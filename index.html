@@ -148,7 +148,7 @@
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="card rounded-2xl p-6 sm:p-8 shadow-2xl">
         <h2 class="text-2xl font-extrabold text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message.</p>
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
@@ -237,7 +237,7 @@ async function handleContactSubmit(e) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
-        access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // Replace with your free key from web3forms.com
+        access_key: "cfc2bac6-ad84-4aff-883c-de297e879391",
         subject: `New Message from ${name} via PaFaqe.al`,
         name: name,
         email: email,
