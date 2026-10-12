@@ -191,6 +191,41 @@ let DATA = null;
 let currentPage = 1;
 const pageSize = 50;
 
+
+function updateURLParams() {
+  const params = new URLSearchParams();
+  const q = document.getElementById('q').value;
+  const city = document.getElementById('city').value;
+  const cat = document.getElementById('cat').value;
+  const sort = document.getElementById('sort').value;
+  const minRating = document.getElementById('minRating').value;
+  const phoneOnly = document.getElementById('phoneOnly').checked;
+
+  if (q) params.set('q', q);
+  if (city) params.set('city', city);
+  if (cat) params.set('cat', cat);
+  if (sort && sort !== 'score') params.set('sort', sort);
+  if (minRating > 0) params.set('minRating', minRating);
+  if (phoneOnly) params.set('phoneOnly', 'true');
+  if (currentPage > 1) params.set('page', currentPage);
+  if (showAll) params.set('showAll', 'true');
+
+  const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+  history.replaceState(null, '', newURL);
+}
+
+function restoreStateFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('q')) document.getElementById('q').value = params.get('q');
+  if (params.has('city')) document.getElementById('city').value = params.get('city');
+  if (params.has('cat')) document.getElementById('cat').value = params.get('cat');
+  if (params.has('sort')) document.getElementById('sort').value = params.get('sort');
+  if (params.has('minRating')) document.getElementById('minRating').value = params.get('minRating');
+  if (params.get('phoneOnly') === 'true') document.getElementById('phoneOnly').checked = true;
+  if (params.get('showAll') === 'true') showAll = true;
+  if (params.has('page')) currentPage = parseInt(params.get('page')) || 1;
+}
+
 if (window.location.protocol === 'file:') {
   document.getElementById('corsWarning').classList.remove('hidden');
 }
@@ -362,6 +397,7 @@ function render(){
       <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>`;
     tb.appendChild(tr);
   });
+  updateURLParams();
 }
 
 function escapeHtml(str) {
@@ -405,6 +441,20 @@ function init(){
   cs.innerHTML = '<option value="">All cities</option>' + [...new Set(DATA.businesses.map(b => b.city))].sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
   ks.innerHTML = '<option value="">All categories</option>' + [...new Set(DATA.businesses.map(b => b.category))].sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
   
+  restoreStateFromURL();
+
+  const chips = document.getElementById('chips');
+  chips.innerHTML = '';
+  [['🎯 Leads only (no website)', false], ['👁 Show all including with website', true]].forEach(([label, val], i) => {
+    const b = document.createElement('button');
+    b.textContent = label; 
+    const isActive = (val === showAll);
+    b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (isActive ? ' active' : '');
+    b.onclick = () => { showAll = val; [...chips.children].forEach(c => c.classList.remove('active')); b.classList.add('active'); handleFilterInput(); };
+    chips.appendChild(b);
+  });
+  render();
+}
   const chips = document.getElementById('chips');
   chips.innerHTML = '';
   [['🎯 Leads only (no website)', false], ['👁 Show all including with website', true]].forEach(([label, val], i) => {
