@@ -148,7 +148,7 @@
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="card rounded-2xl p-6 sm:p-8 shadow-2xl">
         <h2 class="text-2xl font-extrabold text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>.</p>
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
@@ -191,6 +191,14 @@ let DATA = null;
 let currentPage = 1;
 const pageSize = 50;
 
+if (window.location.protocol === 'file:') {
+  document.getElementById('corsWarning').classList.remove('hidden');
+}
+
+fetch('leads.json')
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(j => { DATA = j; init(); })
+  .catch(() => { DATA = DEMO; init(); });
 
 function updateURLParams() {
   const params = new URLSearchParams();
@@ -225,16 +233,6 @@ function restoreStateFromURL() {
   if (params.get('showAll') === 'true') showAll = true;
   if (params.has('page')) currentPage = parseInt(params.get('page')) || 1;
 }
-
-if (window.location.protocol === 'file:') {
-  document.getElementById('corsWarning').classList.remove('hidden');
-}
-
-// Load leads.json with graceful fallback to demo
-fetch('leads.json')
-  .then(r => r.ok ? r.json() : Promise.reject())
-  .then(j => { DATA = j; init(); })
-  .catch(() => { DATA = DEMO; init(); });
 
 function switchTab(tab) {
   document.getElementById('tabLeads').classList.add('hidden');
@@ -397,6 +395,7 @@ function render(){
       <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>`;
     tb.appendChild(tr);
   });
+
   updateURLParams();
 }
 
@@ -450,17 +449,6 @@ function init(){
     b.textContent = label; 
     const isActive = (val === showAll);
     b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (isActive ? ' active' : '');
-    b.onclick = () => { showAll = val; [...chips.children].forEach(c => c.classList.remove('active')); b.classList.add('active'); handleFilterInput(); };
-    chips.appendChild(b);
-  });
-  render();
-}
-  const chips = document.getElementById('chips');
-  chips.innerHTML = '';
-  [['🎯 Leads only (no website)', false], ['👁 Show all including with website', true]].forEach(([label, val], i) => {
-    const b = document.createElement('button');
-    b.textContent = label; 
-    b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (i === 0 ? ' active' : '');
     b.onclick = () => { showAll = val; [...chips.children].forEach(c => c.classList.remove('active')); b.classList.add('active'); handleFilterInput(); };
     chips.appendChild(b);
   });
