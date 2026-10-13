@@ -1,911 +1,342 @@
 <!DOCTYPE html>
-<html lang="sq" class="dark">
+<html lang="sq" class="h-full bg-slate-50">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaFaqe.al — Albanian Businesses Without a Website | Web Design Leads</title>
-<meta name="description" content="Discover local Albanian businesses across Tirana, Durrës, Vlorë, and more that have no website. Ready-made web design leads with phone numbers and ratings.">
-<link rel="stylesheet" href="output.css">
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- Firebase Compat SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<style>
-  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility;}
-  .card{background:#1e293b;border:1px solid #334155}
-  .badge{background:#f59e0b;color:#0f172a}
-  .chip{border:1px solid #475569;cursor:pointer;transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease}
-  .chip.active{background:#f59e0b;color:#0f172a;border-color:#f59e0b;font-weight:600}
-  .row{transition:background-color 0.1s ease}
-  .row:hover{background:#26334d}
-  .leadscore{font-variant-numeric:tabular-nums}
-  ::-webkit-scrollbar{width:8px;height:8px}
-  ::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
-  ::-webkit-scrollbar-track{background:#0f172a}
-</style>
-</head>
-<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaFaqe.al — Albanian Web Design Leads & B2B CRM</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Production Tailwind CSS Compilation -->
+  <link rel="stylesheet" href="output.css">
 
-<div>
-  <!-- Header / Navbar -->
-  <header class="border-b border-slate-700/85 sticky top-0 bg-slate-900/90 backdrop-blur-md z-30 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <div>
-        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white cursor-pointer" onclick="switchTab('leads')">PaFaqe<span class="text-amber-400">.al</span></h1>
-        <p class="text-xs sm:text-sm text-slate-400">Find Albanian local businesses with <b class="text-amber-400 font-semibold">no website</b></p>
+  <!-- Firebase SDKs (v10+ Modular via CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      collection, 
+      getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase Web Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
+      authDomain: "pafaqeal.firebaseapp.com",
+      projectId: "pafaqeal",
+      storageBucket: "pafaqeal.firebasestorage.app",
+      messagingSenderId: "1087093259160",
+      appId: "1:1087093259160:web:9f8e434316d3fdf2a7229b"
+    };
+
+    // Initialize Firebase Services
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Make Firebase functions available globally
+    window.fbAuth = auth;
+    window.fbDb = db;
+    window.fbCreateUser = createUserWithEmailAndPassword;
+    window.fbSignIn = signInWithEmailAndPassword;
+    window.fbSignOut = signOut;
+    window.fbDoc = doc;
+    window.fbSetDoc = setDoc;
+    window.fbGetDoc = getDoc;
+
+    // Monitor Auth State
+    onAuthStateChanged(auth, (user) => {
+      window.currentUser = user;
+      updateAuthUI(user);
+      if (user) {
+        loadUserNotes(user.uid);
+      } else {
+        window.userNotes = {};
+        if (window.allLeads) renderLeadsTable(window.allLeads);
+      }
+    });
+  </script>
+</head>
+<body class="min-h-full font-sans text-slate-800 antialiased bg-slate-50 flex flex-col">
+
+  <!-- Header / Navigation -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🚀</span>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">PaFaqe<span class="text-indigo-600">.al</span></h1>
       </div>
-      
-      <!-- Nav Tabs & Actions -->
-      <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-        <nav class="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs font-medium">
-          <button onclick="switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition">Leads</button>
-          <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">About Us</button>
-          <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">Contact Us</button>
-        </nav>
-        
-        <!-- Auth User State / Button -->
-        <div id="authContainer" class="flex items-center gap-2">
-          <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full bg-slate-800 text-xs font-medium border border-slate-700">…</span>
-          <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-amber-400 transition cursor-pointer flex items-center gap-1.5">
-            <span>👤 Sign In</span>
-          </button>
-        </div>
+      <div id="auth-controls" class="flex items-center gap-3">
+        <button onclick="openAuthModal('login')" class="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300">
+          Kyoçet
+        </button>
+        <button onclick="openAuthModal('signup')" class="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-1.5 rounded-lg shadow-sm">
+          Regjistrohu Falas
+        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-    <!-- Localhost Warning Banner -->
-    <div id="corsWarning" class="hidden mb-6 p-4 rounded-2xl bg-amber-950/90 border border-amber-600/60 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
-      <span>⚠️ <b>CORS Notice:</b> Opened via <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">file://</code>. Run <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">python -m http.server 8000</code> and visit <a href="http://localhost:8000" class="underline font-bold text-white hover:text-amber-200">http://localhost:8000</a>.</span>
+  <!-- Main Content Area -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Guest Banner -->
+    <div id="guest-banner" class="mb-8 p-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 rounded-2xl text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-bold">Gjej Klientët e Tu të Ardhshëm për Web Design</h2>
+        <p class="text-indigo-200 text-sm mt-1">Skanojmë automatikisht çdo javë të gjitha bizneset aktuale në Shqipëri që nuk kanë faqe interneti.</p>
+      </div>
+      <button onclick="openAuthModal('signup')" class="whitespace-nowrap bg-indigo-500 hover:bg-indigo-400 text-white font-semibold px-5 py-2.5 rounded-xl shadow transition-colors">
+        Zhblloko Qasjen e Plotë
+      </button>
     </div>
 
-    <!-- TAB 1: LEADS VIEW -->
-    <div id="tabLeads" class="space-y-6">
-      
-      <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
-      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/40 border border-amber-500/30 shadow-2xl relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="max-w-3xl space-y-4 relative z-10">
-          <span class="px-3 py-1 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-semibold uppercase tracking-wider">🚀 B2B SaaS Lead Generation for Agencies</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Discover hundreds of verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
-          </p>
-          <div class="pt-2 flex flex-wrap items-center gap-3">
-            <button onclick="openAuthModal()" class="px-6 py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-lg text-sm cursor-pointer flex items-center gap-2">
-              <span>⚡ Get Started Free</span>
-            </button>
-            <span class="text-xs text-slate-400">No credit card required • Instant cloud sync</span>
-          </div>
-        </div>
+    <!-- Stats Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Gjithsej Biznese të Skanuara</p>
+        <p id="stat-total" class="text-3xl font-bold text-slate-900 mt-1">...</p>
       </div>
-
-      <!-- Filters Section (Hidden when signed out) -->
-      <section id="filterSection" class="hidden card rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-xl">
-        <div class="md:col-span-3">
-          <input id="q" oninput="handleFilterInput()" placeholder="🔍 Search name, street..." class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-100 placeholder-slate-400 transition">
-        </div>
-        <div class="md:col-span-2">
-          <select id="city" onchange="handleFilterInput()" class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-200 transition cursor-pointer"></select>
-        </div>
-        <div class="md:col-span-2">
-          <select id="cat" onchange="handleFilterInput()" class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-200 transition cursor-pointer"></select>
-        </div>
-        <div class="md:col-span-2">
-          <select id="sort" onchange="handleFilterInput()" class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-200 transition cursor-pointer">
-            <option value="score">Sort: Lead score</option>
-            <option value="rating">Sort: Rating (High→Low)</option>
-            <option value="reviews">Sort: Reviews</option>
-            <option value="name">Sort: Name A→Z</option>
-          </select>
-        </div>
-        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-sm text-slate-300">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input id="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
-          </label>
-          <div class="flex items-center gap-2 ml-auto sm:ml-0">
-            <span class="text-xs text-slate-400">Min rating:</span>
-            <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-20 sm:w-24 cursor-pointer">
-            <span id="minRatingLabel" class="w-8 text-amber-400 font-semibold text-right">0★</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Quick Filter Chips & Export Button -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-        <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-xs sm:text-sm font-bold hover:bg-amber-300 transition shadow-md flex items-center gap-1.5 cursor-pointer ml-auto">
-          <span>⬇ Export CSV</span>
-        </button>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Biznese Pa Faqe Web</p>
+        <p id="stat-no-web" class="text-3xl font-bold text-indigo-600 mt-1">...</p>
       </div>
-
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
-        <div class="card rounded-2xl p-4 shadow-lg"><div id="statLeads" class="text-3xl font-extrabold text-amber-400 tracking-tight">0</div><div class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">No-website leads</div></div>
-        <div class="card rounded-2xl p-4 shadow-lg"><div id="statCities" class="text-3xl font-extrabold text-white tracking-tight">0</div><div class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Cities covered</div></div>
-        <div class="card rounded-2xl p-4 shadow-lg"><div id="statAvg" class="text-3xl font-extrabold text-white tracking-tight">0</div><div class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Avg. lead score</div></div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Përditësimi i Fundit</p>
+        <p id="stat-date" class="text-3xl font-bold text-emerald-600 mt-1">-</p>
       </div>
+    </div>
 
-      <!-- Data Table Section -->
-      <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[460px] flex flex-col justify-between relative">
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left border-collapse">
-            <thead id="tableHead" class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700"></thead>
-            <tbody id="rows" class="divide-y divide-slate-800/60"></tbody>
-          </table>
-        </div>
-
-        <!-- Freemium Gating Banner for Guests -->
-        <div id="guestGatingOverlay" class="hidden p-8 sm:p-12 text-center bg-slate-900/95 backdrop-blur-md border-t border-slate-700 space-y-4">
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-400 text-xl font-bold mb-1 border border-amber-400/20">🔒</div>
-          <h3 class="text-xl font-extrabold text-white tracking-tight">Unlock All 1,000+ Verified Albanian Leads</h3>
-          <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
-            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp pitch generators, custom CRM notes, and Excel-ready CSV exports.
-          </p>
-          <div class="pt-2">
-            <button onclick="openAuthModal()" class="px-6 py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-xl text-xs sm:text-sm cursor-pointer inline-flex items-center gap-2">
-              <span>🚀 Create Free Account & Unlock All Leads</span>
-            </button>
-          </div>
-        </div>
-
-        <div id="empty" class="hidden p-16 text-center text-slate-400 text-sm">No businesses match your filter criteria.</div>
+    <!-- Toolbar: Search & Export -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+        <input type="text" id="search-input" oninput="filterLeads()" placeholder="Kërko me emër ose adresë..." class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-full sm:w-64 shadow-sm">
         
-        <!-- Pagination Bar -->
-        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 bg-slate-800/50 border-t border-slate-700 text-xs text-slate-300 mt-auto">
-          <div id="pageInfo">Showing 0-0 of 0 leads</div>
-          <div class="flex items-center gap-2">
-            <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
-            <span id="pageIndicator" class="px-3 py-1 font-semibold text-amber-400">Page 1 of 1</span>
-            <button id="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 2: ABOUT US VIEW -->
-    <div id="tabAbout" class="hidden space-y-6 max-w-3xl mx-auto">
-      <div class="card rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4">
-        <h2 class="text-2xl font-extrabold text-amber-400">About PaFaqe.al</h2>
-        <p class="text-slate-300 leading-relaxed">
-          <b>PaFaqe.al</b> is built specifically for web design agencies, digital marketers, and freelance developers looking to connect with local businesses across Albania that do not yet have an online presence. 
-        </p>
-        <p class="text-slate-300 leading-relaxed">
-          Many small businesses—ranging from cafés and retail shops to auto repair and hotels—rely solely on foot traffic or social media. PaFaqe.al aggregates open data to pinpoint these exact businesses, providing accurate contact details, categories, and lead scoring so you can pitch your web development services effectively.
-        </p>
-        <div class="pt-4 border-t border-slate-700 text-sm text-slate-400">
-          <p>Created and maintained by <b>Kristian Frroku</b>.</p>
-        </div>
+        <select id="city-filter" onchange="filterLeads()" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
+          <option value="">Të gjitha qytetet</option>
+          <option value="Tirana">Tiranë</option>
+          <option value="Durrës">Durrës</option>
+          <option value="Vlorë">Vlorë</option>
+          <option value="Shkodër">Shkodër</option>
+        </select>
       </div>
+
+      <button onclick="exportLeadsToCSV()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors flex items-center justify-center gap-2">
+        📥 Shkarko CSV
+      </button>
     </div>
 
-    <!-- TAB 3: CONTACT US VIEW -->
-    <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="card rounded-2xl p-6 sm:p-8 shadow-2xl">
-        <h2 class="text-2xl font-extrabold text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>.</p>
-        
-        <form onsubmit="handleContactSubmit(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Your Name</label>
-            <input type="text" id="contactName" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Your Email</label>
-            <input type="email" id="contactEmail" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Message</label>
-            <textarea id="contactMsg" rows="4" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
-          </div>
-          <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer">Send Message</button>
-        </form>
-        <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
-          ✅ Thank you! Your message has been sent successfully to Kristian Frroku.
-        </div>
+    <!-- Leads Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <th class="py-3.5 px-4">Biznesi</th>
+              <th class="py-3.5 px-4">Kategoria</th>
+              <th class="py-3.5 px-4">Qyteti / Adresa</th>
+              <th class="py-3.5 px-4">Telefon</th>
+              <th class="py-3.5 px-4 text-right">Veprime Directe</th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody" class="divide-y divide-slate-200 text-sm">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
       </div>
     </div>
   </main>
-</div>
 
-<!-- AUTH MODAL -->
-<div id="authModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-    <div id="authTitle" class="text-xl font-extrabold text-white mb-1">Sign In to PaFaqe.al</div>
-    <p id="authSubtitle" class="text-xs text-slate-400 mb-6">Access your saved lead statuses and cloud CRM notes across devices.</p>
-    
-    <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email</label>
-        <input type="email" id="authEmail" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modal-title" class="text-lg font-bold text-slate-900">Kyoçet në PaFaqe.al</h3>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Password</label>
-        <input type="password" id="authPassword" required minlength="6" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
-      </div>
-      <div id="authError" class="hidden text-xs text-rose-400 font-medium"></div>
-      
-      <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer">Sign In</button>
-    </form>
-    
-    <div class="mt-6 text-center text-xs text-slate-400">
-      <span id="authToggleText">Don't have an account?</span> 
-      <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-amber-400 font-semibold hover:underline ml-1">Sign Up</button>
+      <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Email</label>
+          <input type="email" id="auth-email" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Fjalëkalimi</label>
+          <input type="password" id="auth-password" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+        <p id="auth-error" class="text-xs text-red-600 hidden"></p>
+        <button type="submit" id="auth-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg text-sm shadow">
+          Vazhdo
+        </button>
+      </form>
     </div>
   </div>
-</div>
 
-<!-- NOTES MODAL -->
-<div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closeNotesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-    <div class="text-xl font-extrabold text-white mb-1">Lead CRM Notes</div>
-    <p id="notesBusinessSubtitle" class="text-xs text-amber-400 mb-4 font-medium"></p>
-    
-    <div class="space-y-4">
-      <textarea id="leadNoteInput" rows="5" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
-      <div class="flex items-center justify-end gap-3">
-        <button onclick="closeNotesModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">Cancel</button>
-        <button onclick="saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-900 transition shadow-md">Save Note</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <!-- JavaScript Logic -->
+  <script>
+    window.allLeads = [];
+    window.userNotes = {};
+    let authMode = 'login';
 
-<!-- PITCH GENERATOR MODAL -->
-<div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closePitchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-    <div class="text-xl font-extrabold text-amber-400 mb-1">💬 Albanian WhatsApp Pitch</div>
-    <p id="pitchBusinessSubtitle" class="text-xs text-slate-400 mb-4 font-medium"></p>
-    
-    <div class="space-y-4">
-      <textarea id="pitchTextOutput" rows="6" readonly class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 outline-none font-mono select-all"></textarea>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition">📋 Copy Pitch Text</button>
-        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
-          <span>🚀 Send via WhatsApp ↗</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
+    async function initApp() {
+      try {
+        const res = await fetch('leads.json');
+        const data = await res.json();
+        window.allLeads = data.businesses || [];
 
-<!-- Footer -->
-<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 text-xs text-slate-400 border-t border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-  <div>
-    <p class="font-semibold text-slate-300">PaFaqe.al — Albanian Web Design Leads</p>
-    <p class="text-slate-500 mt-1">© 2026 Developed by <b class="text-amber-400">Kristian Frroku</b></p>
-  </div>
-  <div class="flex items-center gap-4">
-    <span>📞 <a href="tel:0684073212" class="text-amber-400 hover:underline">0684073212</a></span>
-    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-amber-400 hover:underline">frrokuk2@gmail.com</a></span>
-  </div>
-</footer>
+        // Update stats
+        document.getElementById('stat-total').innerText = window.allLeads.length;
+        document.getElementById('stat-no-web').innerText = window.allLeads.filter(b => !b.website).length;
+        document.getElementById('stat-date').innerText = data.generated || 'Sot';
 
-<script>
-// ==========================================
-// 🔑 FIREBASE CONFIGURATION
-// ==========================================
-const firebaseConfig = {
-  apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
-  authDomain: "pafaqeal.firebaseapp.com",
-  projectId: "pafaqeal",
-  storageBucket: "pafaqeal.firebasestorage.app",
-  messagingSenderId: "292435292597",
-  appId: "1:292435292597:web:c266bf46c4e0869be869fc",
-  measurementId: "G-5QD3YLQPQP"
-};
-
-// Initialize Firebase safely
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let currentUser = null;
-let cloudStatuses = {};
-let cloudNotes = {};
-let activeLeadKeyForNotes = null;
-
-// Auth State Observer
-auth.onAuthStateChanged(async (user) => {
-  currentUser = user;
-  const btn = document.getElementById('authActionBtn');
-  const hero = document.getElementById('guestHero');
-  const filterSec = document.getElementById('filterSection');
-  
-  if (user) {
-    const emailPrefix = user.email ? user.email.split('@')[0] : 'User';
-    btn.innerHTML = `<span>👤 ${escapeHtml(emailPrefix)}</span> <span class="text-xs text-rose-400 ml-1 hover:underline" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
-    hero.classList.add('hidden');
-    filterSec.classList.remove('hidden');
-    render();
-    await loadCloudData();
-  } else {
-    btn.innerHTML = `<span>👤 Sign In</span>`;
-    cloudStatuses = {};
-    cloudNotes = {};
-    hero.classList.remove('hidden');
-    filterSec.classList.add('hidden');
-    render();
-  }
-});
-
-let isSignUpMode = false;
-function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
-function closeAuthModal() { 
-  document.getElementById('authModal').classList.add('hidden'); 
-  document.getElementById('authError').classList.add('hidden'); 
-}
-function toggleAuthMode() {
-  isSignUpMode = !isSignUpMode;
-  document.getElementById('authTitle').textContent = isSignUpMode ? 'Create Free Account' : 'Sign In to PaFaqe.al';
-  document.getElementById('authSubtitle').textContent = isSignUpMode ? 'Sign up to sync your lead notes and statuses in the cloud.' : 'Access your saved lead statuses and cloud CRM notes across devices.';
-  document.getElementById('authSubmitBtn').textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
-  document.getElementById('authToggleText').textContent = isSignUpMode ? 'Already have an account?' : "Don't have an account?";
-  document.getElementById('authToggleBtn').textContent = isSignUpMode ? 'Sign In' : 'Sign Up';
-}
-
-async function handleAuthSubmit(e) {
-  e.preventDefault();
-  const email = document.getElementById('authEmail').value;
-  const password = document.getElementById('authPassword').value;
-  const errBox = document.getElementById('authError');
-  errBox.classList.add('hidden');
-
-  try {
-    if (isSignUpMode) {
-      await auth.createUserWithEmailAndPassword(email, password);
-    } else {
-      await auth.signInWithEmailAndPassword(email, password);
+        renderLeadsTable(window.allLeads);
+      } catch (err) {
+        console.error("Nuk u ngarkua leads.json:", err);
+      }
     }
-    closeAuthModal();
-    e.target.reset();
-  } catch (err) {
-    errBox.textContent = err.message;
-    errBox.classList.remove('hidden');
-  }
-}
 
-async function loadCloudData() {
-  if (!currentUser) return;
-  try {
-    const [statusSnap, notesSnap] = await Promise.all([
-      db.collection('users').doc(currentUser.uid).collection('lead_statuses').get(),
-      db.collection('users').doc(currentUser.uid).collection('lead_notes').get()
-    ]);
-    cloudStatuses = {};
-    statusSnap.forEach(doc => { cloudStatuses[doc.id] = doc.data().status; });
-    
-    cloudNotes = {};
-    notesSnap.forEach(doc => { cloudNotes[doc.id] = doc.data().note; });
-  } catch (err) {
-    console.error("Error loading cloud data:", err);
-  } finally {
-    render();
-  }
-}
+    function renderLeadsTable(leads) {
+      const tbody = document.getElementById('leads-tbody');
+      tbody.innerHTML = '';
 
-function getLeadStatus(id) {
-  if (currentUser) {
-    return cloudStatuses[id] || 'new';
-  } else {
-    const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
-    return statuses[id] || 'new';
-  }
-}
+      if (!leads.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400">Nuk u gjet asnjë biznes me këtë kërkim.</td></tr>`;
+        return;
+      }
 
-async function setLeadStatus(id, status) {
-  if (currentUser) {
-    cloudStatuses[id] = status;
-    render();
-    try {
-      await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
-    } catch (err) {
-      console.error("Error saving status to cloud:", err);
+      leads.forEach(lead => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/80 transition-colors";
+
+        const phoneDisplay = lead.phone ? lead.phone : '<span class="text-slate-400 text-xs">Mungon</span>';
+        const waLink = generateWhatsAppLink(lead.phone, lead.name, lead.city);
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-semibold text-slate-900">${lead.name}</td>
+          <td class="py-3 px-4"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">${lead.category}</span></td>
+          <td class="py-3 px-4 text-slate-600">${lead.city} <span class="text-slate-400 text-xs block">${lead.address}</span></td>
+          <td class="py-3 px-4 text-slate-700 font-mono text-xs">${phoneDisplay}</td>
+          <td class="py-3 px-4 text-right">
+            ${lead.phone ? `
+              <a href="${waLink}" target="_blank" class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-200 transition-colors">
+                💬 Pitch në WhatsApp
+              </a>
+            ` : '<span class="text-xs text-slate-400">Jo Telefon</span>'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
-  } else {
-    const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
-    statuses[id] = status;
-    localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
-    render();
-  }
-}
 
-// Notes Handlers
-function getLeadNote(id) {
-  if (currentUser) {
-    return cloudNotes[id] || '';
-  } else {
-    const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
-    return notes[id] || '';
-  }
-}
-
-function openNotesModal(leadKey) {
-  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
-  const name = b ? b.name : leadKey;
-  activeLeadKeyForNotes = leadKey;
-  document.getElementById('notesBusinessSubtitle').textContent = name;
-  document.getElementById('leadNoteInput').value = getLeadNote(leadKey);
-  document.getElementById('notesModal').classList.remove('hidden');
-}
-
-function closeNotesModal() {
-  document.getElementById('notesModal').classList.add('hidden');
-  activeLeadKeyForNotes = null;
-}
-
-async function saveLeadNote() {
-  if (!activeLeadKeyForNotes) return;
-  const noteText = document.getElementById('leadNoteInput').value.trim();
-  
-  if (currentUser) {
-    cloudNotes[activeLeadKeyForNotes] = noteText;
-    try {
-      await db.collection('users').doc(currentUser.uid).collection('lead_notes').doc(activeLeadKeyForNotes).set({ note: noteText });
-    } catch (err) {
-      console.error("Error saving note to cloud:", err);
-    }
-  } else {
-    const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
-    notes[activeLeadKeyForNotes] = noteText;
-    localStorage.setItem('pafaqe_lead_notes', JSON.stringify(notes));
-  }
-  closeNotesModal();
-  render();
-}
-
-// Pitch Generator Handlers
-function openPitchModal(leadKey) {
-  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
-  if (!b) return;
-  const name = b.name || '';
-  const city = b.city || '';
-  const category = b.category || 'Business';
-  const phone = b.phone || '';
-
-  document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category} • ${city || 'Albania'})`;
-  
-  const pitch = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
-  
-  document.getElementById('pitchTextOutput').value = pitch;
-  
-  const cleanNum = phone ? phone.replace(/\D/g, '') : '';
-  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
-  const waUrl = formatted ? `https://wa.me/${formatted}?text=${encodeURIComponent(pitch)}` : `https://wa.me/?text=${encodeURIComponent(pitch)}`;
-  
-  document.getElementById('whatsappSendBtn').href = waUrl;
-  document.getElementById('pitchModal').classList.remove('hidden');
-}
-
-function closePitchModal() {
-  document.getElementById('pitchModal').classList.add('hidden');
-}
-
-function copyPitchToClipboard() {
-  const txt = document.getElementById('pitchTextOutput');
-  txt.select();
-  navigator.clipboard.writeText(txt.value).then(() => {
-    alert('✅ Pitch copied to clipboard successfully!');
-  });
-}
-
-// App Core State
-let showAll = false;
-let DATA = null;
-let currentPage = 1;
-const pageSize = 50;
-
-if (window.location.protocol === 'file:') {
-  document.getElementById('corsWarning').classList.remove('hidden');
-}
-
-fetch('leads.json')
-  .then(r => r.ok ? r.json() : Promise.reject())
-  .then(j => { DATA = j; init(); })
-  .catch(() => { DATA = DEMO; init(); });
-
-function updateURLParams() {
-  if (!currentUser) return;
-  const params = new URLSearchParams();
-  const q = document.getElementById('q').value;
-  const city = document.getElementById('city').value;
-  const cat = document.getElementById('cat').value;
-  const sort = document.getElementById('sort').value;
-  const minRating = document.getElementById('minRating').value;
-  const phoneOnly = document.getElementById('phoneOnly').checked;
-
-  if (q) params.set('q', q);
-  if (city) params.set('city', city);
-  if (cat) params.set('cat', cat);
-  if (sort && sort !== 'score') params.set('sort', sort);
-  if (minRating > 0) params.set('minRating', minRating);
-  if (phoneOnly) params.set('phoneOnly', 'true');
-  if (currentPage > 1) params.set('page', currentPage);
-  if (showAll) params.set('showAll', 'true');
-
-  const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
-  history.replaceState(null, '', newURL);
-}
-
-function restoreStateFromURL() {
-  if (!currentUser) return;
-  const params = new URLSearchParams(window.location.search);
-  if (params.has('q')) document.getElementById('q').value = params.get('q');
-  if (params.has('city')) document.getElementById('city').value = params.get('city');
-  if (params.has('cat')) document.getElementById('cat').value = params.get('cat');
-  if (params.has('sort')) document.getElementById('sort').value = params.get('sort');
-  if (params.has('minRating')) document.getElementById('minRating').value = params.get('minRating');
-  if (params.get('phoneOnly') === 'true') document.getElementById('phoneOnly').checked = true;
-  if (params.get('showAll') === 'true') showAll = true;
-  if (params.has('page')) currentPage = parseInt(params.get('page')) || 1;
-}
-
-function switchTab(tab) {
-  document.getElementById('tabLeads').classList.add('hidden');
-  document.getElementById('tabAbout').classList.add('hidden');
-  document.getElementById('tabContact').classList.add('hidden');
-  
-  document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition";
-  document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition";
-  document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition";
-
-  if (tab === 'leads') {
-    document.getElementById('tabLeads').classList.remove('hidden');
-    document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-  } else if (tab === 'about') {
-    document.getElementById('tabAbout').classList.remove('hidden');
-    document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-  } else if (tab === 'contact') {
-    document.getElementById('tabContact').classList.remove('hidden');
-    document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-  }
-}
-
-async function handleContactSubmit(e) {
-  e.preventDefault();
-  const name = document.getElementById('contactName').value;
-  const email = document.getElementById('contactEmail').value;
-  const message = document.getElementById('contactMsg').value;
-  const submitBtn = document.getElementById('submitBtn');
-
-  submitBtn.textContent = "Sending...";
-  submitBtn.disabled = true;
-
-  try {
-    const response = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        access_key: "cfc2bac6-ad84-4aff-883c-de297e879391",
-        subject: `New Message from ${name} via PaFaqe.al`,
-        name: name,
-        email: email,
-        message: message
-      })
-    });
-    const result = await response.json();
-    if (result.success) {
-      document.getElementById('contactSuccess').classList.remove('hidden');
-      e.target.reset();
-      setTimeout(() => { document.getElementById('contactSuccess').classList.add('hidden'); }, 6000);
-    } else {
-      alert("Failed to send message. Please email directly at frrokuk2@gmail.com");
-    }
-  } catch (err) {
-    alert("Network error. Please email directly at frrokuk2@gmail.com");
-  } finally {
-    submitBtn.textContent = "Send Message";
-    submitBtn.disabled = false;
-  }
-}
-
-let filterTimeout = null;
-function handleFilterInput() {
-  clearTimeout(filterTimeout);
-  filterTimeout = setTimeout(() => {
-    currentPage = 1;
-    render();
-  }, 150);
-}
-
-function changePage(direction) {
-  const list = filtered();
-  const totalPages = Math.ceil(list.length / pageSize) || 1;
-  currentPage += direction;
-  if (currentPage < 1) currentPage = 1;
-  if (currentPage > totalPages) currentPage = totalPages;
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function leadScore(b){
-  let s = 50;
-  if(!b.website) s += 25;
-  if(b.phone) s += 10;
-  if(b.rating){ s += Math.round((b.rating-3)*6); if(b.rating>=4.5) s+=5; }
-  if(b.reviews>50) s += 5;
-  return Math.max(0,Math.min(100,s));
-}
-
-function filtered(){
-  if (!DATA || !DATA.businesses) return [];
-  const highPriorityOnly = window.highPriorityOnly || false;
-  
-  let list = DATA.businesses.filter(b => {
-    if(!showAll && b.website) return false;
-    if(highPriorityOnly && (leadScore(b) < 80 || !b.phone)) return false;
-    
-    if (currentUser) {
-      const q = document.getElementById('q').value.toLowerCase();
-      const city = document.getElementById('city').value;
-      const cat = document.getElementById('cat').value;
-      const mr = parseFloat(document.getElementById('minRating').value) || 0;
-      const phoneOnly = document.getElementById('phoneOnly').checked;
-
-      if(q && !(b.name + ' ' + (b.address || '')).toLowerCase().includes(q)) return false;
-      if(city && (b.city || '').trim() !== city) return false;
-      if(cat && (b.category || '').trim() !== cat) return false;
-      if(phoneOnly && !b.phone) return false;
+    function generateWhatsAppLink(phone, name, city) {
+      if (!phone) return '#';
+      let cleanPhone = phone.replace(/[^0-9]/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = '355' + cleanPhone.substring(1);
       
-      const bRating = b.rating || 0;
-      if(mr > 0 && bRating < mr) return false;
+      const pitchMsg = encodeURIComponent(
+        `Përshëndetje! Vura re se biznesi juaj "${name}" në ${city} nuk ka ende një faqe interneti zyrtare.\n\nNe ndihmojmë bizneset në Shqipëri të rrisin klientët me uebsajte moderne. A do të kishit interes për një model falas?`
+      );
+      return `https://wa.me/${cleanPhone}?text=${pitchMsg}`;
     }
 
-    return true;
-  });
-  
-  if (currentUser) {
-    const mrLabel = document.getElementById('minRatingLabel');
-    if (mrLabel) {
-      const mr = parseFloat(document.getElementById('minRating').value) || 0;
-      mrLabel.textContent = mr + '★';
+    function filterLeads() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const city = document.getElementById('city-filter').value.toLowerCase();
+
+      const filtered = window.allLeads.filter(lead => {
+        const matchesSearch = lead.name.toLowerCase().includes(search) || lead.address.toLowerCase().includes(search);
+        const matchesCity = !city || lead.city.toLowerCase() === city;
+        return matchesSearch && matchesCity;
+      });
+
+      renderLeadsTable(filtered);
     }
-  }
-  
-  const s = currentUser ? document.getElementById('sort').value : 'score';
-  list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
-    : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
-    : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
-    : leadScore(b) - leadScore(a));
-  return list;
-}
 
-function getWhatsAppLink(phone) {
-  if (!phone) return null;
-  const cleanNum = phone.replace(/\D/g, '');
-  if (!cleanNum) return null;
-  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
-  return `https://wa.me/${formatted}`;
-}
+    function exportLeadsToCSV() {
+      if (!window.currentUser) {
+        alert("Ju lutem regjistrohuni ose kyçuni për të shkarkuar skedarin CSV!");
+        openAuthModal('signup');
+        return;
+      }
 
-function copyLeadInfo(leadKey) {
-  if (!currentUser) {
-    openAuthModal();
-    return;
-  }
-  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
-  if (!b) return;
-  const info = `${b.name} | ${b.category || 'N/A'} | ${b.city || 'N/A'} | Tel: ${b.phone || 'N/A'}`;
-  navigator.clipboard.writeText(info).then(() => {
-    alert(`Copied to clipboard:\n${info}`);
-  }).catch(() => {
-    alert('Failed to copy.');
-  });
-}
+      if (!window.allLeads.length) return alert("Nuk ka të dhëna për të eksportuar!");
 
-function exportCSV() {
-  if (!currentUser) {
-    openAuthModal();
-    return;
-  }
-  const list = filtered();
-  const excelHeader = 'sep=,\n';
-  const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
-  const body = list.map(b => {
-    const rawPhone = b.phone ? b.phone : '';
-    const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
-    return [
-      `"${(b.name || '').replace(/"/g, '""')}"`,
-      `"${(b.category || '').replace(/"/g, '""')}"`,
-      `"${(b.city || '').replace(/"/g, '""')}"`,
-      `"${(b.address || '').replace(/"/g, '""')}"`,
-      excelPhone,
-      b.rating || '',
-      b.reviews || '',
-      `"${(b.website || '').replace(/"/g, '""')}"`,
-      leadScore(b)
-    ].join(',');
-  }).join('\n');
-  
-  const blob = new Blob(['\ufeff' + excelHeader + head + body], {type: 'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'albania-no-website-leads.csv'; 
-  a.click();
-}
+      let csv = "\uFEFFEmri,Kategoria,Qyteti,Adresa,Telefon\n";
+      window.allLeads.forEach(l => {
+        csv += `"${l.name || ''}","${l.category || ''}","${l.city || ''}","${l.address || ''}","${l.phone || ''}"\n`;
+      });
 
-function render(){
-  if (!DATA || !DATA.businesses) return;
-  const list = filtered();
-  const noWebCount = DATA.businesses.filter(b => !b.website).length;
-  const cities = [...new Set(DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))];
-  
-  document.getElementById('statLeads').textContent = noWebCount.toLocaleString();
-  document.getElementById('statCities').textContent = cities.length;
-  const sc = DATA.businesses.filter(b => !b.website).map(leadScore);
-  document.getElementById('statAvg').textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `pafaqe_leads_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
-  // For guest users, limit preview to top 5 leads
-  const maxGuestRows = 5;
-  const effectiveList = currentUser ? list : list.slice(0, maxGuestRows);
+    // Modal & Auth Handling
+    function openAuthModal(mode) {
+      authMode = mode;
+      document.getElementById('modal-title').innerText = mode === 'login' ? 'Kyçet në PaFaqe.al' : 'Regjistrohu Falas';
+      document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Kyçet' : 'Krijo Llogari';
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
 
-  const totalPages = Math.ceil(effectiveList.length / pageSize) || 1;
-  if (currentPage > totalPages) currentPage = totalPages;
-  if (currentPage < 1) currentPage = 1;
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('auth-error').classList.add('hidden');
+    }
 
-  const start = (currentPage - 1) * pageSize;
-  const end = start + pageSize;
-  const displayList = effectiveList.slice(start, end);
+    async function handleAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      const errEl = document.getElementById('auth-error');
+      errEl.classList.add('hidden');
 
-  // Render Table Header dynamically based on Auth State
-  const thead = document.getElementById('tableHead');
-  thead.innerHTML = `
-    <tr>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Business</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Category</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">City</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
-      ${currentUser ? '<th class="px-4 sm:px-6 py-3.5 font-semibold">Status</th>' : ''}
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Website</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
-      ${currentUser ? '<th class="px-4 sm:px-6 py-3.5 font-semibold text-center">Actions</th>' : ''}
-    </tr>
-  `;
+      try {
+        if (authMode === 'signup') {
+          await window.fbCreateUser(window.fbAuth, email, pass);
+        } else {
+          await window.fbSignIn(window.fbAuth, email, pass);
+        }
+        closeAuthModal();
+      } catch (err) {
+        errEl.innerText = err.message;
+        errEl.classList.remove('hidden');
+      }
+    }
 
-  const tb = document.getElementById('rows'); 
-  tb.innerHTML = '';
-  document.getElementById('empty').classList.toggle('hidden', list.length > 0);
-  
-  // Toggle Freemium Gating Banner
-  const gatingOverlay = document.getElementById('guestGatingOverlay');
-  if (!currentUser && list.length > 0) {
-    gatingOverlay.classList.remove('hidden');
-  } else {
-    gatingOverlay.classList.add('hidden');
-  }
+    function updateAuthUI(user) {
+      const controls = document.getElementById('auth-controls');
+      const banner = document.getElementById('guest-banner');
 
-  const paginationBar = document.getElementById('paginationBar');
-  if (currentUser && list.length > 0) {
-    paginationBar.classList.remove('hidden');
-    document.getElementById('pageInfo').textContent = `Showing ${start + 1}–${Math.min(end, list.length)} of ${list.length.toLocaleString()} filtered leads`;
-    document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = currentPage === totalPages;
-  } else {
-    paginationBar.classList.add('hidden');
-  }
+      if (user) {
+        controls.innerHTML = `
+          <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">${user.email}</span>
+          <button onclick="window.fbSignOut(window.fbAuth)" class="text-xs font-medium text-red-600 hover:text-red-700 px-3 py-1.5 border border-red-200 rounded-lg">Çkyçet</button>
+        `;
+        if (banner) banner.classList.add('hidden');
+      } else {
+        controls.innerHTML = `
+          <button onclick="openAuthModal('login')" class="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200">Kyçet</button>
+          <button onclick="openAuthModal('signup')" class="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-1.5 rounded-lg shadow-sm">Regjistrohu Falas</button>
+        `;
+        if (banner) banner.classList.remove('hidden');
+      }
+    }
 
-  displayList.forEach(b => {
-    const sc = leadScore(b);
-    const noWeb = !b.website;
-    const waLink = getWhatsAppLink(b.phone);
-    const leadKey = b.id || b.name;
-    const currentStatus = getLeadStatus(leadKey);
-    const leadNote = getLeadNote(leadKey);
-
-    const tr = document.createElement('tr');
-    tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
-    tr.innerHTML = `
-      <td class="px-4 sm:px-6 py-3.5">
-        <div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
-        <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div>
-      </td>
-      <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
-      
-      <!-- Phone + WhatsApp -->
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
-        ${b.phone ? `
-          <div class="flex items-center gap-2">
-            <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition">WA ↗</a>` : ''}
-          </div>
-        ` : '<span class="text-slate-600">—</span>'}
-      </td>
-
-      <!-- Lead Status Selector (Only when signed in) -->
-      ${currentUser ? `
-        <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
-          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer">
-            <option value="new" ${currentStatus==='new'?'selected':''}>🆕 New</option>
-            <option value="contacted" ${currentStatus==='contacted'?'selected':''}>📞 Contacted</option>
-            <option value="interested" ${currentStatus==='interested'?'selected':''}>⭐ Interested</option>
-            <option value="closed" ${currentStatus==='closed'?'selected':''}>✅ Closed</option>
-          </select>
-        </td>
-      ` : ''}
-
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
-      <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
-      
-      <!-- Action Buttons (Only when signed in) -->
-      ${currentUser ? `
-        <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
-          <div class="flex items-center justify-center gap-1.5">
-            <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium ${leadNote ? 'text-amber-400 border-amber-600/50' : 'text-slate-300'} transition" title="View/Edit Notes">
-              📝 ${leadNote ? 'Note*' : 'Note'}
-            </button>
-            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition" title="Generate WhatsApp Pitch">
-              💬 Pitch
-            </button>
-            <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
-              📋 Copy
-            </button>
-          </div>
-        </td>
-      ` : ''}
-    `;
-    tb.appendChild(tr);
-  });
-
-  updateURLParams();
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function init(){
-  document.getElementById('dataSource').textContent =
-    DATA.source === 'live' ? `🔴 LIVE · ${DATA.businesses.length.toLocaleString()} businesses` : `🟡 DEMO data`;
-  document.getElementById('dataSource').className += DATA.source === 'live' ? ' bg-emerald-950 text-emerald-300 border-emerald-800' : '';
-  
-  const cs = document.getElementById('city'), ks = document.getElementById('cat');
-  
-  const cleanCities = [...new Set(DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
-  const cleanCats = [...new Set(DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
-
-  cs.innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  ks.innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  
-  restoreStateFromURL();
-
-  const chips = document.getElementById('chips');
-  chips.innerHTML = '';
-  [
-    ['🎯 Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
-    ['🔥 High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
-    ['👁 Show all', () => { showAll = true; window.highPriorityOnly = false; }]
-  ].forEach(([label, action], i) => {
-    const b = document.createElement('button');
-    b.textContent = label; 
-    b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (i === 0 ? ' active' : '');
-    b.onclick = () => { 
-      [...chips.children].forEach(c => c.classList.remove('active')); 
-      b.classList.add('active'); 
-      action();
-      handleFilterInput(); 
-    };
-    chips.appendChild(b);
-  });
-  render();
-}
-
-const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
-</script>
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
 </body>
 </html>
