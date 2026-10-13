@@ -152,7 +152,7 @@
           Many small businesses—ranging from cafés and retail shops to auto repair and hotels—rely solely on foot traffic or social media. PaFaqe.al aggregates open data to pinpoint these exact businesses, providing accurate contact details, categories, and lead scoring so you can pitch your web development services effectively.
         </p>
         <div class="pt-4 border-t border-slate-700 text-sm text-slate-400">
-          <p>Created and maintained by <b>Kristian Frroku</b>[cite: 3].</p>
+          <p>Created and maintained by <b>Kristian Frroku</b>.</p>
         </div>
       </div>
     </div>
@@ -161,7 +161,7 @@
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="card rounded-2xl p-6 sm:p-8 shadow-2xl">
         <h2 class="text-2xl font-extrabold text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>[cite: 3].</p>
+        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>.</p>
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
@@ -179,7 +179,7 @@
           <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer">Send Message</button>
         </form>
         <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
-          ✅ Thank you! Your message has been sent successfully to Kristian Frroku[cite: 3].
+          ✅ Thank you! Your message has been sent successfully to Kristian Frroku.
         </div>
       </div>
     </div>
@@ -218,7 +218,7 @@
 <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 text-xs text-slate-400 border-t border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
     <p class="font-semibold text-slate-300">PaFaqe.al — Albanian Web Design Leads</p>
-    <p class="text-slate-500 mt-1">© 2026 Developed by <b class="text-amber-400">Kristian Frroku</b>[cite: 3]</p>
+    <p class="text-slate-500 mt-1">© 2026 Developed by <b class="text-amber-400">Kristian Frroku</b></p>
   </div>
   <div class="flex items-center gap-4">
     <span>📞 <a href="tel:0684073212" class="text-amber-400 hover:underline">0684073212</a></span>
@@ -437,10 +437,10 @@ async function handleContactSubmit(e) {
       e.target.reset();
       setTimeout(() => { document.getElementById('contactSuccess').classList.add('hidden'); }, 6000);
     } else {
-      alert("Failed to send message. Please email directly at frrokuk2@gmail.com[cite: 3]");
+      alert("Failed to send message. Please email directly at frrokuk2@gmail.com");
     }
   } catch (err) {
-    alert("Network error. Please email directly at frrokuk2@gmail.com[cite: 3]");
+    alert("Network error. Please email directly at frrokuk2@gmail.com");
   } finally {
     submitBtn.textContent = "Send Message";
     submitBtn.disabled = false;
@@ -488,7 +488,6 @@ function filtered(){
     if(cat && (b.category || '').trim() !== cat) return false;
     if(phoneOnly && !b.phone) return false;
     
-    // Rating check: Include missing ratings if minRating is 0; otherwise check against b.rating
     const bRating = b.rating || 0;
     if(mr > 0 && bRating < mr) return false;
 
@@ -523,7 +522,7 @@ function copyLeadInfo(name, city, phone, category) {
 function render(){
   const list = filtered();
   const noWebCount = DATA.businesses.filter(b => !b.website).length;
-  const cities = [...new Set(DATA.businesses.filter(b => !b.website).map(b => b.city))];
+  const cities = [...new Set(DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))];
   
   document.getElementById('statLeads').textContent = noWebCount.toLocaleString();
   document.getElementById('statCities').textContent = cities.length;
@@ -649,8 +648,8 @@ function init(){
   document.getElementById('dataSource').className += DATA.source === 'live' ? ' bg-emerald-950 text-emerald-300 border-emerald-800' : '';
   
   const cs = document.getElementById('city'), ks = document.getElementById('cat');
-
-  // Clean, filter out null/empty strings, and sort city & category options
+  
+  // Clean, trim, and filter out falsy/empty values for cities and categories
   const cleanCities = [...new Set(DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
   const cleanCats = [...new Set(DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
 
