@@ -6,6 +6,10 @@
 <title>PaFaqe.al — Albanian Businesses Without a Website | Web Design Leads</title>
 <meta name="description" content="Discover local Albanian businesses across Tirana, Durrës, Vlorë, and more that have no website. Ready-made web design leads with phone numbers and ratings.">
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Firebase Compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
   body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0; -webkit-tap-highlight-color: transparent;}
   .card{background:#1e293b;border:1px solid #334155}
@@ -37,7 +41,14 @@
           <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">About Us</button>
           <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">Contact Us</button>
         </nav>
-        <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full bg-slate-800 text-xs font-medium border border-slate-700">…</span>
+        
+        <!-- Auth User State / Button -->
+        <div id="authContainer" class="flex items-center gap-2">
+          <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full bg-slate-800 text-xs font-medium border border-slate-700">…</span>
+          <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-amber-400 transition cursor-pointer flex items-center gap-1.5">
+            <span>👤 Sign In</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -101,18 +112,18 @@
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border-collapse">
             <thead class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700">
-  		<tr>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Business</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Category</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">City</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Status</th> <!-- 👈 New -->
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Website</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
-    			<th class="px-4 sm:px-6 py-3.5 font-semibold text-center">Actions</th> <!-- 👈 New -->
-  		</tr>
-	    </thead>
+              <tr>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">Business</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">Category</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">City</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">Status</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold">Website</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
+                <th class="px-4 sm:px-6 py-3.5 font-semibold text-center">Actions</th>
+              </tr>
+            </thead>
             <tbody id="rows" class="divide-y divide-slate-800/60"></tbody>
           </table>
         </div>
@@ -141,7 +152,7 @@
           Many small businesses—ranging from cafés and retail shops to auto repair and hotels—rely solely on foot traffic or social media. PaFaqe.al aggregates open data to pinpoint these exact businesses, providing accurate contact details, categories, and lead scoring so you can pitch your web development services effectively.
         </p>
         <div class="pt-4 border-t border-slate-700 text-sm text-slate-400">
-          <p>Created and maintained by <b>Kristian Frroku</b>.</p>
+          <p>Created and maintained by <b>Kristian Frroku</b>[cite: 3].</p>
         </div>
       </div>
     </div>
@@ -150,7 +161,7 @@
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="card rounded-2xl p-6 sm:p-8 shadow-2xl">
         <h2 class="text-2xl font-extrabold text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>.</p>
+        <p class="text-xs sm:text-sm text-slate-400 mb-6">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-400">frrokuk2@gmail.com</b>[cite: 3].</p>
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
@@ -168,18 +179,46 @@
           <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer">Send Message</button>
         </form>
         <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
-          ✅ Thank you! Your message has been sent successfully to Kristian Frroku.
+          ✅ Thank you! Your message has been sent successfully to Kristian Frroku[cite: 3].
         </div>
       </div>
     </div>
   </main>
 </div>
 
+<!-- AUTH MODAL -->
+<div id="authModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    <div id="authTitle" class="text-xl font-extrabold text-white mb-1">Sign In to PaFaqe.al</div>
+    <p id="authSubtitle" class="text-xs text-slate-400 mb-6">Access your saved lead statuses and cloud CRM notes across devices.</p>
+    
+    <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email</label>
+        <input type="email" id="authEmail" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Password</label>
+        <input type="password" id="authPassword" required minlength="6" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
+      </div>
+      <div id="authError" class="hidden text-xs text-rose-400 font-medium"></div>
+      
+      <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer">Sign In</button>
+    </form>
+    
+    <div class="mt-6 text-center text-xs text-slate-400">
+      <span id="authToggleText">Don't have an account?</span> 
+      <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-amber-400 font-semibold hover:underline ml-1">Sign Up</button>
+    </div>
+  </div>
+</div>
+
 <!-- Footer -->
 <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 text-xs text-slate-400 border-t border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
     <p class="font-semibold text-slate-300">PaFaqe.al — Albanian Web Design Leads</p>
-    <p class="text-slate-500 mt-1">© 2026 Developed by <b class="text-amber-400">Kristian Frroku</b></p>
+    <p class="text-slate-500 mt-1">© 2026 Developed by <b class="text-amber-400">Kristian Frroku</b>[cite: 3]</p>
   </div>
   <div class="flex items-center gap-4">
     <span>📞 <a href="tel:0684073212" class="text-amber-400 hover:underline">0684073212</a></span>
@@ -188,6 +227,118 @@
 </footer>
 
 <script>
+// ==========================================
+// 🔑 FIREBASE CONFIGURATION
+// ==========================================
+const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase safely
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let cloudStatuses = {};
+
+// Auth State Observer
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
+  const btn = document.getElementById('authActionBtn');
+  if (user) {
+    const emailPrefix = user.email ? user.email.split('@')[0] : 'User';
+    btn.innerHTML = `<span>👤 ${escapeHtml(emailPrefix)}</span> <span class="text-xs text-rose-400 ml-1 hover:underline" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+    await loadCloudStatuses();
+  } else {
+    btn.innerHTML = `<span>👤 Sign In</span>`;
+    cloudStatuses = {};
+    render();
+  }
+});
+
+let isSignUpMode = false;
+function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+function closeAuthModal() { 
+  document.getElementById('authModal').classList.add('hidden'); 
+  document.getElementById('authError').classList.add('hidden'); 
+}
+function toggleAuthMode() {
+  isSignUpMode = !isSignUpMode;
+  document.getElementById('authTitle').textContent = isSignUpMode ? 'Create Free Account' : 'Sign In to PaFaqe.al';
+  document.getElementById('authSubtitle').textContent = isSignUpMode ? 'Sign up to sync your lead notes and statuses in the cloud.' : 'Access your saved lead statuses and cloud CRM notes across devices.';
+  document.getElementById('authSubmitBtn').textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+  document.getElementById('authToggleText').textContent = isSignUpMode ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('authToggleBtn').textContent = isSignUpMode ? 'Sign In' : 'Sign Up';
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value;
+  const password = document.getElementById('authPassword').value;
+  const errBox = document.getElementById('authError');
+  errBox.classList.add('hidden');
+
+  try {
+    if (isSignUpMode) {
+      await auth.createUserWithEmailAndPassword(email, password);
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+    }
+    closeAuthModal();
+    e.target.reset();
+  } catch (err) {
+    errBox.textContent = err.message;
+    errBox.classList.remove('hidden');
+  }
+}
+
+async function loadCloudStatuses() {
+  if (!currentUser) return;
+  try {
+    const snapshot = await db.collection('users').doc(currentUser.uid).collection('lead_statuses').get();
+    cloudStatuses = {};
+    snapshot.forEach(doc => { cloudStatuses[doc.id] = doc.data().status; });
+    render();
+  } catch (err) {
+    console.error("Error loading cloud statuses:", err);
+  }
+}
+
+function getLeadStatus(id) {
+  if (currentUser) {
+    return cloudStatuses[id] || 'new';
+  } else {
+    const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+    return statuses[id] || 'new';
+  }
+}
+
+async function setLeadStatus(id, status) {
+  if (currentUser) {
+    cloudStatuses[id] = status;
+    render();
+    try {
+      await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
+    } catch (err) {
+      console.error("Error saving status to cloud:", err);
+    }
+  } else {
+    const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+    statuses[id] = status;
+    localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
+    render();
+  }
+}
+
+// App Core State
 let showAll = false;
 let DATA = null;
 let currentPage = 1;
@@ -283,14 +434,12 @@ async function handleContactSubmit(e) {
     if (result.success) {
       document.getElementById('contactSuccess').classList.remove('hidden');
       e.target.reset();
-      setTimeout(() => {
-        document.getElementById('contactSuccess').classList.add('hidden');
-      }, 6000);
+      setTimeout(() => { document.getElementById('contactSuccess').classList.add('hidden'); }, 6000);
     } else {
-      alert("Failed to send message. Please email directly at frrokuk2@gmail.com");
+      alert("Failed to send message. Please email directly at frrokuk2@gmail.com[cite: 3]");
     }
   } catch (err) {
-    alert("Network error. Please email directly at frrokuk2@gmail.com");
+    alert("Network error. Please email directly at frrokuk2@gmail.com[cite: 3]");
   } finally {
     submitBtn.textContent = "Send Message";
     submitBtn.disabled = false;
@@ -327,12 +476,12 @@ function filtered(){
   const city = document.getElementById('city').value, cat = document.getElementById('cat').value;
   const mr = parseFloat(document.getElementById('minRating').value);
   const phoneOnly = document.getElementById('phoneOnly').checked;
-  const highPriorityOnly = window.highPriorityOnly || false; // 👈 Track high priority flag
+  const highPriorityOnly = window.highPriorityOnly || false;
   document.getElementById('minRatingLabel').textContent = mr+'★';
   
   let list = DATA.businesses.filter(b => {
     if(!showAll && b.website) return false;
-    if(highPriorityOnly && (leadScore(b) < 80 || !b.phone)) return false; // 👈 Filters for score 80+ & phone
+    if(highPriorityOnly && (leadScore(b) < 80 || !b.phone)) return false;
     if(q && !(b.name + ' ' + (b.address || '')).toLowerCase().includes(q)) return false;
     if(city && b.city !== city) return false;
     if(cat && b.category !== cat) return false;
@@ -351,28 +500,12 @@ function filtered(){
 
 function getWhatsAppLink(phone) {
   if (!phone) return null;
-  // Remove non-digit characters
   const cleanNum = phone.replace(/\D/g, '');
   if (!cleanNum) return null;
-  
-  // Convert Albanian local format (e.g. 0684073212 -> 355684073212)
   const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
   return `https://wa.me/${formatted}`;
 }
-// LocalStorage handlers for lead outreach tracking
-function getLeadStatus(id) {
-  const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
-  return statuses[id] || 'new';
-}
 
-function setLeadStatus(id, status) {
-  const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
-  statuses[id] = status;
-  localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
-  render();
-}
-
-// One-click copy lead details to clipboard
 function copyLeadInfo(name, city, phone, category) {
   const info = `${name} | ${category || 'N/A'} | ${city || 'N/A'} | Tel: ${phone || 'N/A'}`;
   navigator.clipboard.writeText(info).then(() => {
@@ -381,6 +514,7 @@ function copyLeadInfo(name, city, phone, category) {
     alert('Failed to copy.');
   });
 }
+
 function render(){
   const list = filtered();
   const noWebCount = DATA.businesses.filter(b => !b.website).length;
@@ -415,53 +549,54 @@ function render(){
   }
 
   displayList.forEach(b => {
-  const sc = leadScore(b);
-  const noWeb = !b.website;
-  const waLink = getWhatsAppLink(b.phone);
-  const currentStatus = getLeadStatus(b.id || b.name);
+    const sc = leadScore(b);
+    const noWeb = !b.website;
+    const waLink = getWhatsAppLink(b.phone);
+    const leadKey = b.id || b.name;
+    const currentStatus = getLeadStatus(leadKey);
 
-  const tr = document.createElement('tr');
-  tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
-  tr.innerHTML = `
-    <td class="px-4 sm:px-6 py-3.5">
-      <div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
-      <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div>
-    </td>
-    <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
-    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
-    
-    <!-- Phone + WhatsApp -->
-    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
-      ${b.phone ? `
-        <div class="flex items-center gap-2">
-          <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition">WA ↗</a>` : ''}
-        </div>
-      ` : '<span class="text-slate-600">—</span>'}
-    </td>
+    const tr = document.createElement('tr');
+    tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
+    tr.innerHTML = `
+      <td class="px-4 sm:px-6 py-3.5">
+        <div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
+        <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div>
+      </td>
+      <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
+      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
+      
+      <!-- Phone + WhatsApp -->
+      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
+        ${b.phone ? `
+          <div class="flex items-center gap-2">
+            <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition">WA ↗</a>` : ''}
+          </div>
+        ` : '<span class="text-slate-600">—</span>'}
+      </td>
 
-    <!-- Lead Status Selector -->
-    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
-      <select onchange="setLeadStatus('${escapeHtml(b.id || b.name)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer">
-        <option value="new" ${currentStatus==='new'?'selected':''}>🆕 New</option>
-        <option value="contacted" ${currentStatus==='contacted'?'selected':''}>📞 Contacted</option>
-        <option value="interested" ${currentStatus==='interested'?'selected':''}>⭐ Interested</option>
-        <option value="closed" ${currentStatus==='closed'?'selected':''}>✅ Closed</option>
-      </select>
-    </td>
+      <!-- Lead Status Selector -->
+      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
+        <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer">
+          <option value="new" ${currentStatus==='new'?'selected':''}>🆕 New</option>
+          <option value="contacted" ${currentStatus==='contacted'?'selected':''}>📞 Contacted</option>
+          <option value="interested" ${currentStatus==='interested'?'selected':''}>⭐ Interested</option>
+          <option value="closed" ${currentStatus==='closed'?'selected':''}>✅ Closed</option>
+        </select>
+      </td>
 
-    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
-    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
-    <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
-    
-    <!-- Copy Action Button -->
-    <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
-      <button onclick="copyLeadInfo('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.phone || '')}', '${escapeHtml(b.category || '')}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
-        📋 Copy
-      </button>
-    </td>
-  `;
-  tb.appendChild(tr);
-});
+      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
+      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
+      <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
+      
+      <!-- Copy Action Button -->
+      <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
+        <button onclick="copyLeadInfo('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.phone || '')}', '${escapeHtml(b.category || '')}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
+          📋 Copy
+        </button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
 
   updateURLParams();
 }
@@ -478,20 +613,25 @@ function escapeHtml(str) {
 
 function exportCSV(){
   const list = filtered();
+  const excelHeader = 'sep=,\n';
   const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
-  const body = list.map(b => [
-    `"${(b.name || '').replace(/"/g, '""')}"`,
-    `"${(b.category || '').replace(/"/g, '""')}"`,
-    `"${(b.city || '').replace(/"/g, '""')}"`,
-    `"${(b.address || '').replace(/"/g, '""')}"`,
-    `"${(b.phone || '').replace(/"/g, '""')}"`,
-    b.rating || '',
-    b.reviews || '',
-    `"${(b.website || '').replace(/"/g, '""')}"`,
-    leadScore(b)
-  ].join(',')).join('\n');
+  const body = list.map(b => {
+    const rawPhone = b.phone ? b.phone : '';
+    const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
+    return [
+      `"${(b.name || '').replace(/"/g, '""')}"`,
+      `"${(b.category || '').replace(/"/g, '""')}"`,
+      `"${(b.city || '').replace(/"/g, '""')}"`,
+      `"${(b.address || '').replace(/"/g, '""')}"`,
+      excelPhone,
+      b.rating || '',
+      b.reviews || '',
+      `"${(b.website || '').replace(/"/g, '""')}"`,
+      leadScore(b)
+    ].join(',');
+  }).join('\n');
   
-  const blob = new Blob(['\ufeff' + head + body], {type: 'text/csv;charset=utf-8;'});
+  const blob = new Blob(['\ufeff' + excelHeader + head + body], {type: 'text/csv;charset=utf-8;'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'albania-no-website-leads.csv'; 
@@ -510,23 +650,24 @@ function init(){
   restoreStateFromURL();
 
   const chips = document.getElementById('chips');
-chips.innerHTML = '';
-[
-  ['🎯 Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
-  ['🔥 High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
-  ['👁 Show all', () => { showAll = true; window.highPriorityOnly = false; }]
-].forEach(([label, action], i) => {
-  const b = document.createElement('button');
-  b.textContent = label; 
-  b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (i === 0 ? ' active' : '');
-  b.onclick = () => { 
-    [...chips.children].forEach(c => c.classList.remove('active')); 
-    b.classList.add('active'); 
-    action();
-    handleFilterInput(); 
-  };
-  chips.appendChild(b);
-});
+  chips.innerHTML = '';
+  [
+    ['🎯 Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
+    ['🔥 High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
+    ['👁 Show all', () => { showAll = true; window.highPriorityOnly = false; }]
+  ].forEach(([label, action], i) => {
+    const b = document.createElement('button');
+    b.textContent = label; 
+    b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (i === 0 ? ' active' : '');
+    b.onclick = () => { 
+      [...chips.children].forEach(c => c.classList.remove('active')); 
+      b.classList.add('active'); 
+      action();
+      handleFilterInput(); 
+    };
+    chips.appendChild(b);
+  });
+  render();
 }
 
 const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
