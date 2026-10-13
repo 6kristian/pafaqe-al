@@ -112,9 +112,7 @@
       <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[460px] flex flex-col justify-between">
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border-collapse">
-            <thead id="tableHead" class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700">
-              <!-- Dynamically populated based on auth state -->
-            </thead>
+            <thead id="tableHead" class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700"></thead>
             <tbody id="rows" class="divide-y divide-slate-800/60"></tbody>
           </table>
         </div>
@@ -286,6 +284,7 @@ auth.onAuthStateChanged(async (user) => {
   if (user) {
     const emailPrefix = user.email ? user.email.split('@')[0] : 'User';
     btn.innerHTML = `<span>👤 ${escapeHtml(emailPrefix)}</span> <span class="text-xs text-rose-400 ml-1 hover:underline" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+    render();
     await loadCloudData();
   } else {
     btn.innerHTML = `<span>👤 Sign In</span>`;
@@ -343,9 +342,10 @@ async function loadCloudData() {
     
     cloudNotes = {};
     notesSnap.forEach(doc => { cloudNotes[doc.id] = doc.data().note; });
-    render();
   } catch (err) {
     console.error("Error loading cloud data:", err);
+  } finally {
+    render();
   }
 }
 
@@ -630,6 +630,7 @@ function copyLeadInfo(name, city, phone, category) {
 }
 
 function render(){
+  if (!DATA || !DATA.businesses) return;
   const list = filtered();
   const noWebCount = DATA.businesses.filter(b => !b.website).length;
   const cities = [...new Set(DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))];
