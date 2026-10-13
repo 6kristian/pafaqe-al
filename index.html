@@ -108,7 +108,7 @@
         <div class="card rounded-2xl p-4 shadow-lg"><div id="statAvg" class="text-3xl font-extrabold text-white tracking-tight">0</div><div class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
-      <!-- Data Table Section with CLS-Preventing Minimum Height -->
+      <!-- Data Table Section -->
       <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[460px] flex flex-col justify-between">
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border-collapse">
@@ -215,6 +215,42 @@
   </div>
 </div>
 
+<!-- NOTES MODAL -->
+<div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeNotesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    <div class="text-xl font-extrabold text-white mb-1">Lead CRM Notes</div>
+    <p id="notesBusinessSubtitle" class="text-xs text-amber-400 mb-4 font-medium"></p>
+    
+    <div class="space-y-4">
+      <textarea id="leadNoteInput" rows="5" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+      <div class="flex items-center justify-end gap-3">
+        <button onclick="closeNotesModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">Cancel</button>
+        <button onclick="saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-900 transition shadow-md">Save Note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PITCH GENERATOR MODAL -->
+<div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closePitchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    <div class="text-xl font-extrabold text-amber-400 mb-1">💬 Albanian WhatsApp Pitch</div>
+    <p id="pitchBusinessSubtitle" class="text-xs text-slate-400 mb-4 font-medium"></p>
+    
+    <div class="space-y-4">
+      <textarea id="pitchTextOutput" rows="6" readonly class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 outline-none font-mono select-all"></textarea>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition">📋 Copy Pitch Text</button>
+        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
+          <span>🚀 Send via WhatsApp ↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Footer -->
 <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 text-xs text-slate-400 border-t border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
@@ -250,6 +286,8 @@ const db = firebase.firestore();
 
 let currentUser = null;
 let cloudStatuses = {};
+let cloudNotes = {};
+let activeLeadKeyForNotes = null;
 
 // Auth State Observer
 auth.onAuthStateChanged(async (user) => {
@@ -258,10 +296,11 @@ auth.onAuthStateChanged(async (user) => {
   if (user) {
     const emailPrefix = user.email ? user.email.split('@')[0] : 'User';
     btn.innerHTML = `<span>👤 ${escapeHtml(emailPrefix)}</span> <span class="text-xs text-rose-400 ml-1 hover:underline" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
-    await loadCloudStatuses();
+    await loadCloudData();
   } else {
     btn.innerHTML = `<span>👤 Sign In</span>`;
     cloudStatuses = {};
+    cloudNotes = {};
     render();
   }
 });
@@ -302,15 +341,21 @@ async function handleAuthSubmit(e) {
   }
 }
 
-async function loadCloudStatuses() {
+async function loadCloudData() {
   if (!currentUser) return;
   try {
-    const snapshot = await db.collection('users').doc(currentUser.uid).collection('lead_statuses').get();
+    const [statusSnap, notesSnap] = await Promise.all([
+      db.collection('users').doc(currentUser.uid).collection('lead_statuses').get(),
+      db.collection('users').doc(currentUser.uid).collection('lead_notes').get()
+    ]);
     cloudStatuses = {};
-    snapshot.forEach(doc => { cloudStatuses[doc.id] = doc.data().status; });
+    statusSnap.forEach(doc => { cloudStatuses[doc.id] = doc.data().status; });
+    
+    cloudNotes = {};
+    notesSnap.forEach(doc => { cloudNotes[doc.id] = doc.data().note; });
     render();
   } catch (err) {
-    console.error("Error loading cloud statuses:", err);
+    console.error("Error loading cloud data:", err);
   }
 }
 
@@ -338,6 +383,76 @@ async function setLeadStatus(id, status) {
     localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
     render();
   }
+}
+
+// Notes Handlers
+function getLeadNote(id) {
+  if (currentUser) {
+    return cloudNotes[id] || '';
+  } else {
+    const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
+    return notes[id] || '';
+  }
+}
+
+function openNotesModal(id, name) {
+  activeLeadKeyForNotes = id;
+  document.getElementById('notesBusinessSubtitle').textContent = name;
+  document.getElementById('leadNoteInput').value = getLeadNote(id);
+  document.getElementById('notesModal').classList.remove('hidden');
+}
+
+function closeNotesModal() {
+  document.getElementById('notesModal').classList.add('hidden');
+  activeLeadKeyForNotes = null;
+}
+
+async function saveLeadNote() {
+  if (!activeLeadKeyForNotes) return;
+  const noteText = document.getElementById('leadNoteInput').value.trim();
+  
+  if (currentUser) {
+    cloudNotes[activeLeadKeyForNotes] = noteText;
+    try {
+      await db.collection('users').doc(currentUser.uid).collection('lead_notes').doc(activeLeadKeyForNotes).set({ note: noteText });
+    } catch (err) {
+      console.error("Error saving note to cloud:", err);
+    }
+  } else {
+    const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
+    notes[activeLeadKeyForNotes] = noteText;
+    localStorage.setItem('pafaqe_lead_notes', JSON.stringify(notes));
+  }
+  closeNotesModal();
+  render();
+}
+
+// Pitch Generator Handlers
+function openPitchModal(name, city, category, phone) {
+  document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category || 'Business'} • ${city || 'Albania'})`;
+  
+  const pitch = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
+  
+  document.getElementById('pitchTextOutput').value = pitch;
+  
+  const cleanNum = phone ? phone.replace(/\D/g, '') : '';
+  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+  const waUrl = formatted ? `https://wa.me/${formatted}?text=${encodeURIComponent(pitch)}` : `https://wa.me/?text=${encodeURIComponent(pitch)}`;
+  
+  document.getElementById('whatsappSendBtn').href = waUrl;
+  document.getElementById('pitchModal').classList.remove('hidden');
+}
+
+function closePitchModal() {
+  document.getElementById('pitchModal').classList.add('hidden');
+}
+
+function copyPitchToClipboard() {
+  const txt = document.getElementById('pitchTextOutput');
+  txt.select();
+  navigator.clipboard.writeText(txt.value).then(() => {
+    alert('✅ Pitch copied to clipboard successfully!');
+  });
 }
 
 // App Core State
@@ -448,7 +563,6 @@ async function handleContactSubmit(e) {
   }
 }
 
-// Optimized Debounced Search Input for Main-Thread Efficiency
 let filterTimeout = null;
 function handleFilterInput() {
   clearTimeout(filterTimeout);
@@ -564,6 +678,7 @@ function render(){
     const waLink = getWhatsAppLink(b.phone);
     const leadKey = b.id || b.name;
     const currentStatus = getLeadStatus(leadKey);
+    const leadNote = getLeadNote(leadKey);
 
     const tr = document.createElement('tr');
     tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
@@ -598,11 +713,19 @@ function render(){
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
       <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
       
-      <!-- Copy Action Button -->
+      <!-- Action Buttons -->
       <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
-        <button onclick="copyLeadInfo('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.phone || '')}', '${escapeHtml(b.category || '')}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
-          📋 Copy
-        </button>
+        <div class="flex items-center justify-center gap-1.5">
+          <button onclick="openNotesModal('${escapeHtml(leadKey)}', '${escapeHtml(b.name)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium ${leadNote ? 'text-amber-400 border-amber-600/50' : 'text-slate-300'} transition" title="View/Edit Notes">
+            📝 ${leadNote ? 'Note*' : 'Note'}
+          </button>
+          <button onclick="openPitchModal('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.category)}', '${escapeHtml(b.phone || '')}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition" title="Generate WhatsApp Pitch">
+            💬 Pitch
+          </button>
+          <button onclick="copyLeadInfo('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.phone || '')}', '${escapeHtml(b.category || '')}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
+            📋 Copy
+          </button>
+        </div>
       </td>
     `;
     tb.appendChild(tr);
