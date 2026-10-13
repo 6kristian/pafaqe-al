@@ -19,6 +19,7 @@
   .row{transition:background-color 0.1s ease}
   .row:hover{background:#26334d}
   .leadscore{font-variant-numeric:tabular-nums}
+  .blur-preview{filter:blur(5px);user-select:none;pointer-events:none;opacity:0.6;}
   ::-webkit-scrollbar{width:8px;height:8px}
   ::-webkit-scrollbar-thumb{background:#475569;border-radius:4px}
   ::-webkit-scrollbar-track{background:#0f172a}
@@ -62,6 +63,25 @@
 
     <!-- TAB 1: LEADS VIEW -->
     <div id="tabLeads" class="space-y-6">
+      
+      <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
+      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/40 border border-amber-500/30 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-3xl space-y-4 relative z-10">
+          <span class="px-3 py-1 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-semibold uppercase tracking-wider">🚀 B2B SaaS Lead Generation for Agencies</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Discover hundreds of verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
+          </p>
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <button onclick="openAuthModal()" class="px-6 py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-lg text-sm cursor-pointer flex items-center gap-2">
+              <span>⚡ Get Started Free</span>
+            </button>
+            <span class="text-xs text-slate-400">No credit card required • Instant cloud sync</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Filters Section -->
       <section class="card rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-xl">
         <div class="md:col-span-3">
@@ -109,13 +129,28 @@
       </div>
 
       <!-- Data Table Section -->
-      <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[460px] flex flex-col justify-between">
+      <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[460px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border-collapse">
             <thead id="tableHead" class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700"></thead>
             <tbody id="rows" class="divide-y divide-slate-800/60"></tbody>
           </table>
         </div>
+
+        <!-- Freemium Gating Banner for Guests -->
+        <div id="guestGatingOverlay" class="hidden p-8 sm:p-12 text-center bg-slate-900/95 backdrop-blur-md border-t border-slate-700 space-y-4">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-400 text-xl font-bold mb-1 border border-amber-400/20">🔒</div>
+          <h3 class="text-xl font-extrabold text-white tracking-tight">Unlock All 1,000+ Verified Albanian Leads</h3>
+          <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp pitch generators, custom CRM notes, and Excel-ready CSV exports.
+          </p>
+          <div class="pt-2">
+            <button onclick="openAuthModal()" class="px-6 py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-xl text-xs sm:text-sm cursor-pointer inline-flex items-center gap-2">
+              <span>🚀 Create Free Account & Unlock All Leads</span>
+            </button>
+          </div>
+        </div>
+
         <div id="empty" class="hidden p-16 text-center text-slate-400 text-sm">No businesses match your filter criteria.</div>
         
         <!-- Pagination Bar -->
@@ -281,15 +316,19 @@ let activeLeadKeyForNotes = null;
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
   const btn = document.getElementById('authActionBtn');
+  const hero = document.getElementById('guestHero');
+  
   if (user) {
     const emailPrefix = user.email ? user.email.split('@')[0] : 'User';
     btn.innerHTML = `<span>👤 ${escapeHtml(emailPrefix)}</span> <span class="text-xs text-rose-400 ml-1 hover:underline" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+    hero.classList.add('hidden');
     render();
     await loadCloudData();
   } else {
     btn.innerHTML = `<span>👤 Sign In</span>`;
     cloudStatuses = {};
     cloudNotes = {};
+    hero.classList.remove('hidden');
     render();
   }
 });
@@ -419,7 +458,7 @@ async function saveLeadNote() {
   render();
 }
 
-// Pitch Generator Handlers (Lookup by leadKey safely)
+// Pitch Generator Handlers
 function openPitchModal(leadKey) {
   const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
   if (!b) return;
@@ -630,6 +669,10 @@ function getWhatsAppLink(phone) {
 }
 
 function copyLeadInfo(leadKey) {
+  if (!currentUser) {
+    openAuthModal();
+    return;
+  }
   const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
   if (!b) return;
   const info = `${b.name} | ${b.category || 'N/A'} | ${b.city || 'N/A'} | Tel: ${b.phone || 'N/A'}`;
@@ -638,6 +681,37 @@ function copyLeadInfo(leadKey) {
   }).catch(() => {
     alert('Failed to copy.');
   });
+}
+
+function exportCSV() {
+  if (!currentUser) {
+    openAuthModal();
+    return;
+  }
+  const list = filtered();
+  const excelHeader = 'sep=,\n';
+  const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
+  const body = list.map(b => {
+    const rawPhone = b.phone ? b.phone : '';
+    const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
+    return [
+      `"${(b.name || '').replace(/"/g, '""')}"`,
+      `"${(b.category || '').replace(/"/g, '""')}"`,
+      `"${(b.city || '').replace(/"/g, '""')}"`,
+      `"${(b.address || '').replace(/"/g, '""')}"`,
+      excelPhone,
+      b.rating || '',
+      b.reviews || '',
+      `"${(b.website || '').replace(/"/g, '""')}"`,
+      leadScore(b)
+    ].join(',');
+  }).join('\n');
+  
+  const blob = new Blob(['\ufeff' + excelHeader + head + body], {type: 'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'albania-no-website-leads.csv'; 
+  a.click();
 }
 
 function render(){
@@ -651,13 +725,17 @@ function render(){
   const sc = DATA.businesses.filter(b => !b.website).map(leadScore);
   document.getElementById('statAvg').textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
 
-  const totalPages = Math.ceil(list.length / pageSize) || 1;
+  // For guest users, limit preview to top 5 leads
+  const maxGuestRows = 5;
+  const effectiveList = currentUser ? list : list.slice(0, maxGuestRows);
+
+  const totalPages = Math.ceil(effectiveList.length / pageSize) || 1;
   if (currentPage > totalPages) currentPage = totalPages;
   if (currentPage < 1) currentPage = 1;
 
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize;
-  const displayList = list.slice(start, end);
+  const displayList = effectiveList.slice(start, end);
 
   // Render Table Header dynamically based on Auth State
   const thead = document.getElementById('tableHead');
@@ -679,8 +757,16 @@ function render(){
   tb.innerHTML = '';
   document.getElementById('empty').classList.toggle('hidden', list.length > 0);
   
+  // Toggle Freemium Gating Banner
+  const gatingOverlay = document.getElementById('guestGatingOverlay');
+  if (!currentUser && list.length > 0) {
+    gatingOverlay.classList.remove('hidden');
+  } else {
+    gatingOverlay.classList.add('hidden');
+  }
+
   const paginationBar = document.getElementById('paginationBar');
-  if (list.length > 0) {
+  if (currentUser && list.length > 0) {
     paginationBar.classList.remove('hidden');
     document.getElementById('pageInfo').textContent = `Showing ${start + 1}–${Math.min(end, list.length)} of ${list.length.toLocaleString()} filtered leads`;
     document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
@@ -764,33 +850,6 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
-}
-
-function exportCSV(){
-  const list = filtered();
-  const excelHeader = 'sep=,\n';
-  const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
-  const body = list.map(b => {
-    const rawPhone = b.phone ? b.phone : '';
-    const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
-    return [
-      `"${(b.name || '').replace(/"/g, '""')}"`,
-      `"${(b.category || '').replace(/"/g, '""')}"`,
-      `"${(b.city || '').replace(/"/g, '""')}"`,
-      `"${(b.address || '').replace(/"/g, '""')}"`,
-      excelPhone,
-      b.rating || '',
-      b.reviews || '',
-      `"${(b.website || '').replace(/"/g, '""')}"`,
-      leadScore(b)
-    ].join(',');
-  }).join('\n');
-  
-  const blob = new Blob(['\ufeff' + excelHeader + head + body], {type: 'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'albania-no-website-leads.csv'; 
-  a.click();
 }
 
 function init(){
