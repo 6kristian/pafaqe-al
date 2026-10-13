@@ -345,6 +345,17 @@ function filtered(){
   return list;
 }
 
+function getWhatsAppLink(phone) {
+  if (!phone) return null;
+  // Remove non-digit characters
+  const cleanNum = phone.replace(/\D/g, '');
+  if (!cleanNum) return null;
+  
+  // Convert Albanian local format (e.g. 0684073212 -> 355684073212)
+  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+  return `https://wa.me/${formatted}`;
+}
+
 function render(){
   const list = filtered();
   const noWebCount = DATA.businesses.filter(b => !b.website).length;
@@ -382,13 +393,21 @@ function render(){
     const sc = leadScore(b);
     const noWeb = !b.website;
     const tr = document.createElement('tr');
+    const waLink = getWhatsAppLink(b.phone);
     tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
     tr.innerHTML = `
       <td class="px-4 sm:px-6 py-3.5"><div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
         <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div></td>
       <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.phone ? `<a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>` : '<span class="text-slate-600">—</span>'}</td>
+      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
+  ${b.phone ? `
+    <div class="flex items-center gap-2">
+      <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>
+      ${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition" title="Message on WhatsApp">WA ↗</a>` : ''}
+    </div>
+  ` : '<span class="text-slate-600">—</span>'}
+</td>
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>'
         : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
