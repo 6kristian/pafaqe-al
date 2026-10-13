@@ -385,10 +385,12 @@ function getLeadNote(id) {
   }
 }
 
-function openNotesModal(id, name) {
-  activeLeadKeyForNotes = id;
+function openNotesModal(leadKey) {
+  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
+  const name = b ? b.name : leadKey;
+  activeLeadKeyForNotes = leadKey;
   document.getElementById('notesBusinessSubtitle').textContent = name;
-  document.getElementById('leadNoteInput').value = getLeadNote(id);
+  document.getElementById('leadNoteInput').value = getLeadNote(leadKey);
   document.getElementById('notesModal').classList.remove('hidden');
 }
 
@@ -417,9 +419,16 @@ async function saveLeadNote() {
   render();
 }
 
-// Pitch Generator Handlers
-function openPitchModal(name, city, category, phone) {
-  document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category || 'Business'} • ${city || 'Albania'})`;
+// Pitch Generator Handlers (Lookup by leadKey safely)
+function openPitchModal(leadKey) {
+  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
+  if (!b) return;
+  const name = b.name || '';
+  const city = b.city || '';
+  const category = b.category || 'Business';
+  const phone = b.phone || '';
+
+  document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category} • ${city || 'Albania'})`;
   
   const pitch = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
   
@@ -607,7 +616,7 @@ function filtered(){
   const s = document.getElementById('sort').value;
   list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
     : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
-    : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
+    : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
     : leadScore(b) - leadScore(a));
   return list;
 }
@@ -620,8 +629,10 @@ function getWhatsAppLink(phone) {
   return `https://wa.me/${formatted}`;
 }
 
-function copyLeadInfo(name, city, phone, category) {
-  const info = `${name} | ${category || 'N/A'} | ${city || 'N/A'} | Tel: ${phone || 'N/A'}`;
+function copyLeadInfo(leadKey) {
+  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
+  if (!b) return;
+  const info = `${b.name} | ${b.category || 'N/A'} | ${b.city || 'N/A'} | Tel: ${b.phone || 'N/A'}`;
   navigator.clipboard.writeText(info).then(() => {
     alert(`Copied to clipboard:\n${info}`);
   }).catch(() => {
@@ -726,13 +737,13 @@ function render(){
       ${currentUser ? `
         <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
           <div class="flex items-center justify-center gap-1.5">
-            <button onclick="openNotesModal('${escapeHtml(leadKey)}', '${escapeHtml(b.name)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium ${leadNote ? 'text-amber-400 border-amber-600/50' : 'text-slate-300'} transition" title="View/Edit Notes">
+            <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium ${leadNote ? 'text-amber-400 border-amber-600/50' : 'text-slate-300'} transition" title="View/Edit Notes">
               📝 ${leadNote ? 'Note*' : 'Note'}
             </button>
-            <button onclick="openPitchModal('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.category)}', '${escapeHtml(b.phone || '')}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition" title="Generate WhatsApp Pitch">
+            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition" title="Generate WhatsApp Pitch">
               💬 Pitch
             </button>
-            <button onclick="copyLeadInfo('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.phone \vert{}\vert{} '')}', '${escapeHtml(b.category || '')}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
+            <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
               📋 Copy
             </button>
           </div>
