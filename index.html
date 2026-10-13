@@ -101,16 +101,18 @@
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border-collapse">
             <thead class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700">
-              <tr>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold">Business</th>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold">Category</th>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold">City</th>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold">Website</th>
-                <th class="px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
-              </tr>
-            </thead>
+  		<tr>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Business</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Category</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">City</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Status</th> <!-- 👈 New -->
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold">Website</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
+    			<th class="px-4 sm:px-6 py-3.5 font-semibold text-center">Actions</th> <!-- 👈 New -->
+  		</tr>
+	    </thead>
             <tbody id="rows" class="divide-y divide-slate-800/60"></tbody>
           </table>
         </div>
@@ -325,10 +327,12 @@ function filtered(){
   const city = document.getElementById('city').value, cat = document.getElementById('cat').value;
   const mr = parseFloat(document.getElementById('minRating').value);
   const phoneOnly = document.getElementById('phoneOnly').checked;
+  const highPriorityOnly = window.highPriorityOnly || false; // 👈 Track high priority flag
   document.getElementById('minRatingLabel').textContent = mr+'★';
   
   let list = DATA.businesses.filter(b => {
     if(!showAll && b.website) return false;
+    if(highPriorityOnly && (leadScore(b) < 80 || !b.phone)) return false; // 👈 Filters for score 80+ & phone
     if(q && !(b.name + ' ' + (b.address || '')).toLowerCase().includes(q)) return false;
     if(city && b.city !== city) return false;
     if(cat && b.category !== cat) return false;
@@ -355,7 +359,28 @@ function getWhatsAppLink(phone) {
   const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
   return `https://wa.me/${formatted}`;
 }
+// LocalStorage handlers for lead outreach tracking
+function getLeadStatus(id) {
+  const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+  return statuses[id] || 'new';
+}
 
+function setLeadStatus(id, status) {
+  const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+  statuses[id] = status;
+  localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
+  render();
+}
+
+// One-click copy lead details to clipboard
+function copyLeadInfo(name, city, phone, category) {
+  const info = `${name} | ${category || 'N/A'} | ${city || 'N/A'} | Tel: ${phone || 'N/A'}`;
+  navigator.clipboard.writeText(info).then(() => {
+    alert(`Copied to clipboard:\n${info}`);
+  }).catch(() => {
+    alert('Failed to copy.');
+  });
+}
 function render(){
   const list = filtered();
   const noWebCount = DATA.businesses.filter(b => !b.website).length;
@@ -390,30 +415,53 @@ function render(){
   }
 
   displayList.forEach(b => {
-    const sc = leadScore(b);
-    const noWeb = !b.website;
-    const tr = document.createElement('tr');
-    const waLink = getWhatsAppLink(b.phone);
-    tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
-    tr.innerHTML = `
-      <td class="px-4 sm:px-6 py-3.5"><div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
-        <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div></td>
-      <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
-  ${b.phone ? `
-    <div class="flex items-center gap-2">
-      <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>
-      ${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition" title="Message on WhatsApp">WA ↗</a>` : ''}
-    </div>
-  ` : '<span class="text-slate-600">—</span>'}
-</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>'
-        : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
-      <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>`;
-    tb.appendChild(tr);
-  });
+  const sc = leadScore(b);
+  const noWeb = !b.website;
+  const waLink = getWhatsAppLink(b.phone);
+  const currentStatus = getLeadStatus(b.id || b.name);
+
+  const tr = document.createElement('tr');
+  tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
+  tr.innerHTML = `
+    <td class="px-4 sm:px-6 py-3.5">
+      <div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
+      <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div>
+    </td>
+    <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
+    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
+    
+    <!-- Phone + WhatsApp -->
+    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
+      ${b.phone ? `
+        <div class="flex items-center gap-2">
+          <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition">WA ↗</a>` : ''}
+        </div>
+      ` : '<span class="text-slate-600">—</span>'}
+    </td>
+
+    <!-- Lead Status Selector -->
+    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
+      <select onchange="setLeadStatus('${escapeHtml(b.id || b.name)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer">
+        <option value="new" ${currentStatus==='new'?'selected':''}>🆕 New</option>
+        <option value="contacted" ${currentStatus==='contacted'?'selected':''}>📞 Contacted</option>
+        <option value="interested" ${currentStatus==='interested'?'selected':''}>⭐ Interested</option>
+        <option value="closed" ${currentStatus==='closed'?'selected':''}>✅ Closed</option>
+      </select>
+    </td>
+
+    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
+    <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
+    <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
+    
+    <!-- Copy Action Button -->
+    <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
+      <button onclick="copyLeadInfo('${escapeHtml(b.name)}', '${escapeHtml(b.city)}', '${escapeHtml(b.phone || '')}', '${escapeHtml(b.category || '')}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
+        📋 Copy
+      </button>
+    </td>
+  `;
+  tb.appendChild(tr);
+});
 
   updateURLParams();
 }
@@ -462,16 +510,23 @@ function init(){
   restoreStateFromURL();
 
   const chips = document.getElementById('chips');
-  chips.innerHTML = '';
-  [['🎯 Leads only (no website)', false], ['👁 Show all including with website', true]].forEach(([label, val], i) => {
-    const b = document.createElement('button');
-    b.textContent = label; 
-    const isActive = (val === showAll);
-    b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (isActive ? ' active' : '');
-    b.onclick = () => { showAll = val; [...chips.children].forEach(c => c.classList.remove('active')); b.classList.add('active'); handleFilterInput(); };
-    chips.appendChild(b);
-  });
-  render();
+chips.innerHTML = '';
+[
+  ['🎯 Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
+  ['🔥 High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
+  ['👁 Show all', () => { showAll = true; window.highPriorityOnly = false; }]
+].forEach(([label, action], i) => {
+  const b = document.createElement('button');
+  b.textContent = label; 
+  b.className = 'chip px-3.5 py-1.5 rounded-full text-xs shadow-sm font-medium' + (i === 0 ? ' active' : '');
+  b.onclick = () => { 
+    [...chips.children].forEach(c => c.classList.remove('active')); 
+    b.classList.add('active'); 
+    action();
+    handleFilterInput(); 
+  };
+  chips.appendChild(b);
+});
 }
 
 const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
