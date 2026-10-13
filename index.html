@@ -475,19 +475,23 @@ function filtered(){
   if (!DATA || !DATA.businesses) return [];
   const q = document.getElementById('q').value.toLowerCase();
   const city = document.getElementById('city').value, cat = document.getElementById('cat').value;
-  const mr = parseFloat(document.getElementById('minRating').value);
+  const mr = parseFloat(document.getElementById('minRating').value) || 0;
   const phoneOnly = document.getElementById('phoneOnly').checked;
   const highPriorityOnly = window.highPriorityOnly || false;
-  document.getElementById('minRatingLabel').textContent = mr+'★';
+  document.getElementById('minRatingLabel').textContent = mr + '★';
   
   let list = DATA.businesses.filter(b => {
     if(!showAll && b.website) return false;
     if(highPriorityOnly && (leadScore(b) < 80 || !b.phone)) return false;
     if(q && !(b.name + ' ' + (b.address || '')).toLowerCase().includes(q)) return false;
-    if(city && b.city !== city) return false;
-    if(cat && b.category !== cat) return false;
+    if(city && (b.city || '').trim() !== city) return false;
+    if(cat && (b.category || '').trim() !== cat) return false;
     if(phoneOnly && !b.phone) return false;
-    if(mr > 0 && (!b.rating || b.rating < mr)) return false;
+    
+    // Rating check: Include missing ratings if minRating is 0; otherwise check against b.rating
+    const bRating = b.rating || 0;
+    if(mr > 0 && bRating < mr) return false;
+
     return true;
   });
   
@@ -645,8 +649,13 @@ function init(){
   document.getElementById('dataSource').className += DATA.source === 'live' ? ' bg-emerald-950 text-emerald-300 border-emerald-800' : '';
   
   const cs = document.getElementById('city'), ks = document.getElementById('cat');
-  cs.innerHTML = '<option value="">All cities</option>' + [...new Set(DATA.businesses.map(b => b.city))].sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  ks.innerHTML = '<option value="">All categories</option>' + [...new Set(DATA.businesses.map(b => b.category))].sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+
+  // Clean, filter out null/empty strings, and sort city & category options
+  const cleanCities = [...new Set(DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
+  const cleanCats = [...new Set(DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
+
+  cs.innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  ks.innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
   
   restoreStateFromURL();
 
