@@ -1,9 +1,11 @@
 import json
 import os
-import resend
+import time
 from google import genai
+from google.genai.errors import ServerError
+import resend
 
-# Read API keys from GitHub Secrets / Environment Variables
+# Read API keys from GitHub Secrets
 resend.api_key = os.environ.get("RESEND_API_KEY")
 gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
@@ -20,10 +22,37 @@ def generate_welcome_message(user_name, business_name=None):
     - Encourage them to start exploring their leads dashboard.
     - Keep it encouraging, clean, and under 3 short paragraphs.
     """
-  response = gemini_client.models.generate_content(
-      model="gemini-3.8-flash", contents=prompt
-  )
-  return response.text
+
+  # Retry up to 3 times if 503 (High Demand) occurs
+  for attempt in range(3):
+    try:
+      response = gemini_client.models.generate_content(
+          model="gemini-3.8-flash", contents=prompt
+      )
+      return response.text
+    except ServerError as e:
+      if e.status_code == 503:
+        print(
+            f"⚠️ Serveri i Gemini është i ngarkuar (503). Duke provuar përsëri"
+            f" në 5s ({attempt + 1}/3)..."
+        )
+        time.sleep(5)
+      else:
+        print(f"⚠️ Server error: {e}")
+        break
+    except Exception as e:
+      print(f"⚠️ Dështoi gjenerimi me AI: {e}")
+      break
+
+  # Default fallback welcome message if Gemini is unavailable
+  print("ℹ️ Duke përdorur mesazhin bazë të mirëseardhjes...")
+  return f"""Përshëndetje {user_name},
+
+Mirë se erdhe në PaFaqe.al! Jemi shumë të lumtur që të kemi pjesë të platformës sonë.
+
+PaFaqe.al të ndihmon të zbulosh biznese lokale që kanë nevojë për faqe web dhe të krijosh mesazhe të personalizuara automatikisht për secilin prej tyre.
+
+Lohu në platformë dhe fillo të eksplorosh mundësitë e reja sot!"""
 
 
 def process_queue():
@@ -70,7 +99,7 @@ def process_queue():
     except Exception as e:
       print(f"❌ Dështoi dërgimi te {email}: {e}")
 
-  # Clear queue so duplicate emails are never sent
+  # Clear the queue file
   with open(queue_file, "w", encoding="utf-8") as f:
     json.dump([], f)
   print("🧹 Rreshti u pastrua.")
