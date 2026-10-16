@@ -48,7 +48,7 @@
         <div id="authContainer" class="flex items-center gap-2">
           <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full bg-slate-800 text-xs font-medium border border-slate-700">…</span>
           <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-amber-400 transition cursor-pointer flex items-center gap-1.5">
-            <span>👤 Sign In</span>
+            <span>Sign In</span>
           </button>
         </div>
       </div>
@@ -58,24 +58,23 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
     <!-- Localhost Warning Banner -->
     <div id="corsWarning" class="hidden mb-6 p-4 rounded-2xl bg-amber-950/90 border border-amber-600/60 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
-      <span>⚠️ <b>CORS Notice:</b> Opened via <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">file://</code>. Run <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">python -m http.server 8000</code> and visit <a href="http://localhost:8000" class="underline font-bold text-white hover:text-amber-200">http://localhost:8000</a>.</span>
+      <span><b>CORS Notice:</b> Opened via <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">file://</code>. Run <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">python -m http.server 8000</code> and visit <a href="http://localhost:8000" class="underline font-bold text-white hover:text-amber-200">http://localhost:8000</a>.</span>
     </div>
 
     <!-- TAB 1: LEADS VIEW -->
     <div id="tabLeads" class="space-y-6">
       
       <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
-      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/40 border border-amber-500/30 shadow-2xl relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-10 bg-slate-900 border border-slate-800 shadow-2xl relative overflow-hidden">
         <div class="max-w-3xl space-y-4 relative z-10">
-          <span class="px-3 py-1 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-semibold uppercase tracking-wider">🚀 B2B SaaS Lead Generation for Agencies</span>
+          <span class="px-3 py-1 rounded-full bg-slate-800 text-amber-400 border border-slate-700 text-xs font-semibold uppercase tracking-wider">B2B SaaS Lead Generation for Agencies</span>
           <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
           <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Discover hundreds of verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
+            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
           </p>
           <div class="pt-2 flex flex-wrap items-center gap-3">
             <button onclick="openAuthModal()" class="px-6 py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-lg text-sm cursor-pointer flex items-center gap-2">
-              <span>⚡ Get Started Free</span>
+              <span>Get Started Free</span>
             </button>
             <span class="text-xs text-slate-400">No credit card required • Instant cloud sync</span>
           </div>
@@ -85,7 +84,7 @@
       <!-- Filters Section (Hidden when signed out) -->
       <section id="filterSection" class="hidden card rounded-2xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-xl">
         <div class="md:col-span-3">
-          <input id="q" oninput="handleFilterInput()" placeholder="🔍 Search name, street..." class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-100 placeholder-slate-400 transition">
+          <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-100 placeholder-slate-400 transition">
         </div>
         <div class="md:col-span-2">
           <select id="city" onchange="handleFilterInput()" class="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-200 transition cursor-pointer"></select>
@@ -117,7 +116,7 @@
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
         <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-xs sm:text-sm font-bold hover:bg-amber-300 transition shadow-md flex items-center gap-1.5 cursor-pointer ml-auto">
-          <span>⬇ Export CSV</span>
+          <span>Export CSV</span>
         </button>
       </div>
 
@@ -139,14 +138,14 @@
 
         <!-- Freemium Gating Banner for Guests -->
         <div id="guestGatingOverlay" class="hidden p-8 sm:p-12 text-center bg-slate-900/95 backdrop-blur-md border-t border-slate-700 space-y-4">
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-400 text-xl font-bold mb-1 border border-amber-400/20">🔒</div>
-          <h3 class="text-xl font-extrabold text-white tracking-tight">Unlock All 1,000+ Verified Albanian Leads</h3>
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-800 text-amber-400 text-xl font-bold mb-1 border border-slate-700">🔒</div>
+          <h3 class="text-xl font-extrabold text-white tracking-tight">Unlock All Verified Albanian Leads</h3>
           <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
             You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp pitch generators, custom CRM notes, and Excel-ready CSV exports.
           </p>
           <div class="pt-2">
             <button onclick="openAuthModal()" class="px-6 py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-xl text-xs sm:text-sm cursor-pointer inline-flex items-center gap-2">
-              <span>🚀 Create Free Account & Unlock All Leads</span>
+              <span>Create Free Account & Unlock All Leads</span>
             </button>
           </div>
         </div>
@@ -203,7 +202,7 @@
           <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer">Send Message</button>
         </form>
         <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
-          ✅ Thank you! Your message has been sent successfully to Kristian Frroku.
+          Thank you! Your message has been sent successfully to Kristian Frroku.
         </div>
       </div>
     </div>
@@ -259,15 +258,15 @@
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
     <button onclick="closePitchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-    <div class="text-xl font-extrabold text-amber-400 mb-1">💬 Albanian WhatsApp Pitch</div>
+    <div class="text-xl font-extrabold text-amber-400 mb-1">Albanian WhatsApp Pitch</div>
     <p id="pitchBusinessSubtitle" class="text-xs text-slate-400 mb-4 font-medium"></p>
     
     <div class="space-y-4">
       <textarea id="pitchTextOutput" rows="6" readonly class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 outline-none font-mono select-all"></textarea>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition">📋 Copy Pitch Text</button>
+        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 transition">Copy Pitch Text</button>
         <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
-          <span>🚀 Send via WhatsApp ↗</span>
+          <span>Send via WhatsApp ↗</span>
         </a>
       </div>
     </div>
@@ -312,7 +311,7 @@ let cloudStatuses = {};
 let cloudNotes = {};
 let activeLeadKeyForNotes = null;
 
-// Auth State Observer
+// Auth State Observer with Fixed Rendering Order (No Double Flash)
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
   const btn = document.getElementById('authActionBtn');
@@ -324,7 +323,7 @@ auth.onAuthStateChanged(async (user) => {
     btn.innerHTML = `<span>👤 ${escapeHtml(emailPrefix)}</span> <span class="text-xs text-rose-400 ml-1 hover:underline" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
     hero.classList.add('hidden');
     filterSec.classList.remove('hidden');
-    render();
+    // Await cloud data loading before rendering to eliminate double-render flash
     await loadCloudData();
   } else {
     btn.innerHTML = `<span>👤 Sign In</span>`;
@@ -401,19 +400,20 @@ function getLeadStatus(id) {
 }
 
 async function setLeadStatus(id, status) {
-  if (currentUser) {
-    cloudStatuses[id] = status;
-    render();
-    try {
-      await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
-    } catch (err) {
-      console.error("Error saving status to cloud:", err);
-    }
-  } else {
+  if (!currentUser) {
     const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
     statuses[id] = status;
     localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
     render();
+    return;
+  }
+
+  cloudStatuses[id] = status;
+  render();
+  try {
+    await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
+  } catch (err) {
+    console.error("Error saving status to cloud:", err);
   }
 }
 
@@ -461,14 +461,14 @@ async function saveLeadNote() {
   render();
 }
 
-// Pitch Generator Handlers
+// Pitch Generator Handlers with Safe String Coercion
 function openPitchModal(leadKey) {
   const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
   if (!b) return;
   const name = b.name || '';
   const city = b.city || '';
   const category = b.category || 'Business';
-  const phone = b.phone || '';
+  const phone = b.phone ? String(b.phone) : '';
 
   document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category} • ${city || 'Albania'})`;
   
@@ -492,7 +492,7 @@ function copyPitchToClipboard() {
   const txt = document.getElementById('pitchTextOutput');
   txt.select();
   navigator.clipboard.writeText(txt.value).then(() => {
-    alert('✅ Pitch copied to clipboard successfully!');
+    alert('Pitch copied to clipboard successfully!');
   });
 }
 
@@ -544,7 +544,10 @@ function restoreStateFromURL() {
   if (params.has('minRating')) document.getElementById('minRating').value = params.get('minRating');
   if (params.get('phoneOnly') === 'true') document.getElementById('phoneOnly').checked = true;
   if (params.get('showAll') === 'true') showAll = true;
-  if (params.has('page')) currentPage = parseInt(params.get('page')) || 1;
+  if (params.has('page')) {
+    const parsedPage = parseInt(params.get('page'), 10);
+    currentPage = !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  }
 }
 
 function switchTab(tab) {
@@ -679,7 +682,7 @@ function filtered(){
 
 function getWhatsAppLink(phone) {
   if (!phone) return null;
-  const cleanNum = phone.replace(/\D/g, '');
+  const cleanNum = String(phone).replace(/\D/g, '');
   if (!cleanNum) return null;
   const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
   return `https://wa.me/${formatted}`;
@@ -709,7 +712,7 @@ function exportCSV() {
   const excelHeader = 'sep=,\n';
   const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
   const body = list.map(b => {
-    const rawPhone = b.phone ? b.phone : '';
+    const rawPhone = b.phone ? String(b.phone) : '';
     const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
     return [
       `"${(b.name || '').replace(/"/g, '""')}"`,
@@ -742,7 +745,6 @@ function render(){
   const sc = DATA.businesses.filter(b => !b.website).map(leadScore);
   document.getElementById('statAvg').textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
 
-  // For guest users, limit preview to top 5 leads
   const maxGuestRows = 5;
   const effectiveList = currentUser ? list : list.slice(0, maxGuestRows);
 
@@ -754,7 +756,6 @@ function render(){
   const end = start + pageSize;
   const displayList = effectiveList.slice(start, end);
 
-  // Render Table Header dynamically based on Auth State
   const thead = document.getElementById('tableHead');
   thead.innerHTML = `
     <tr>
@@ -774,7 +775,6 @@ function render(){
   tb.innerHTML = '';
   document.getElementById('empty').classList.toggle('hidden', list.length > 0);
   
-  // Toggle Freemium Gating Banner
   const gatingOverlay = document.getElementById('guestGatingOverlay');
   if (!currentUser && list.length > 0) {
     gatingOverlay.classList.remove('hidden');
@@ -811,7 +811,6 @@ function render(){
       <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
       
-      <!-- Phone + WhatsApp -->
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
         ${b.phone ? `
           <div class="flex items-center gap-2">
@@ -820,14 +819,13 @@ function render(){
         ` : '<span class="text-slate-600">—</span>'}
       </td>
 
-      <!-- Lead Status Selector (Only when signed in) -->
       ${currentUser ? `
         <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
           <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer">
-            <option value="new" ${currentStatus==='new'?'selected':''}>🆕 New</option>
-            <option value="contacted" ${currentStatus==='contacted'?'selected':''}>📞 Contacted</option>
-            <option value="interested" ${currentStatus==='interested'?'selected':''}>⭐ Interested</option>
-            <option value="closed" ${currentStatus==='closed'?'selected':''}>✅ Closed</option>
+            <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
+            <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
+            <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
+            <option value="closed" ${currentStatus==='closed'?'selected':''}>Closed</option>
           </select>
         </td>
       ` : ''}
@@ -836,18 +834,17 @@ function render(){
       <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
       <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
       
-      <!-- Action Buttons (Only when signed in) -->
       ${currentUser ? `
         <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
           <div class="flex items-center justify-center gap-1.5">
             <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium ${leadNote ? 'text-amber-400 border-amber-600/50' : 'text-slate-300'} transition" title="View/Edit Notes">
-              📝 ${leadNote ? 'Note*' : 'Note'}
+              ${leadNote ? 'Note*' : 'Note'}
             </button>
             <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 transition" title="Generate WhatsApp Pitch">
-              💬 Pitch
+              Pitch
             </button>
             <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-300 transition" title="Copy summary">
-              📋 Copy
+              Copy
             </button>
           </div>
         </td>
@@ -871,7 +868,7 @@ function escapeHtml(str) {
 
 function init(){
   document.getElementById('dataSource').textContent =
-    DATA.source === 'live' ? `🔴 LIVE · ${DATA.businesses.length.toLocaleString()} businesses` : `🟡 DEMO data`;
+    DATA.source === 'live' ? `LIVE · ${DATA.businesses.length.toLocaleString()} businesses` : `DEMO data`;
   document.getElementById('dataSource').className += DATA.source === 'live' ? ' bg-emerald-950 text-emerald-300 border-emerald-800' : '';
   
   const cs = document.getElementById('city'), ks = document.getElementById('cat');
@@ -887,9 +884,9 @@ function init(){
   const chips = document.getElementById('chips');
   chips.innerHTML = '';
   [
-    ['🎯 Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
-    ['🔥 High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
-    ['👁 Show all', () => { showAll = true; window.highPriorityOnly = false; }]
+    ['Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
+    ['High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
+    ['Show all', () => { showAll = true; window.highPriorityOnly = false; }]
   ].forEach(([label, action], i) => {
     const b = document.createElement('button');
     b.textContent = label; 
