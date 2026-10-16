@@ -451,6 +451,43 @@ function toggleAuthMode() {
   const errBox = document.getElementById('authError');
   if (errBox) errBox.classList.add('hidden');
 }
+// ==========================================
+// 🍪 COOKIE CONSENT FUNCTIONS
+// ==========================================
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure";
+}
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function acceptCookies() {
+  setCookie("pafaqe_cookie_consent", "true", 365);
+  const banner = document.getElementById('cookieBanner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function checkCookieConsent() {
+  const consent = getCookie("pafaqe_cookie_consent");
+  const banner = document.getElementById('cookieBanner');
+  if (!consent && banner) {
+    banner.classList.remove('hidden');
+  }
+}
 
 // 🟢 PASSWORD STRENGTH CHECKER FUNCTION FIXED
 function checkPasswordStrength(password) {
@@ -1227,6 +1264,7 @@ function init(){
     chips.appendChild(b);
   });
   render();
+  setTimeout(checkCookieConsent, 1000);
 }
 
 const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
