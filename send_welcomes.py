@@ -5,7 +5,6 @@ from google import genai
 from google.genai.errors import ServerError
 import resend
 
-# Read API keys from GitHub Secrets
 resend.api_key = os.environ.get("RESEND_API_KEY")
 gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
@@ -19,13 +18,8 @@ def generate_welcome_message(user_name, business_name=None):
     IMPORTANT RULES:
     - Do NOT include any Subject line or 'Subjekti:' header in your output.
     - Do NOT include markdown bolding like **Subjekti:** or **Themeluesi**.
-    - Do NOT include sign-offs like 'Gjithë të mirat' or 'Ekipi i PaFaqe.al' at the end (these are handled in the email signature).
+    - Do NOT include sign-offs like 'Gjithë të mirat' or 'Ekipi i PaFaqe.al' at the end.
     - Provide ONLY 2-3 clean, encouraging paragraphs for the email body text.
-    
-    Key points to cover:
-    - Thank them for joining PaFaqe.al.
-    - Briefly explain how PaFaqe helps them find unserviced local businesses and generate outreach messages.
-    - Invite them to check out their leads dashboard.
     """
 
   for attempt in range(3):
@@ -36,18 +30,14 @@ def generate_welcome_message(user_name, business_name=None):
       return response.text.strip()
     except ServerError as e:
       if e.status_code == 503:
-        print(
-            f"⚠️ Gemini busy (503). Retrying in 5s ({attempt + 1}/3)..."
-        )
+        print(f"⚠️ Gemini busy (503). Retrying in 5s ({attempt + 1}/3)...")
         time.sleep(5)
       else:
-        print(f"⚠️ Server error: {e}")
         break
     except Exception as e:
       print(f"⚠️ AI generation error: {e}")
       break
 
-  # Default clean fallback body
   return f"""Përshëndetje {user_name},
 
 Faleminderit që iu bashkove PaFaqe.al! Jemi shumë të lumtur që të kemi pjesë të platformës sonë.
@@ -63,8 +53,21 @@ def process_queue():
     print("Nuk u gjet asnjë skedar rreshti (queue).")
     return
 
-  with open(queue_file, "r", encoding="utf-8") as f:
-    users = json.load(f)
+  try:
+    with open(queue_file, "r", encoding="utf-8") as f:
+      content = f.read().strip()
+      if not content:
+        print("Skedari users_queue.json është bosh.")
+        return
+      users = json.loads(content)
+  except json.decoder.JSONDecodeError as e:
+    print(
+        f"❌ Gabim në formatin e JSON te users_queue.json: {e}\nPo pastrohet"
+        " skedari..."
+    )
+    with open(queue_file, "w", encoding="utf-8") as f:
+      json.dump([], f)
+    return
 
   if not users:
     print("Nuk ka përdorues në pritje për email.")
@@ -78,7 +81,6 @@ def process_queue():
     print(f"🤖 Duke gjeneruar mesazhin për {name} ({email})...")
     ai_body = generate_welcome_message(name, business)
 
-    # Clean HTML Template without duplicate headers or sign-offs
     html_content = f"""
         <div style="font-family: Arial, sans-serif; font-size: 15px; color: #2d3748; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #ffffff;">
             <h2 style="color: #2b6cb0; margin-top: 0; font-size: 20px;">Mirë se erdhe në PaFaqe.al! 🚀</h2>
@@ -104,7 +106,6 @@ def process_queue():
     except Exception as e:
       print(f"❌ Dështoi dërgimi te {email}: {e}")
 
-  # Clear the queue file
   with open(queue_file, "w", encoding="utf-8") as f:
     json.dump([], f)
   print("🧹 Rreshti u pastrua.")
