@@ -13,46 +13,48 @@ gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 def generate_welcome_message(user_name, business_name=None):
   prompt = f"""
     Act as the founder of 'PaFaqe.al', an automated lead-generation platform for Albanian businesses.
-    Write a warm, concise, professional welcome email content in Albanian for a new user named '{user_name}'.
+    Write a warm, concise, professional welcome email body in Albanian for a new user named '{user_name}'.
     {"Their business is called '" + business_name + "'." if business_name else ""}
     
-    Key points to include:
+    IMPORTANT RULES:
+    - Do NOT include any Subject line or 'Subjekti:' header in your output.
+    - Do NOT include markdown bolding like **Subjekti:** or **Themeluesi**.
+    - Do NOT include sign-offs like 'Gjithë të mirat' or 'Ekipi i PaFaqe.al' at the end (these are handled in the email signature).
+    - Provide ONLY 2-3 clean, encouraging paragraphs for the email body text.
+    
+    Key points to cover:
     - Thank them for joining PaFaqe.al.
-    - Explain that PaFaqe helps them discover unserviced local businesses needing websites and generates tailored outreach messages automatically.
-    - Encourage them to start exploring their leads dashboard.
-    - Keep it encouraging, clean, and under 3 short paragraphs.
+    - Briefly explain how PaFaqe helps them find unserviced local businesses and generate outreach messages.
+    - Invite them to check out their leads dashboard.
     """
 
-  # Retry up to 3 times if 503 (High Demand) occurs
   for attempt in range(3):
     try:
       response = gemini_client.models.generate_content(
           model="gemini-3.8-flash", contents=prompt
       )
-      return response.text
+      return response.text.strip()
     except ServerError as e:
       if e.status_code == 503:
         print(
-            f"⚠️ Serveri i Gemini është i ngarkuar (503). Duke provuar përsëri"
-            f" në 5s ({attempt + 1}/3)..."
+            f"⚠️ Gemini busy (503). Retrying in 5s ({attempt + 1}/3)..."
         )
         time.sleep(5)
       else:
         print(f"⚠️ Server error: {e}")
         break
     except Exception as e:
-      print(f"⚠️ Dështoi gjenerimi me AI: {e}")
+      print(f"⚠️ AI generation error: {e}")
       break
 
-  # Default fallback welcome message if Gemini is unavailable
-  print("ℹ️ Duke përdorur mesazhin bazë të mirëseardhjes...")
+  # Default clean fallback body
   return f"""Përshëndetje {user_name},
 
-Mirë se erdhe në PaFaqe.al! Jemi shumë të lumtur që të kemi pjesë të platformës sonë.
+Faleminderit që iu bashkove PaFaqe.al! Jemi shumë të lumtur që të kemi pjesë të platformës sonë.
 
-PaFaqe.al të ndihmon të zbulosh biznese lokale që kanë nevojë për faqe web dhe të krijosh mesazhe të personalizuara automatikisht për secilin prej tyre.
+PaFaqe.al është ndërtuar për t'ju kursyer kohë duke identifikuar automatikisht bizneset lokale që kanë nevojë për faqe web dhe duke gjeneruar mesazhe të personalizuara për t'i kontaktuar ato.
 
-Lohu në platformë dhe fillo të eksplorosh mundësitë e reja sot!"""
+Ju ftojmë të hyni në panelin tuaj të 'leads' dhe të filloni të eksploroni mundësitë e reja sot!"""
 
 
 def process_queue():
@@ -76,13 +78,16 @@ def process_queue():
     print(f"🤖 Duke gjeneruar mesazhin për {name} ({email})...")
     ai_body = generate_welcome_message(name, business)
 
+    # Clean HTML Template without duplicate headers or sign-offs
     html_content = f"""
-        <div style="font-family: Arial, sans-serif; font-size: 15px; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-            <h2 style="color: #2b6cb0; margin-top: 0;">Mirë se erdhe në PaFaqe.al! 🚀</h2>
-            <div style="white-space: pre-line;">{ai_body}</div>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;">
-            <p style="font-size: 13px; color: #777; margin-bottom: 0;">
-                Ekipi i PaFaqe.al<br><a href="https://pafaqe.al" style="color: #2b6cb0; text-decoration: none;">www.pafaqe.al</a>
+        <div style="font-family: Arial, sans-serif; font-size: 15px; color: #2d3748; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #ffffff;">
+            <h2 style="color: #2b6cb0; margin-top: 0; font-size: 20px;">Mirë se erdhe në PaFaqe.al! 🚀</h2>
+            <div style="white-space: pre-line; margin-bottom: 20px;">{ai_body}</div>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+            <p style="font-size: 13px; color: #718096; margin-bottom: 0;">
+                Gjithë të mirat,<br>
+                <strong>Themeluesi & Ekipi i PaFaqe.al</strong><br>
+                <a href="https://pafaqe.al" style="color: #2b6cb0; text-decoration: none;">www.pafaqe.al</a>
             </p>
         </div>
         """
