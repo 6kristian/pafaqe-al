@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sq" class="dark auth-pending">
+<html lang="sq" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,75 +13,41 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
   body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility; }
-  
-  /* Dark Mode Palette */
-  html.dark body { background-color: #0f172a; color: #e2e8f0; }
-  html.dark .card-bg { background-color: #1e293b; border-color: #334155; }
-  html.dark .header-bg { background-color: rgba(15, 23, 42, 0.9); border-color: #334155; }
-  html.dark .input-bg { background-color: #1e293b; border-color: #475569; color: #f8fafc; }
-  html.dark .table-head-bg { background-color: #1e293b; border-color: #334155; color: #94a3b8; }
-  html.dark .row-hover:hover { background-color: #26334d; }
-  html.dark .subtext { color: #94a3b8; }
-  html.dark .border-theme { border-color: #334155; }
-  html.dark .chip-btn { background-color: #1e293b; border-color: #475569; color: #cbd5e1; }
-  html.dark .chip-btn:hover { background-color: #334155; color: #ffffff; }
-
-  /* Light Mode Palette */
-  html.light body { background-color: #f8fafc; color: #0f172a; }
-  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05); }
-  html.light .header-bg { background-color: rgba(255, 255, 255, 0.95); border-color: #e2e8f0; }
-  html.light .input-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; }
-  html.light .table-head-bg { background-color: #f1f5f9; border-color: #e2e8f0; color: #475569; }
-  html.light .row-hover:hover { background-color: #f8fafc; }
-  html.light .subtext { color: #64748b; }
-  html.light .border-theme { border-color: #e2e8f0; }
-  html.light .chip-btn { background-color: #ffffff; border-color: #cbd5e1; color: #334155; }
-  html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; }
-
-  .badge { background-color: #f59e0b; color: #0f172a; }
-  .chip { cursor: pointer; transition: all 0.15s ease; }
-  .chip.active { background-color: #f59e0b !important; color: #0f172a !important; border-color: #f59e0b !important; font-weight: 600; }
-  .row { transition: background-color 0.1s ease; }
   .leadscore { font-variant-numeric: tabular-nums; }
-
-  /* CLS Prevention: Smooth opacity transition instead of abrupt layout shifts */
-  #guestHero, #filterSection { transition: opacity 0.15s ease-in-out; }
-  html.auth-pending #guestHero, html.auth-pending #filterSection { opacity: 0; pointer-events: none; }
-
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
 </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between transition-colors duration-200">
+<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
 
 <div>
   <!-- Header / Navbar -->
-  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-sm transition-colors duration-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+  <header class="border-b sticky top-0 bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 backdrop-blur-md z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
       <div>
         <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight cursor-pointer" onclick="switchTab('leads')">PaFaqe<span class="text-amber-500 dark:text-amber-400">.al</span></h1>
-        <p class="text-xs sm:text-sm subtext">Find Albanian local businesses with <b class="text-amber-500 dark:text-amber-400 font-semibold">no website</b></p>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Find Albanian local businesses with <b class="text-amber-600 dark:text-amber-400 font-semibold">no website</b></p>
       </div>
       
       <!-- Nav Tabs & Actions -->
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-        <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
-          <button onclick="switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition">Leads</button>
-          <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">About Us</button>
-          <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Contact Us</button>
-          <button onclick="switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Profile</button>
+        <nav class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-medium">
+          <button onclick="switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition">Leads</button>
+          <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">About Us</button>
+          <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Contact Us</button>
+          <button onclick="switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Profile</button>
         </nav>
         
         <!-- Theme Toggle Button -->
-        <button onclick="toggleTheme()" class="p-2 rounded-xl card-bg border subtext hover:text-amber-500 transition cursor-pointer text-xs flex items-center gap-1 shadow-sm" title="Toggle Light/Dark Theme">
+        <button onclick="toggleTheme()" class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-amber-500 transition cursor-pointer text-xs shadow-sm" title="Toggle Light/Dark Theme">
           <span id="themeIcon">🌙</span>
         </button>
 
         <!-- Auth User State / Button -->
         <div id="authContainer" class="flex items-center gap-2">
-          <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full card-bg border text-xs font-medium">…</span>
-          <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl card-bg border text-xs font-bold text-amber-500 dark:text-amber-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">…</span>
+          <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
             <span>Sign In</span>
           </button>
         </div>
@@ -99,111 +65,111 @@
     <div id="tabLeads" class="space-y-6">
       
       <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
-      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 card-bg border shadow-lg relative overflow-hidden">
+      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
         <div class="max-w-3xl space-y-3 relative z-10">
-          <span class="px-3 py-1 rounded-full card-bg text-amber-500 dark:text-amber-400 border border-theme text-xs font-semibold uppercase tracking-wider">B2B SaaS Lead Generation</span>
+          <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 text-xs font-semibold uppercase tracking-wider">B2B Lead Generation</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
+          <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-600 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
           </p>
           <div class="pt-2 flex flex-wrap items-center gap-3">
-            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
+            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
               <span>Get Started Free</span>
             </button>
-            <span class="text-xs subtext">No credit card required • Instant cloud sync</span>
+            <span class="text-xs text-slate-500 dark:text-slate-400">No credit card required • Instant cloud sync</span>
           </div>
         </div>
       </div>
 
       <!-- Filters Section -->
-      <section id="filterSection" class="hidden card-bg rounded-2xl p-4 sm:p-5 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
+      <section id="filterSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
         <div class="md:col-span-3">
-          <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition">
+          <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition">
         </div>
         <div class="md:col-span-2">
-          <select id="city" onchange="handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer"></select>
+          <select id="city" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
         </div>
         <div class="md:col-span-2">
-          <select id="cat" onchange="handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer"></select>
+          <select id="cat" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
         </div>
         <div class="md:col-span-2">
-          <select id="sort" onchange="handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer">
+          <select id="sort" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer">
             <option value="score">Sort: Lead score</option>
             <option value="rating">Sort: Rating (High→Low)</option>
             <option value="reviews">Sort: Reviews</option>
             <option value="name">Sort: Name A→Z</option>
           </select>
         </div>
-        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm">
+        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
           <label class="flex items-center gap-2 cursor-pointer select-none">
             <input id="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
           </label>
           <div class="flex items-center gap-2 ml-auto sm:ml-0">
-            <span class="text-xs subtext">Min rating:</span>
+            <span class="text-xs text-slate-500 dark:text-slate-400">Min rating:</span>
             <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
-            <span id="minRatingLabel" class="w-7 text-amber-500 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
+            <span id="minRatingLabel" class="w-7 text-amber-600 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
           </div>
         </div>
       </section>
 
-      <!-- Quick Filter Chips & High Value Recommendations -->
+      <!-- Quick Filter Chips & Recommendations -->
       <div class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-          <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-xs font-bold hover:bg-amber-300 transition shadow-md flex items-center gap-1.5 cursor-pointer ml-auto">
+          <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold hover:bg-amber-300 transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
             <span id="exportBtnText">Export CSV</span>
           </button>
         </div>
 
-        <!-- High Profit Industry Recommendations -->
-        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-3">
-          <span class="subtext text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
-          <button onclick="quickNicheFilter('Hotel')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🏨 Hotels & Tourism</button>
-          <button onclick="quickNicheFilter('Dental')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🦷 Dentists & Clinics</button>
-          <button onclick="quickNicheFilter('Auto')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🚗 Auto & Rentals</button>
-          <button onclick="quickNicheFilter('Restaurant')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🍽️ Restaurants & Cafes</button>
+        <!-- Hot Niches -->
+        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-slate-200 dark:border-slate-800 pt-3">
+          <span class="text-slate-500 dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
+          <button onclick="quickNicheFilter('Hotel')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🏨 Hotels & Tourism</button>
+          <button onclick="quickNicheFilter('Dental')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🦷 Dentists & Clinics</button>
+          <button onclick="quickNicheFilter('Auto')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🚗 Auto & Rentals</button>
+          <button onclick="quickNicheFilter('Restaurant')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🍽️ Restaurants & Cafes</button>
         </div>
       </div>
 
-      <!-- Stats Grid (Fixed min-height to eliminate layout shift) -->
+      <!-- Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
-        <div class="card-bg rounded-2xl p-4 border shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">No-website leads</div></div>
-        <div class="card-bg rounded-2xl p-4 border shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Cities covered</div></div>
-        <div class="card-bg rounded-2xl p-4 border shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Avg. lead score</div></div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">No-website leads</div></div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">Cities covered</div></div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
       <!-- Data Table Section -->
-      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[500px] flex flex-col justify-between relative">
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm min-h-[500px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-xs sm:text-sm text-left border-collapse table-fixed min-w-[700px]">
-            <thead id="tableHead" class="table-head-bg text-xs uppercase tracking-wider border-b"></thead>
-            <tbody id="rows" class="divide-y border-theme"></tbody>
+            <thead id="tableHead" class="bg-slate-50 dark:bg-slate-900/90 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800"></thead>
+            <tbody id="rows" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
           </table>
         </div>
 
         <!-- Freemium Gating Banner for Guests -->
-        <div id="guestGatingOverlay" class="hidden p-6 sm:p-10 text-center card-bg border-t border-theme space-y-3">
-          <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl card-bg border text-amber-500 dark:text-amber-400 text-lg font-bold">🔒</div>
+        <div id="guestGatingOverlay" class="hidden p-6 sm:p-10 text-center bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 space-y-3">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 text-lg font-bold">🔒</div>
           <h3 class="text-lg font-extrabold tracking-tight">Unlock All Verified Albanian Leads</h3>
-          <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
+          <p class="text-xs text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
             You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp pitch generators, custom CRM notes, and Excel-ready CSV exports.
           </p>
           <div class="pt-1">
-            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
               <span>Create Free Account & Unlock All Leads</span>
             </button>
           </div>
         </div>
 
-        <div id="empty" class="hidden p-12 text-center subtext text-xs">No businesses match your filter criteria.</div>
+        <div id="empty" class="hidden p-12 text-center text-slate-500 dark:text-slate-400 text-xs">No businesses match your filter criteria.</div>
         
         <!-- Pagination Bar -->
-        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-theme text-xs subtext mt-auto">
+        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 mt-auto">
           <div id="pageInfo">Showing 0-0 of 0 leads</div>
           <div class="flex items-center gap-2">
-            <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
-            <span id="pageIndicator" class="px-2 py-1 font-semibold text-amber-500 dark:text-amber-400">Page 1 of 1</span>
-            <button id="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+            <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
+            <span id="pageIndicator" class="px-2 py-1 font-semibold text-amber-600 dark:text-amber-400">Page 1 of 1</span>
+            <button id="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
           </div>
         </div>
       </section>
@@ -211,15 +177,15 @@
 
     <!-- TAB 2: ABOUT US VIEW -->
     <div id="tabAbout" class="hidden space-y-6 max-w-3xl mx-auto">
-      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
-        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">About PaFaqe.al</h2>
-        <p class="text-xs sm:text-sm leading-relaxed">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
+        <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400">About PaFaqe.al</h2>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           <b>PaFaqe.al</b> is built specifically for web design agencies, digital marketers, and freelance developers looking to connect with local businesses across Albania that do not yet have an online presence. 
         </p>
-        <p class="text-xs sm:text-sm leading-relaxed">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           Many small businesses—ranging from cafés and retail shops to auto repair and hotels—rely solely on foot traffic or social media. PaFaqe.al aggregates open data to pinpoint these exact businesses, providing accurate contact details, categories, and lead scoring so you can pitch your web development services effectively.
         </p>
-        <div class="pt-4 border-t border-theme text-xs subtext">
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
           <p>Created and maintained by <b>Kristian Frroku</b>.</p>
         </div>
       </div>
@@ -227,19 +193,1199 @@
 
     <!-- TAB 3: CONTACT US VIEW -->
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm">
-        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs subtext mb-5">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-500 dark:text-amber-400">frrokuk2@gmail.com</b>.</p>
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400 mb-2">Contact Us</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-600 dark:text-amber-400">frrokuk2@gmail.com</b>.</p>
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Your Name</label>
-            <input type="text" id="contactName" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Name</label>
+            <input type="text" id="contactName" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Your Email</label>
-            <input type="email" id="contactEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Email</label>
+            <input type="email" id="contactEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Message</label>
-            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-xl px-3.5 py-
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Message</label>
+            <textarea id="contactMsg" rows="4" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
+          </div>
+          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Message</button>
+        </form>
+        <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
+          Thank you! Your message has been sent successfully to Kristian Frroku.
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PROFILE VIEW -->
+    <div id="tabProfile" class="hidden space-y-6 max-w-xl mx-auto">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+        <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400">User Profile</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
+            <input type="text" id="profileName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
+            <input type="email" id="profileEmail" disabled class="w-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-500 dark:text-slate-500 cursor-not-allowed">
+          </div>
+          <div id="verificationStatusContainer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <!-- Dynamic verification status -->
+          </div>
+          <button onclick="updateProfileData()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Save Changes</button>
+          <div id="profileSuccess" class="hidden text-xs text-emerald-600 dark:text-emerald-400 font-medium text-center">Profile updated successfully!</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+    <div id="authTitle" class="text-lg font-extrabold mb-1">Sign In to PaFaqe.al</div>
+    <p id="authSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mb-5">Access your saved lead statuses and cloud CRM notes across devices.</p>
+    
+    <form onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+      <div id="nameFieldContainer" class="hidden">
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
+        <input type="text" id="authName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Kristian Frroku">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email</label>
+        <input type="email" id="authEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Password</label>
+          <button type="button" id="forgotPasswordLink" onclick="openForgotPasswordModal()" class="text-xs text-amber-600 dark:text-amber-400 hover:underline">Forgot password?</button>
+        </div>
+        <input type="password" id="authPassword" required minlength="6" oninput="checkPasswordStrength(this.value)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
+        
+        <div id="passwordStrengthContainer" class="hidden mt-2 space-y-1">
+          <div class="flex gap-1 h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="strengthBar1" class="w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all"></div>
+            <div id="strengthBar2" class="w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all"></div>
+            <div id="strengthBar3" class="w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all"></div>
+          </div>
+          <div id="strengthText" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Password strength: Enter password</div>
+        </div>
+      </div>
+
+      <div id="authError" class="hidden text-xs text-rose-500 font-medium"></div>
+      
+      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Sign In</button>
+    </form>
+    
+    <div class="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">
+      <span id="authToggleText">Don't have an account?</span> 
+      <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-amber-600 dark:text-amber-400 font-semibold hover:underline ml-1">Sign Up</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+    <div class="text-lg font-extrabold mb-1">Reset Password</div>
+    <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Enter your registered email address below. We will send you a secure link to reset your password.</p>
+    
+    <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3.5">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
+        <input type="email" id="forgotEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+      </div>
+      <div id="forgotError" class="hidden text-xs text-rose-500 font-medium"></div>
+      <div id="forgotSuccess" class="hidden text-xs text-emerald-600 dark:text-emerald-400 font-medium p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/50"></div>
+      
+      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Reset Link</button>
+    </form>
+  </div>
+</div>
+
+<!-- NOTES MODAL -->
+<div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeNotesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+    <div class="text-lg font-extrabold mb-1">Lead CRM Notes & Reminder</div>
+    <p id="notesBusinessSubtitle" class="text-xs text-amber-600 dark:text-amber-400 mb-4 font-semibold"></p>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Custom Notes</label>
+        <textarea id="leadNoteInput" rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Follow-Up Date (Reminder)</label>
+        <input type="date" id="leadReminderInput" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeNotesModal()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition">Cancel</button>
+        <button onclick="saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-950 transition shadow-md">Save Note & Reminder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PITCH GENERATOR MODAL -->
+<div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closePitchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+    <div class="text-lg font-extrabold text-amber-600 dark:text-amber-400 mb-1">Albanian WhatsApp Pitch</div>
+    <p id="pitchBusinessSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium"></p>
+    
+    <div class="space-y-4">
+      <textarea id="pitchTextOutput" rows="6" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-mono select-all outline-none text-slate-800 dark:text-slate-200"></textarea>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Pitch Text</button>
+        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
+          <span>Send via WhatsApp ↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COOKIE CONSENT BANNER -->
+<div id="cookieBanner" class="hidden fixed bottom-4 left-4 right-4 sm:left-6 sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-3 text-xs text-slate-600 dark:text-slate-300">
+  <div class="flex items-start justify-between gap-2">
+    <p class="leading-relaxed">Ne përdorim cookies dhe ruajtje lokale për të përmirësuar përvojën tuaj dhe për të menaxhuar sesionin në <b class="text-amber-600 dark:text-amber-400">PaFaqe.al</b>.</p>
+    <button onclick="acceptCookies()" class="text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-sm cursor-pointer">✕</button>
+  </div>
+  <div class="flex items-center gap-2 justify-end">
+    <button onclick="acceptCookies()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold transition cursor-pointer">Prano të gjitha</button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div>
+    <p class="font-semibold text-slate-700 dark:text-slate-300">PaFaqe.al — Albanian Web Design Leads</p>
+    <p class="text-[11px] mt-0.5">© 2026 Developed by <b class="text-amber-600 dark:text-amber-400">Kristian Frroku</b></p>
+  </div>
+  <div class="flex items-center gap-4">
+    <span>📞 <a href="tel:0684073212" class="text-amber-600 dark:text-amber-400 hover:underline">0684073212</a></span>
+    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-amber-600 dark:text-amber-400 hover:underline">frrokuk2@gmail.com</a></span>
+  </div>
+</footer>
+
+<script>
+// ==========================================
+// 🔑 FIREBASE CONFIGURATION
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
+  authDomain: "pafaqeal.firebaseapp.com",
+  projectId: "pafaqeal",
+  storageBucket: "pafaqeal.firebasestorage.app",
+  messagingSenderId: "292435292597",
+  appId: "1:292435292597:web:c266bf46c4e0869be869fc",
+  measurementId: "G-5QD3YLQPQP"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let cloudStatuses = {};
+let cloudNotes = {};
+let cloudReminders = {};
+let activeLeadKeyForNotes = null;
+let selectedLeads = new Set();
+
+// Theme Switcher
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.classList.contains('dark') ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.classList.remove(current);
+  html.classList.add(next);
+  document.getElementById('themeIcon').textContent = next === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('pafaqe_theme', next);
+  render();
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('pafaqe_theme') || 'dark';
+  document.documentElement.classList.remove('dark', 'light');
+  document.documentElement.classList.add(saved);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = saved === 'dark' ? '🌙' : '☀️';
+}
+
+// Auth Observer
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
+  const btn = document.getElementById('authActionBtn');
+  const hero = document.getElementById('guestHero');
+  const filterSec = document.getElementById('filterSection');
+  const navProfileBtn = document.getElementById('navProfileBtn');
+  
+  if (user) {
+    const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    if (btn) btn.innerHTML = `<span onclick="switchTab('profile')" class="cursor-pointer hover:underline">${escapeHtml(displayName)}</span> <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+    if (hero) hero.classList.add('hidden');
+    if (filterSec) filterSec.classList.remove('hidden');
+    if (navProfileBtn) navProfileBtn.classList.remove('hidden');
+    
+    const pName = document.getElementById('profileName');
+    const pEmail = document.getElementById('profileEmail');
+    if (pName) pName.value = user.displayName || '';
+    if (pEmail) pEmail.value = user.email || '';
+    renderVerificationStatus();
+
+    await loadCloudData();
+  } else {
+    if (btn) btn.innerHTML = `<span>Sign In</span>`;
+    cloudStatuses = {};
+    cloudNotes = {};
+    cloudReminders = {};
+    if (hero) hero.classList.remove('hidden');
+    if (filterSec) filterSec.classList.add('hidden');
+    if (navProfileBtn) navProfileBtn.classList.add('hidden');
+    
+    const profileTab = document.getElementById('tabProfile');
+    if (profileTab && !profileTab.classList.contains('hidden')) {
+      switchTab('leads');
+    }
+    render();
+  }
+});
+
+let isSignUpMode = false;
+function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+function closeAuthModal() { 
+  document.getElementById('authModal').classList.add('hidden'); 
+  const errBox = document.getElementById('authError');
+  if (errBox) errBox.classList.add('hidden'); 
+}
+
+function toggleAuthMode() {
+  isSignUpMode = !isSignUpMode;
+  const nameField = document.getElementById('nameFieldContainer');
+  const strengthContainer = document.getElementById('passwordStrengthContainer');
+  const forgotLink = document.getElementById('forgotPasswordLink');
+
+  if (isSignUpMode) {
+    if (nameField) nameField.classList.remove('hidden');
+    const authName = document.getElementById('authName');
+    if (authName) authName.required = true;
+    if (strengthContainer) strengthContainer.classList.remove('hidden');
+    if (forgotLink) forgotLink.classList.add('hidden');
+  } else {
+    if (nameField) nameField.classList.add('hidden');
+    const authName = document.getElementById('authName');
+    if (authName) authName.required = false;
+    if (strengthContainer) strengthContainer.classList.add('hidden');
+    if (forgotLink) forgotLink.classList.remove('hidden');
+  }
+
+  document.getElementById('authTitle').textContent = isSignUpMode ? 'Create Free Account' : 'Sign In to PaFaqe.al';
+  document.getElementById('authSubtitle').textContent = isSignUpMode ? 'Sign up to sync your lead notes and statuses in the cloud.' : 'Access your saved lead statuses and cloud CRM notes across devices.';
+  document.getElementById('authSubmitBtn').textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+  document.getElementById('authToggleText').textContent = isSignUpMode ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('authToggleBtn').textContent = isSignUpMode ? 'Sign In' : 'Sign Up';
+  const errBox = document.getElementById('authError');
+  if (errBox) errBox.classList.add('hidden');
+}
+
+function checkPasswordStrength(password) {
+  const strengthContainer = document.getElementById('passwordStrengthContainer');
+  if (!isSignUpMode) {
+    if (strengthContainer) strengthContainer.classList.add('hidden');
+    return;
+  }
+  if (strengthContainer) strengthContainer.classList.remove('hidden');
+
+  const bar1 = document.getElementById('strengthBar1');
+  const bar2 = document.getElementById('strengthBar2');
+  const bar3 = document.getElementById('strengthBar3');
+  const text = document.getElementById('strengthText');
+  if (!bar1 || !bar2 || !bar3 || !text) return;
+
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  bar1.className = "w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all";
+  bar2.className = "w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all";
+  bar3.className = "w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all";
+
+  if (password.length === 0) {
+    text.textContent = "Password strength: Enter password";
+    text.className = "text-[11px] text-slate-500 dark:text-slate-400 font-medium";
+    return;
+  }
+
+  if (score === 1 || password.length < 6) {
+    bar1.className = "w-1/3 h-full bg-rose-500 transition-all";
+    text.textContent = "Password strength: Weak";
+    text.className = "text-[11px] text-rose-500 font-medium";
+  } else if (score === 2) {
+    bar1.className = "w-1/3 h-full bg-amber-500 transition-all";
+    bar2.className = "w-1/3 h-full bg-amber-500 transition-all";
+    text.textContent = "Password strength: Medium";
+    text.className = "text-[11px] text-amber-500 font-medium";
+  } else {
+    bar1.className = "w-1/3 h-full bg-emerald-500 transition-all";
+    bar2.className = "w-1/3 h-full bg-emerald-500 transition-all";
+    bar3.className = "w-1/3 h-full bg-emerald-500 transition-all";
+    text.textContent = "Password strength: Strong";
+    text.className = "text-[11px] text-emerald-500 font-medium";
+  }
+}
+
+function openForgotPasswordModal() {
+  closeAuthModal();
+  const forgotEmail = document.getElementById('forgotEmail');
+  const authEmail = document.getElementById('authEmail');
+  if (forgotEmail && authEmail) forgotEmail.value = authEmail.value || '';
+  const fErr = document.getElementById('forgotError');
+  const fSucc = document.getElementById('forgotSuccess');
+  if (fErr) fErr.classList.add('hidden');
+  if (fSucc) fSucc.classList.add('hidden');
+  document.getElementById('forgotPasswordModal').classList.remove('hidden');
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').classList.add('hidden');
+}
+
+async function handleForgotPasswordSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgotEmail').value.trim();
+  const errBox = document.getElementById('forgotError');
+  const succBox = document.getElementById('forgotSuccess');
+  const submitBtn = document.getElementById('forgotSubmitBtn');
+
+  if (errBox) errBox.classList.add('hidden');
+  if (succBox) succBox.classList.add('hidden');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+  }
+
+  try {
+    await auth.sendPasswordResetEmail(email);
+    if (succBox) {
+      succBox.textContent = `Password reset email successfully sent to ${email}. Please check your inbox and spam folder.`;
+      succBox.classList.remove('hidden');
+    }
+    setTimeout(() => {
+      closeForgotPasswordModal();
+    }, 4000);
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = err.message;
+      errBox.classList.add('hidden');
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send Reset Link";
+    }
+  }
+}
+
+function renderVerificationStatus() {
+  const container = document.getElementById('verificationStatusContainer');
+  if (!container || !currentUser) return;
+
+  if (currentUser.emailVerified) {
+    container.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-medium">Email Verification: Verified ✓</span>`;
+  } else {
+    container.innerHTML = `
+      <span class="text-amber-600 dark:text-amber-400 font-medium">Email Verification: Not Verified</span>
+      <button onclick="resendVerificationEmail()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-amber-600 transition">Resend Verification Email</button>
+    `;
+  }
+}
+
+async function resendVerificationEmail() {
+  if (!currentUser) return;
+  try {
+    await currentUser.sendEmailVerification();
+    alert('Verification email sent again. Please check your inbox.');
+  } catch (err) {
+    alert('Error sending verification email: ' + err.message);
+  }
+}
+
+async function updateProfileData() {
+  if (!currentUser) return;
+  const pName = document.getElementById('profileName');
+  const succBox = document.getElementById('profileSuccess');
+  const newName = pName ? pName.value.trim() : '';
+
+  try {
+    await currentUser.updateProfile({ displayName: newName });
+    await db.collection('users').doc(currentUser.uid).set({
+      name: newName,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    const btn = document.getElementById('authActionBtn');
+    const emailPrefix = currentUser.email ? currentUser.email.split('@')[0] : 'User';
+    if (btn) {
+      btn.innerHTML = `<span onclick="switchTab('profile')" class="cursor-pointer hover:underline">${escapeHtml(newName || emailPrefix)}</span> <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+    }
+
+    if (succBox) {
+      succBox.classList.remove('hidden');
+      setTimeout(() => succBox.classList.add('hidden'), 4000);
+    }
+  } catch (err) {
+    alert('Failed to update profile: ' + err.message);
+  }
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value;
+  const password = document.getElementById('authPassword').value;
+  const errBox = document.getElementById('authError');
+  if (errBox) errBox.classList.add('hidden');
+
+  try {
+    if (isSignUpMode) {
+      const authName = document.getElementById('authName');
+      const name = authName ? authName.value.trim() : '';
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      await userCredential.user.updateProfile({ displayName: name });
+      await userCredential.user.sendEmailVerification();
+      
+      await db.collection('users').doc(userCredential.user.uid).set({
+        name: name,
+        email: email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      alert('Account created successfully! A verification email has been sent to your inbox.');
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+    }
+    closeAuthModal();
+    e.target.reset();
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = err.message;
+      errBox.classList.remove('hidden');
+    }
+  }
+}
+
+async function loadCloudData() {
+  if (!currentUser) return;
+  try {
+    const [statusSnap, notesSnap] = await Promise.all([
+      db.collection('users').doc(currentUser.uid).collection('lead_statuses').get(),
+      db.collection('users').doc(currentUser.uid).collection('lead_notes').get()
+    ]);
+    cloudStatuses = {};
+    statusSnap.forEach(doc => { cloudStatuses[doc.id] = doc.data().status; });
+    
+    cloudNotes = {};
+    cloudReminders = {};
+    notesSnap.forEach(doc => { 
+      const d = doc.data();
+      cloudNotes[doc.id] = d.note || ''; 
+      if (d.reminder) cloudReminders[doc.id] = d.reminder;
+    });
+  } catch (err) {
+    console.error("Error loading cloud data:", err);
+  } finally {
+    render();
+  }
+}
+
+function getLeadStatus(id) {
+  if (currentUser) {
+    return cloudStatuses[id] || 'new';
+  } else {
+    const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+    return statuses[id] || 'new';
+  }
+}
+
+async function setLeadStatus(id, status) {
+  if (!currentUser) {
+    const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+    statuses[id] = status;
+    localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
+    render();
+    return;
+  }
+
+  cloudStatuses[id] = status;
+  render();
+  try {
+    await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
+  } catch (err) {
+    console.error("Error saving status to cloud:", err);
+  }
+}
+
+function getLeadNote(id) {
+  if (currentUser) {
+    return cloudNotes[id] || '';
+  } else {
+    const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
+    return notes[id] || '';
+  }
+}
+
+function getLeadReminder(id) {
+  if (currentUser) {
+    return cloudReminders[id] || '';
+  } else {
+    const rems = JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}');
+    return rems[id] || '';
+  }
+}
+
+function openNotesModal(leadKey) {
+  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
+  const name = b ? b.name : leadKey;
+  activeLeadKeyForNotes = leadKey;
+  const sub = document.getElementById('notesBusinessSubtitle');
+  const input = document.getElementById('leadNoteInput');
+  const remInput = document.getElementById('leadReminderInput');
+  if (sub) sub.textContent = name;
+  if (input) input.value = getLeadNote(leadKey);
+  if (remInput) remInput.value = getLeadReminder(leadKey);
+  document.getElementById('notesModal').classList.remove('hidden');
+}
+
+function closeNotesModal() {
+  document.getElementById('notesModal').classList.add('hidden');
+  activeLeadKeyForNotes = null;
+}
+
+async function saveLeadNote() {
+  if (!activeLeadKeyForNotes) return;
+  const input = document.getElementById('leadNoteInput');
+  const remInput = document.getElementById('leadReminderInput');
+  const noteText = input ? input.value.trim() : '';
+  const remDate = remInput ? remInput.value : '';
+  
+  if (currentUser) {
+    cloudNotes[activeLeadKeyForNotes] = noteText;
+    cloudReminders[activeLeadKeyForNotes] = remDate;
+    try {
+      await db.collection('users').doc(currentUser.uid).collection('lead_notes').doc(activeLeadKeyForNotes).set({ note: noteText, reminder: remDate });
+    } catch (err) {
+      console.error("Error saving note to cloud:", err);
+    }
+  } else {
+    const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
+    const rems = JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}');
+    notes[activeLeadKeyForNotes] = noteText;
+    rems[activeLeadKeyForNotes] = remDate;
+    localStorage.setItem('pafaqe_lead_notes', JSON.stringify(notes));
+    localStorage.setItem('pafaqe_lead_reminders', JSON.stringify(rems));
+  }
+  closeNotesModal();
+  render();
+}
+
+function openPitchModal(leadKey) {
+  const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
+  if (!b) return;
+  const name = b.name || '';
+  const city = b.city || '';
+  const category = b.category || 'Business';
+  const phone = b.phone ? String(b.phone) : '';
+
+  const sub = document.getElementById('pitchBusinessSubtitle');
+  if (sub) sub.textContent = `${name} (${category} • ${city || 'Albania'})`;
+  
+  const pitch = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
+  
+  const out = document.getElementById('pitchTextOutput');
+  if (out) out.value = pitch;
+  
+  const cleanNum = phone ? phone.replace(/\D/g, '') : '';
+  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+  const waUrl = formatted ? `https://wa.me/${formatted}?text=${encodeURIComponent(pitch)}` : `https://wa.me/?text=${encodeURIComponent(pitch)}`;
+  
+  const waBtn = document.getElementById('whatsappSendBtn');
+  if (waBtn) waBtn.href = waUrl;
+  document.getElementById('pitchModal').classList.remove('hidden');
+}
+
+function closePitchModal() {
+  document.getElementById('pitchModal').classList.add('hidden');
+}
+
+function copyPitchToClipboard() {
+  const txt = document.getElementById('pitchTextOutput');
+  if (!txt) return;
+  txt.select();
+  navigator.clipboard.writeText(txt.value).then(() => {
+    alert('Pitch copied to clipboard successfully!');
+  });
+}
+
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure";
+}
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function acceptCookies() {
+  setCookie("pafaqe_cookie_consent", "true", 365);
+  const banner = document.getElementById('cookieBanner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function checkCookieConsent() {
+  const consent = getCookie("pafaqe_cookie_consent");
+  const banner = document.getElementById('cookieBanner');
+  if (!consent && banner) {
+    banner.classList.remove('hidden');
+  }
+}
+
+let showAll = false;
+let DATA = null;
+let currentPage = 1;
+const pageSize = 50;
+
+if (window.location.protocol === 'file:') {
+  const corsWarning = document.getElementById('corsWarning');
+  if (corsWarning) corsWarning.classList.remove('hidden');
+}
+
+fetch('leads.json')
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(j => { DATA = j; init(); })
+  .catch(() => { DATA = DEMO; init(); });
+
+function updateURLParams() {
+  if (!currentUser) return;
+  const params = new URLSearchParams();
+  const qEl = document.getElementById('q');
+  const cityEl = document.getElementById('city');
+  const catEl = document.getElementById('cat');
+  const sortEl = document.getElementById('sort');
+  const minRatingEl = document.getElementById('minRating');
+  const phoneOnlyEl = document.getElementById('phoneOnly');
+
+  const q = qEl ? qEl.value : '';
+  const city = cityEl ? cityEl.value : '';
+  const cat = catEl ? catEl.value : '';
+  const sort = sortEl ? sortEl.value : '';
+  const minRating = minRatingEl ? minRatingEl.value : 0;
+  const phoneOnly = phoneOnlyEl ? phoneOnlyEl.checked : false;
+
+  if (q) params.set('q', q);
+  if (city) params.set('city', city);
+  if (cat) params.set('cat', cat);
+  if (sort && sort !== 'score') params.set('sort', sort);
+  if (minRating > 0) params.set('minRating', minRating);
+  if (phoneOnly) params.set('phoneOnly', 'true');
+  if (currentPage > 1) params.set('page', currentPage);
+  if (showAll) params.set('showAll', 'true');
+
+  const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+  history.replaceState(null, '', newURL);
+}
+
+function restoreStateFromURL() {
+  if (!currentUser) return;
+  const params = new URLSearchParams(window.location.search);
+  const qEl = document.getElementById('q');
+  const cityEl = document.getElementById('city');
+  const catEl = document.getElementById('cat');
+  const sortEl = document.getElementById('sort');
+  const minRatingEl = document.getElementById('minRating');
+  const phoneOnlyEl = document.getElementById('phoneOnly');
+
+  if (params.has('q') && qEl) qEl.value = params.get('q');
+  if (params.has('city') && cityEl) cityEl.value = params.get('city');
+  if (params.has('cat') && catEl) catEl.value = params.get('cat');
+  if (params.has('sort') && sortEl) sortEl.value = params.get('sort');
+  if (params.has('minRating') && minRatingEl) minRatingEl.value = params.get('minRating');
+  if (params.get('phoneOnly') === 'true' && phoneOnlyEl) phoneOnlyEl.checked = true;
+  if (params.get('showAll') === 'true') showAll = true;
+  if (params.has('page')) {
+    const parsedPage = parseInt(params.get('page'), 10);
+    currentPage = !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  }
+}
+
+function switchTab(tab) {
+  if (tab === 'profile' && !currentUser) {
+    openAuthModal();
+    return;
+  }
+
+  const tabs = ['tabLeads', 'tabAbout', 'tabContact', 'tabProfile'];
+  tabs.forEach(t => {
+    const el = document.getElementById(t);
+    if (el) el.classList.add('hidden');
+  });
+
+  const navs = ['navLeidBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'];
+  navs.forEach(n => {
+    const el = document.getElementById(n);
+    if (!el) return;
+    if (el.id === 'navProfileBtn') {
+      if (currentUser) {
+        el.className = 'hidden sm:inline-block px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+      } else {
+        el.className = 'hidden';
+      }
+    } else {
+      el.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+    }
+  });
+
+  if (tab === 'leads') {
+    document.getElementById('tabLeads').classList.remove('hidden');
+    document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+  } else if (tab === 'about') {
+    document.getElementById('tabAbout').classList.remove('hidden');
+    document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+  } else if (tab === 'contact') {
+    document.getElementById('tabContact').classList.remove('hidden');
+    document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+  } else if (tab === 'profile') {
+    document.getElementById('tabProfile').classList.remove('hidden');
+    document.getElementById('navProfileBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+  }
+}
+
+async function handleContactSubmit(e) {
+  e.preventDefault();
+  const nameEl = document.getElementById('contactName');
+  const emailEl = document.getElementById('contactEmail');
+  const msgEl = document.getElementById('contactMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  const name = nameEl ? nameEl.value : '';
+  const email = emailEl ? emailEl.value : '';
+  const message = msgEl ? msgEl.value : '';
+
+  if (submitBtn) {
+    submitBtn.textContent = "Sending...";
+    submitBtn.disabled = true;
+  }
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: "cfc2bac6-ad84-4aff-883c-de297e879391",
+        subject: `New Message from ${name} via PaFaqe.al`,
+        name: name,
+        email: email,
+        message: message
+      })
+    });
+    const result = await response.json();
+    if (result.success) {
+      const succ = document.getElementById('contactSuccess');
+      if (succ) succ.classList.remove('hidden');
+      e.target.reset();
+      setTimeout(() => { 
+        if (succ) succ.classList.add('hidden'); 
+      }, 6000);
+    } else {
+      alert("Failed to send message. Please email directly at frrokuk2@gmail.com");
+    }
+  } catch (err) {
+    alert("Network error. Please email directly at frrokuk2@gmail.com");
+  } finally {
+    if (submitBtn) {
+      submitBtn.textContent = "Send Message";
+      submitBtn.disabled = false;
+    }
+  }
+}
+
+let filterTimeout = null;
+function handleFilterInput() {
+  clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(() => {
+    currentPage = 1;
+    render();
+  }, 150);
+}
+
+function quickNicheFilter(keyword) {
+  const qEl = document.getElementById('q');
+  if (qEl) {
+    qEl.value = keyword;
+    handleFilterInput();
+  }
+}
+
+function changePage(direction) {
+  const list = filtered();
+  const totalPages = Math.ceil(list.length / pageSize) || 1;
+  currentPage += direction;
+  if (currentPage < 1) currentPage = 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function leadScore(b){
+  let s = 50;
+  if(!b.website) s += 25;
+  if(b.phone) s += 10;
+  if(b.rating){ s += Math.round((b.rating-3)*6); if(b.rating>=4.5) s+=5; }
+  if(b.reviews>50) s += 5;
+  return Math.max(0,Math.min(100,s));
+}
+
+function filtered(){
+  if (!DATA || !DATA.businesses) return [];
+  const highPriorityOnly = window.highPriorityOnly || false;
+  
+  let list = DATA.businesses.filter(b => {
+    if(!showAll && b.website) return false;
+    if(highPriorityOnly && (leadScore(b) < 80 || !b.phone)) return false;
+    
+    if (currentUser) {
+      const qEl = document.getElementById('q');
+      const cityEl = document.getElementById('city');
+      const catEl = document.getElementById('cat');
+      const mrEl = document.getElementById('minRating');
+      const phoneOnlyEl = document.getElementById('phoneOnly');
+
+      const q = qEl ? qEl.value.toLowerCase() : '';
+      const city = cityEl ? cityEl.value : '';
+      const cat = catEl ? catEl.value : '';
+      const mr = mrEl ? parseFloat(mrEl.value) || 0 : 0;
+      const phoneOnly = phoneOnlyEl ? phoneOnlyEl.checked : false;
+
+      if(q && !(b.name + ' ' + (b.address || '') + ' ' + (b.category || '')).toLowerCase().includes(q)) return false;
+      if(city && (b.city || '').trim() !== city) return false;
+      if(cat && (b.category || '').trim() !== cat) return false;
+      if(phoneOnly && !b.phone) return false;
+      
+      const bRating = b.rating || 0;
+      if(mr > 0 && bRating < mr) return false;
+    }
+
+    return true;
+  });
+  
+  if (currentUser) {
+    const mrLabel = document.getElementById('minRatingLabel');
+    const mrEl = document.getElementById('minRating');
+    if (mrLabel && mrEl) {
+      const mr = parseFloat(mrEl.value) || 0;
+      mrLabel.textContent = mr + '★';
+    }
+  }
+  
+  const sortEl = document.getElementById('sort');
+  const s = currentUser && sortEl ? sortEl.value : 'score';
+  list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
+    : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
+    : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
+    : leadScore(b) - leadScore(a));
+  return list;
+}
+
+function getWhatsAppLink(phone) {
+  if (!phone) return null;
+  const cleanNum = String(phone).replace(/\D/g, '');
+  if (!cleanNum) return null;
+  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+  return `https://wa.me/${formatted}`;
+}
+
+function toggleSelectAll(masterCheckbox) {
+  const isChecked = masterCheckbox.checked;
+  const visibleCheckboxes = document.querySelectorAll('.lead-select-checkbox');
+  visibleCheckboxes.forEach(cb => {
+    cb.checked = isChecked;
+    const key = cb.getAttribute('data-key');
+    if (isChecked) selectedLeads.add(key);
+    else selectedLeads.delete(key);
+  });
+  updateExportBtnLabel();
+}
+
+function toggleSelectLead(key, checkbox) {
+  if (checkbox.checked) {
+    selectedLeads.add(key);
+  } else {
+    selectedLeads.delete(key);
+  }
+  updateExportBtnLabel();
+}
+
+function updateExportBtnLabel() {
+  const btnText = document.getElementById('exportBtnText');
+  if (btnText) {
+    if (selectedLeads.size > 0) {
+      btnText.textContent = `Export Selected (${selectedLeads.size})`;
+    } else {
+      btnText.textContent = `Export CSV`;
+    }
+  }
+}
+
+function exportCSV() {
+  if (!currentUser) {
+    openAuthModal();
+    return;
+  }
+  let list = filtered();
+  
+  if (selectedLeads.size > 0) {
+    list = list.filter(b => selectedLeads.has(b.id || b.name));
+  }
+
+  const excelHeader = 'sep=,\n';
+  const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
+  const body = list.map(b => {
+    const rawPhone = b.phone ? String(b.phone) : '';
+    const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
+    return [
+      `"${(b.name || '').replace(/"/g, '""')}"`,
+      `"${(b.category || '').replace(/"/g, '""')}"`,
+      `"${(b.city || '').replace(/"/g, '""')}"`,
+      `"${(b.address || '').replace(/"/g, '""')}"`,
+      excelPhone,
+      b.rating || '',
+      b.reviews || '',
+      `"${(b.website || '').replace(/"/g, '""')}"`,
+      leadScore(b)
+    ].join(',');
+  }).join('\n');
+  
+  const blob = new Blob(['\ufeff' + excelHeader + head + body], {type: 'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = selectedLeads.size > 0 ? `albania-selected-${selectedLeads.size}-leads.csv` : 'albania-no-website-leads.csv'; 
+  a.click();
+}
+
+function render(){
+  if (!DATA || !DATA.businesses) return;
+  const list = filtered();
+  const noWebCount = DATA.businesses.filter(b => !b.website).length;
+  const cities = [...new Set(DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))];
+  
+  const sLeads = document.getElementById('statLeads');
+  const sCities = document.getElementById('statCities');
+  const sAvg = document.getElementById('statAvg');
+
+  if (sLeads) sLeads.textContent = noWebCount.toLocaleString();
+  if (sCities) sCities.textContent = cities.length;
+  const sc = DATA.businesses.filter(b => !b.website).map(leadScore);
+  if (sAvg) sAvg.textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
+
+  const maxGuestRows = 5;
+  const effectiveList = currentUser ? list : list.slice(0, maxGuestRows);
+
+  const totalPages = Math.ceil(effectiveList.length / pageSize) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * pageSize;
+  const end = start + pageSize;
+  const displayList = effectiveList.slice(start, end);
+
+  const thead = document.getElementById('tableHead');
+  thead.innerHTML = `
+    <tr>
+      ${currentUser ? '<th class="w-[5%] px-3 py-3 text-center"><input type="checkbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"></th>' : ''}
+      <th class="w-[24%] px-3 sm:px-4 py-3 font-semibold">Business</th>
+      <th class="w-[14%] px-3 sm:px-4 py-3 font-semibold">Category</th>
+      <th class="w-[11%] px-3 sm:px-4 py-3 font-semibold">City</th>
+      <th class="w-[15%] px-3 sm:px-4 py-3 font-semibold">Phone</th>
+      ${currentUser ? '<th class="w-[11%] px-3 sm:px-4 py-3 font-semibold">Status</th>' : ''}
+      <th class="w-[9%] px-3 sm:px-4 py-3 font-semibold">Rating</th>
+      <th class="w-[10%] px-3 sm:px-4 py-3 font-semibold">Website</th>
+      <th class="w-[8%] px-3 sm:px-4 py-3 font-semibold text-right">Score</th>
+      ${currentUser ? '<th class="w-[18%] px-3 sm:px-4 py-3 font-semibold text-center">Actions</th>' : ''}
+    </tr>
+  `;
+
+  const tb = document.getElementById('rows'); 
+  tb.innerHTML = '';
+  document.getElementById('empty').classList.toggle('hidden', list.length > 0);
+  
+  const gatingOverlay = document.getElementById('guestGatingOverlay');
+  if (!currentUser && list.length > 0) {
+    gatingOverlay.classList.remove('hidden');
+  } else {
+    gatingOverlay.classList.add('hidden');
+  }
+
+  const paginationBar = document.getElementById('paginationBar');
+  if (currentUser && list.length > 0) {
+    paginationBar.classList.remove('hidden');
+    document.getElementById('pageInfo').textContent = `Showing ${start + 1}–${Math.min(end, list.length)} of ${list.length.toLocaleString()} filtered leads`;
+    document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage === totalPages;
+  } else {
+    paginationBar.classList.add('hidden');
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  displayList.forEach(b => {
+    const sc = leadScore(b);
+    const noWeb = !b.website;
+    const waLink = getWhatsAppLink(b.phone);
+    const leadKey = b.id || b.name;
+    const currentStatus = getLeadStatus(leadKey);
+    const leadNote = getLeadNote(leadKey);
+    const leadRem = getLeadReminder(leadKey);
+    const isSelected = selectedLeads.has(leadKey);
+
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-200 dark:border-slate-800' + (noWeb ? '' : ' opacity-40');
+    tr.innerHTML = `
+      ${currentUser ? `
+        <td class="px-3 py-2.5 text-center">
+          <input type="checkbox" data-key="${escapeHtml(leadKey)}" onchange="toggleSelectLead('${escapeHtml(leadKey)}', this)" class="lead-select-checkbox w-4 h-4 rounded accent-amber-400 cursor-pointer" ${isSelected ? 'checked' : ''}>
+        </td>
+      ` : ''}
+      <td class="px-3 sm:px-4 py-2.5 truncate">
+        <div class="font-semibold truncate flex items-center gap-1.5 ${noWeb ? '' : 'line-through opacity-60'}">
+          <span class="truncate">${escapeHtml(b.name)}</span>
+          ${leadRem ? `<span title="Follow-up Reminder: ${escapeHtml(leadRem)}" class="text-xs shrink-0 cursor-help">🔔</span>` : ''}
+        </div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">${escapeHtml(b.address || '')}</div>
+      </td>
+      <td class="px-3 sm:px-4 py-2.5 text-slate-500 dark:text-slate-400 truncate">${escapeHtml(b.category || '—')}</td>
+      <td class="px-3 sm:px-4 py-2.5 truncate">${escapeHtml(b.city || '—')}</td>
+      
+      <td class="px-3 sm:px-4 py-2.5 truncate">
+        ${b.phone ? `
+          <div class="flex items-center gap-1.5">
+            <a href="tel:${escapeHtml(b.phone)}" class="text-amber-600 dark:text-amber-400 font-medium hover:underline truncate">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 hover:bg-emerald-200 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-700/60 px-1.5 py-0.5 rounded transition shrink-0">WA ↗</a>` : ''}
+          </div>
+        ` : '<span class="text-slate-400">—</span>'}
+      </td>
+
+      ${currentUser ? `
+        <td class="px-3 sm:px-4 py-2.5 truncate">
+          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-amber-400 cursor-pointer w-full text-slate-900 dark:text-slate-100">
+            <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
+            <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
+            <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
+            <option value="closed" ${currentStatus==='closed'?'selected':''}>Closed</option>
+          </select>
+        </td>
+      ` : ''}
+
+      <td class="px-3 sm:px-4 py-2.5 truncate">${b.rating ? `★ ${b.rating} <span class="text-slate-400 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-400">—</span>'}</td>
+      <td class="px-3 sm:px-4 py-2.5 truncate">${noWeb ? '<span class="bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-600 dark:text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
+      <td class="px-3 sm:px-4 py-2.5 text-right leadscore font-bold truncate ${sc >= 80 ? 'text-emerald-600 dark:text-emerald-400' : sc >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500'}">${sc}</td>
+      
+      ${currentUser ? `
+        <td class="px-3 sm:px-4 py-2.5 text-center truncate">
+          <div class="flex items-center justify-center gap-1">
+            <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium ${leadNote || leadRem ? 'text-amber-600 dark:text-amber-400 border-amber-400' : 'text-slate-600 dark:text-slate-300'} hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="View/Edit Notes & Reminder">
+              ${leadNote || leadRem ? 'Note*' : 'Note'}
+            </button>
+            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
+              Pitch
+            </button>
+            <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium transition" title="Copy summary">
+              Copy
+            </button>
+          </div>
+        </td>
+      ` : ''}
+    `;
+    fragment.appendChild(tr);
+  });
+
+  tb.appendChild(fragment);
+  updateExportBtnLabel();
+  updateURLParams();
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function init(){
+  initTheme();
+  document.getElementById('dataSource').textContent =
+    DATA.source === 'live' ? `LIVE · ${DATA.businesses.length.toLocaleString()} businesses` : `DEMO data`;
+  
+  const cs = document.getElementById('city'), ks = document.getElementById('cat');
+  
+  const cleanCities = [...new Set(DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
+  const cleanCats = [...new Set(DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
+
+  cs.innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  ks.innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  
+  restoreStateFromURL();
+
+  const chips = document.getElementById('chips');
+  chips.innerHTML = '';
+  [
+    ['Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
+    ['High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
+    ['Show all', () => { showAll = true; window.highPriorityOnly = false; }]
+  ].forEach(([label, action], i) => {
+    const b = document.createElement('button');
+    b.textContent = label; 
+    b.className = 'px-3.5 py-1.5 rounded-xl border text-xs font-medium shadow-sm transition ' + (i === 0 ? ' bg-amber-400 text-slate-950 border-amber-400 font-semibold active' : ' bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800');
+    b.onclick = () => { 
+      [...chips.children].forEach(c => {
+        c.className = 'px-3.5 py-1.5 rounded-xl border text-xs font-medium shadow-sm transition bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+      }); 
+      b.className = 'px-3.5 py-1.5 rounded-xl border text-xs font-medium shadow-sm transition bg-amber-400 text-slate-950 border-amber-400 font-semibold active'; 
+      action();
+      handleFilterInput(); 
+    };
+    chips.appendChild(b);
+  });
+  render();
+  setTimeout(checkCookieConsent, 1000);
+}
+
+const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
+</script>
+</body>
+</html>
