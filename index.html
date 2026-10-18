@@ -14,12 +14,14 @@
 <style>
   body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility; }
   .leadscore { font-variant-numeric: tabular-nums; }
+  /* Stable transition container to prevent CLS layout reflows */
+  .cls-stable-container { min-height: 140px; transition: opacity 0.2s ease-in-out; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
 </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-950 flex flex-col justify-between bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
 
 <div>
   <!-- Header / Navbar -->
@@ -64,53 +66,56 @@
     <!-- TAB 1: LEADS VIEW -->
     <div id="tabLeads" class="space-y-6">
       
-      <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
-      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-        <div class="max-w-3xl space-y-3 relative z-10">
-          <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 text-xs font-semibold uppercase tracking-wider">B2B Lead Generation</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
-          <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-600 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
-          </p>
-          <div class="pt-2 flex flex-wrap items-center gap-3">
-            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
-              <span>Get Started Free</span>
-            </button>
-            <span class="text-xs text-slate-500 dark:text-slate-400">No credit card required • Instant cloud sync</span>
+      <!-- STABLE TOP SECTION WRAPPER (Prevents CLS during Auth check) -->
+      <div class="cls-stable-container">
+        <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
+        <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+          <div class="max-w-3xl space-y-3 relative z-10">
+            <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 text-xs font-semibold uppercase tracking-wider">B2B Lead Generation</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+              Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-600 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
+            </p>
+            <div class="pt-2 flex flex-wrap items-center gap-3">
+              <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
+                <span>Get Started Free</span>
+              </button>
+              <span class="text-xs text-slate-500 dark:text-slate-400">No credit card required • Instant cloud sync</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Filters Section -->
-      <section id="filterSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
-        <div class="md:col-span-3">
-          <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition">
-        </div>
-        <div class="md:col-span-2">
-          <select id="city" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
-        </div>
-        <div class="md:col-span-2">
-          <select id="cat" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
-        </div>
-        <div class="md:col-span-2">
-          <select id="sort" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer">
-            <option value="score">Sort: Lead score</option>
-            <option value="rating">Sort: Rating (High→Low)</option>
-            <option value="reviews">Sort: Reviews</option>
-            <option value="name">Sort: Name A→Z</option>
-          </select>
-        </div>
-        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input id="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
-          </label>
-          <div class="flex items-center gap-2 ml-auto sm:ml-0">
-            <span class="text-xs text-slate-500 dark:text-slate-400">Min rating:</span>
-            <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
-            <span id="minRatingLabel" class="w-7 text-amber-600 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
+        <!-- Filters Section (For Logged-in Users) -->
+        <section id="filterSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
+          <div class="md:col-span-3">
+            <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition">
           </div>
-        </div>
-      </section>
+          <div class="md:col-span-2">
+            <select id="city" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
+          </div>
+          <div class="md:col-span-2">
+            <select id="cat" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
+          </div>
+          <div class="md:col-span-2">
+            <select id="sort" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer">
+              <option value="score">Sort: Lead score</option>
+              <option value="rating">Sort: Rating (High→Low)</option>
+              <option value="reviews">Sort: Reviews</option>
+              <option value="name">Sort: Name A→Z</option>
+            </select>
+          </div>
+          <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input id="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
+            </label>
+            <div class="flex items-center gap-2 ml-auto sm:ml-0">
+              <span class="text-xs text-slate-500 dark:text-slate-400">Min rating:</span>
+              <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
+              <span id="minRatingLabel" class="w-7 text-amber-600 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
+            </div>
+          </div>
+        </section>
+      </div>
 
       <!-- Quick Filter Chips & Recommendations -->
       <div class="space-y-3">
@@ -131,7 +136,7 @@
         </div>
       </div>
 
-      <!-- Stats Grid -->
+      <!-- Stats Grid (Fixed min-h to prevent CLS layout shifts) -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">No-website leads</div></div>
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">Cities covered</div></div>
@@ -589,7 +594,7 @@ async function handleForgotPasswordSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = err.message;
-      errBox.classList.add('hidden');
+      errBox.classList.remove('hidden');
     }
   } finally {
     if (submitBtn) {
