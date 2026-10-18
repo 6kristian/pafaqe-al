@@ -12,7 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
-  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility;}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;-webkit-tap-highlight-color:transparent;text-rendering:optimizeLegibility;}
   .card{background:#1e293b;border:1px solid #334155}
   .badge{background:#f59e0b;color:#0f172a}
   .chip{border:1px solid #475569;cursor:pointer;transition:background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease}
@@ -128,7 +128,7 @@
         <div class="card rounded-2xl p-4 shadow-lg"><div id="statAvg" class="text-3xl font-extrabold text-white tracking-tight">0</div><div class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
-      <!-- Data Table Section (Stabilized min-height to prevent layout shifts) -->
+      <!-- Data Table Section -->
       <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[520px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left border-collapse table-fixed">
@@ -372,7 +372,6 @@ const firebaseConfig = {
   measurementId: "G-5QD3YLQPQP"
 };
 
-// Initialize Firebase safely
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -413,6 +412,12 @@ auth.onAuthStateChanged(async (user) => {
     if (hero) hero.classList.remove('hidden');
     if (filterSec) filterSec.classList.add('hidden');
     if (navProfileBtn) navProfileBtn.classList.add('hidden');
+    
+    // Fallback tab routing if user signs out while on profile view
+    const profileTab = document.getElementById('tabProfile');
+    if (profileTab && !profileTab.classList.contains('hidden')) {
+      switchTab('leads');
+    }
     render();
   }
 });
@@ -454,7 +459,6 @@ function toggleAuthMode() {
   if (errBox) errBox.classList.add('hidden');
 }
 
-// Password Strength Checker
 function checkPasswordStrength(password) {
   const strengthContainer = document.getElementById('passwordStrengthContainer');
   if (!isSignUpMode) {
@@ -502,7 +506,6 @@ function checkPasswordStrength(password) {
   }
 }
 
-// Forgot Password Modal Controls
 function openForgotPasswordModal() {
   closeAuthModal();
   const forgotEmail = document.getElementById('forgotEmail');
@@ -545,7 +548,7 @@ async function handleForgotPasswordSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = err.message;
-      errBox.classList.remove('hidden');
+      errBox.classList.add('hidden');
     }
   } finally {
     if (submitBtn) {
@@ -555,15 +558,12 @@ async function handleForgotPasswordSubmit(e) {
   }
 }
 
-// Email Verification & Profile Management
 function renderVerificationStatus() {
   const container = document.getElementById('verificationStatusContainer');
   if (!container || !currentUser) return;
 
   if (currentUser.emailVerified) {
-    container.innerHTML = `
-      <span class="text-emerald-400 font-medium">Email Verification: Verified ✓</span>
-    `;
+    container.innerHTML = `<span class="text-emerald-400 font-medium">Email Verification: Verified ✓</span>`;
   } else {
     container.innerHTML = `
       <span class="text-amber-400 font-medium">Email Verification: Not Verified</span>
@@ -691,7 +691,6 @@ async function setLeadStatus(id, status) {
   }
 }
 
-// Notes Handlers
 function getLeadNote(id) {
   if (currentUser) {
     return cloudNotes[id] || '';
@@ -738,7 +737,6 @@ async function saveLeadNote() {
   render();
 }
 
-// Pitch Generator Handlers with Safe String Coercion
 function openPitchModal(leadKey) {
   const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
   if (!b) return;
@@ -777,7 +775,6 @@ function copyPitchToClipboard() {
   });
 }
 
-// Cookie Consent Logic
 function setCookie(name, value, days) {
   let expires = "";
   if (days) {
@@ -813,7 +810,6 @@ function checkCookieConsent() {
   }
 }
 
-// App Core State
 let showAll = false;
 let DATA = null;
 let currentPage = 1;
@@ -883,6 +879,11 @@ function restoreStateFromURL() {
 }
 
 function switchTab(tab) {
+  if (tab === 'profile' && !currentUser) {
+    openAuthModal();
+    return;
+  }
+
   const tabs = ['tabLeads', 'tabAbout', 'tabContact', 'tabProfile'];
   tabs.forEach(t => {
     const el = document.getElementById(t);
@@ -892,30 +893,30 @@ function switchTab(tab) {
   const navs = ['navLeidBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'];
   navs.forEach(n => {
     const el = document.getElementById(n);
-    if (el) el.className = el.id === 'navProfileBtn' ? 'hidden sm:inline-block px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition' : 'px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
-    if (currentUser && el && el.id === 'navProfileBtn') el.classList.remove('hidden');
+    if (!el) return;
+    if (el.id === 'navProfileBtn') {
+      if (currentUser) {
+        el.className = 'hidden sm:inline-block px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
+      } else {
+        el.className = 'hidden';
+      }
+    } else {
+      el.className = 'px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
+    }
   });
 
   if (tab === 'leads') {
-    const el = document.getElementById('tabLeads');
-    const btn = document.getElementById('navLeidBtn');
-    if (el) el.classList.remove('hidden');
-    if (btn) btn.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+    document.getElementById('tabLeads').classList.remove('hidden');
+    document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   } else if (tab === 'about') {
-    const el = document.getElementById('tabAbout');
-    const btn = document.getElementById('navAboutBtn');
-    if (el) el.classList.remove('hidden');
-    if (btn) btn.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+    document.getElementById('tabAbout').classList.remove('hidden');
+    document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   } else if (tab === 'contact') {
-    const el = document.getElementById('tabContact');
-    const btn = document.getElementById('navContactBtn');
-    if (el) el.classList.remove('hidden');
-    if (btn) btn.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+    document.getElementById('tabContact').classList.remove('hidden');
+    document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   } else if (tab === 'profile') {
-    const el = document.getElementById('tabProfile');
-    const btn = document.getElementById('navProfileBtn');
-    if (el) el.classList.remove('hidden');
-    if (btn) btn.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+    document.getElementById('tabProfile').classList.remove('hidden');
+    document.getElementById('navProfileBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   }
 }
 
