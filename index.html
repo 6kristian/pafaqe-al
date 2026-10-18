@@ -7,10 +7,10 @@
 <meta name="description" content="Discover local Albanian businesses across Tirana, Durrës, Vlorë, and more that have no website. Ready-made web design leads with phone numbers and ratings.">
 <link rel="stylesheet" href="output.css">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- Firebase Compat SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<!-- Firebase Compat SDKs (Deferred for performance) -->
+<script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
   body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility;}
   .card{background:#1e293b;border:1px solid #334155}
@@ -128,10 +128,10 @@
         <div class="card rounded-2xl p-4 shadow-lg"><div id="statAvg" class="text-3xl font-extrabold text-white tracking-tight">0</div><div class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
-      <!-- Data Table Section -->
-      <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[460px] flex flex-col justify-between relative">
+      <!-- Data Table Section (Stabilized min-height to prevent layout shifts) -->
+      <section class="card rounded-2xl overflow-hidden shadow-2xl min-h-[520px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left border-collapse">
+          <table class="w-full text-sm text-left border-collapse table-fixed">
             <thead id="tableHead" class="bg-slate-800/90 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700"></thead>
             <tbody id="rows" class="divide-y divide-slate-800/60"></tbody>
           </table>
@@ -1130,15 +1130,15 @@ function render(){
   const thead = document.getElementById('tableHead');
   thead.innerHTML = `
     <tr>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Business</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Category</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">City</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
-      ${currentUser ? '<th class="px-4 sm:px-6 py-3.5 font-semibold">Status</th>' : ''}
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold">Website</th>
-      <th class="px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
-      ${currentUser ? '<th class="px-4 sm:px-6 py-3.5 font-semibold text-center">Actions</th>' : ''}
+      <th class="w-[22%] px-4 sm:px-6 py-3.5 font-semibold">Business</th>
+      <th class="w-[15%] px-4 sm:px-6 py-3.5 font-semibold">Category</th>
+      <th class="w-[12%] px-4 sm:px-6 py-3.5 font-semibold">City</th>
+      <th class="w-[15%] px-4 sm:px-6 py-3.5 font-semibold">Phone</th>
+      ${currentUser ? '<th class="w-[10%] px-4 sm:px-6 py-3.5 font-semibold">Status</th>' : ''}
+      <th class="w-[10%] px-4 sm:px-6 py-3.5 font-semibold">Rating</th>
+      <th class="w-[10%] px-4 sm:px-6 py-3.5 font-semibold">Website</th>
+      <th class="w-[10%] px-4 sm:px-6 py-3.5 font-semibold text-right">Lead Score</th>
+      ${currentUser ? '<th class="w-[16%] px-4 sm:px-6 py-3.5 font-semibold text-center">Actions</th>' : ''}
     </tr>
   `;
 
@@ -1175,24 +1175,24 @@ function render(){
     const tr = document.createElement('tr');
     tr.className = 'row transition-colors' + (noWeb ? '' : ' opacity-40');
     tr.innerHTML = `
-      <td class="px-4 sm:px-6 py-3.5">
-        <div class="font-semibold ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
-        <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(b.address || '')}</div>
+      <td class="px-4 sm:px-6 py-3.5 truncate">
+        <div class="font-semibold truncate ${noWeb ? 'text-slate-100' : 'line-through text-slate-400'}">${escapeHtml(b.name)}</div>
+        <div class="text-xs text-slate-500 mt-0.5 truncate">${escapeHtml(b.address || '')}</div>
       </td>
-      <td class="px-4 sm:px-6 py-3.5 text-slate-300 whitespace-nowrap">${escapeHtml(b.category || '—')}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${escapeHtml(b.city || '—')}</td>
+      <td class="px-4 sm:px-6 py-3.5 text-slate-300 truncate">${escapeHtml(b.category || '—')}</td>
+      <td class="px-4 sm:px-6 py-3.5 truncate">${escapeHtml(b.city || '—')}</td>
       
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
+      <td class="px-4 sm:px-6 py-3.5 truncate">
         ${b.phone ? `
           <div class="flex items-center gap-2">
-            <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition">WA ↗</a>` : ''}
+            <a href="tel:${escapeHtml(b.phone)}" class="text-amber-300 hover:underline font-medium truncate">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 px-2 py-0.5 rounded-md transition shrink-0">WA ↗</a>` : ''}
           </div>
         ` : '<span class="text-slate-600">—</span>'}
       </td>
 
       ${currentUser ? `
-        <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">
-          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer">
+        <td class="px-4 sm:px-6 py-3.5 truncate">
+          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 focus:ring-1 focus:ring-amber-400 cursor-pointer w-full">
             <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
             <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
             <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
@@ -1201,13 +1201,13 @@ function render(){
         </td>
       ` : ''}
 
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
-      <td class="px-4 sm:px-6 py-3.5 whitespace-nowrap">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
-      <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold whitespace-nowrap ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
+      <td class="px-4 sm:px-6 py-3.5 truncate">${b.rating ? `★ ${b.rating} <span class="text-slate-500 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-600">—</span>'}</td>
+      <td class="px-4 sm:px-6 py-3.5 truncate">${noWeb ? '<span class="badge px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
+      <td class="px-4 sm:px-6 py-3.5 text-right leadscore font-bold truncate ${sc >= 80 ? 'text-emerald-400' : sc >= 60 ? 'text-amber-400' : 'text-slate-400'}">${sc}</td>
       
       ${currentUser ? `
-        <td class="px-4 sm:px-6 py-3.5 text-center whitespace-nowrap">
-          <div class="flex items-center justify-center gap-1.5">
+        <td class="px-4 sm:px-6 py-3.5 text-center truncate">
+          <div class="flex items-center justify-center gap-1">
             <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium ${leadNote ? 'text-amber-400 border-amber-600/50' : 'text-slate-300'} transition" title="View/Edit Notes">
               ${leadNote ? 'Note*' : 'Note'}
             </button>
