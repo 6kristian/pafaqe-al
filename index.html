@@ -253,7 +253,7 @@
       <div>
         <div class="flex items-center justify-between mb-1">
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Password</label>
-          <button type="button" id="forgotPasswordLink" onclick="openForgotPasswordModal()" class="hidden text-xs text-amber-400 hover:underline">Forgot password?</button>
+          <button type="button" id="forgotPasswordLink" onclick="openForgotPasswordModal()" class="text-xs text-amber-400 hover:underline">Forgot password?</button>
         </div>
         <input type="password" id="authPassword" required minlength="6" oninput="checkPasswordStrength(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
         
@@ -334,16 +334,18 @@
     </div>
   </div>
 </div>
+
 <!-- COOKIE CONSENT BANNER -->
 <div id="cookieBanner" class="hidden fixed bottom-4 left-4 right-4 sm:left-6 sm:max-w-md bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-3 text-xs text-slate-300">
   <div class="flex items-start justify-between gap-2">
     <p class="leading-relaxed">Ne përdorim cookies dhe ruajtje lokale për të përmirësuar përvojën tuaj dhe për të menaxhuar sesionin në <b class="text-amber-400">PaFaqe.al</b>.</p>
-    <button onclick="acceptCookies()" class="text-slate-400 hover:text-white font-bold text-sm">✕</button>
+    <button onclick="acceptCookies()" class="text-slate-400 hover:text-white font-bold text-sm cursor-pointer">✕</button>
   </div>
   <div class="flex items-center gap-2 justify-end">
     <button onclick="acceptCookies()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold transition cursor-pointer">Prano të gjitha</button>
   </div>
 </div>
+
 <!-- Footer -->
 <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 text-xs text-slate-400 border-t border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
@@ -451,47 +453,16 @@ function toggleAuthMode() {
   const errBox = document.getElementById('authError');
   if (errBox) errBox.classList.add('hidden');
 }
-// ==========================================
-// 🍪 COOKIE CONSENT FUNCTIONS
-// ==========================================
-function setCookie(name, value, days) {
-  let expires = "";
-  if (days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure";
-}
 
-function getCookie(name) {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
-function acceptCookies() {
-  setCookie("pafaqe_cookie_consent", "true", 365);
-  const banner = document.getElementById('cookieBanner');
-  if (banner) banner.classList.add('hidden');
-}
-
-function checkCookieConsent() {
-  const consent = getCookie("pafaqe_cookie_consent");
-  const banner = document.getElementById('cookieBanner');
-  if (!consent && banner) {
-    banner.classList.remove('hidden');
-  }
-}
-
-// 🟢 PASSWORD STRENGTH CHECKER FUNCTION FIXED
+// Password Strength Checker
 function checkPasswordStrength(password) {
-  if (!isSignUpMode) return;
+  const strengthContainer = document.getElementById('passwordStrengthContainer');
+  if (!isSignUpMode) {
+    if (strengthContainer) strengthContainer.classList.add('hidden');
+    return;
+  }
+  if (strengthContainer) strengthContainer.classList.remove('hidden');
+
   const bar1 = document.getElementById('strengthBar1');
   const bar2 = document.getElementById('strengthBar2');
   const bar3 = document.getElementById('strengthBar3');
@@ -804,6 +775,42 @@ function copyPitchToClipboard() {
   navigator.clipboard.writeText(txt.value).then(() => {
     alert('Pitch copied to clipboard successfully!');
   });
+}
+
+// Cookie Consent Logic
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax; Secure";
+}
+
+function getCookie(name) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function acceptCookies() {
+  setCookie("pafaqe_cookie_consent", "true", 365);
+  const banner = document.getElementById('cookieBanner');
+  if (banner) banner.classList.add('hidden');
+}
+
+function checkCookieConsent() {
+  const consent = getCookie("pafaqe_cookie_consent");
+  const banner = document.getElementById('cookieBanner');
+  if (!consent && banner) {
+    banner.classList.remove('hidden');
+  }
 }
 
 // App Core State
