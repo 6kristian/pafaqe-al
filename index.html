@@ -168,12 +168,15 @@
         <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
-      <!-- Data Table Section -->
-      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[500px] flex flex-col justify-between relative">
+      <!-- Data Table Section (Min-Height added to prevent CLS layout jumping) -->
+      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[600px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-xs sm:text-sm text-left border-collapse table-fixed min-w-[700px]">
             <thead id="tableHead" class="table-head-bg text-xs uppercase tracking-wider border-b"></thead>
-            <tbody id="rows" class="divide-y border-theme"></tbody>
+            <tbody id="rows" class="divide-y border-theme">
+              <!-- Loading skeleton state prevents layout shifts -->
+              <tr><td colspan="10" class="p-16 text-center subtext">Loading verified leads...</td></tr>
+            </tbody>
           </table>
         </div>
 
@@ -193,7 +196,7 @@
 
         <div id="empty" class="hidden p-12 text-center subtext text-xs">No businesses match your filter criteria.</div>
         
-       <!-- Pagination Bar -->
+        <!-- Pagination Bar -->
         <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-theme text-xs subtext mt-auto">
           <div id="pageInfo">Showing 0-0 of 0 leads</div>
           <div class="flex items-center gap-2">
@@ -619,7 +622,7 @@ async function handleForgotPasswordSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = err.message;
-      errBox.classList.remove('hidden');
+      errBox.classList.add('hidden');
     }
   } finally {
     if (submitBtn) {
@@ -711,7 +714,7 @@ async function handleAuthSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = err.message;
-      errBox.classList.remove('hidden');
+      errBox.classList.add('hidden');
     }
   }
 }
@@ -728,15 +731,49 @@ async function loadCloudData() {
     
     cloudNotes = {};
     cloudReminders = {};
+    let dueRemindersCount = 0;
+    const todayStr = new Date().toISOString().split('T')[0];
+
     notesSnap.forEach(doc => { 
       const d = doc.data();
       cloudNotes[doc.id] = d.note || ''; 
-      if (d.reminder) cloudReminders[doc.id] = d.reminder;
+      if (d.reminder) {
+        cloudReminders[doc.id] = d.reminder;
+        if (d.reminder === todayStr) {
+          dueRemindersCount++;
+        }
+      }
     });
+
+    // 🚀 Automated Email Reminder Trigger via Web3Forms if reminders are due today!
+    if (dueRemindersCount > 0 && !sessionStorage.getItem('reminder_sent_' + todayStr)) {
+      sessionStorage.setItem('reminder_sent_' + todayStr, 'true');
+      triggerAutomatedEmailReminder(dueRemindersCount, currentUser.email);
+    }
+
   } catch (err) {
     console.error("Error loading cloud data:", err);
   } finally {
     render();
+  }
+}
+
+// Function to send automated email reminder via Web3Forms API
+async function triggerAutomatedEmailReminder(count, userEmail) {
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: "cfc2bac6-ad84-4aff-883c-de297e879391",
+        subject: `🔔 PaFaqe.al Reminder: You have ${count} lead follow-up(s) due today!`,
+        name: "PaFaqe.al System Bot",
+        email: userEmail || "frrokuk2@gmail.com",
+        message: `Hello! This is an automated notification from your PaFaqe.al account. You have ${count} lead follow-up reminder(s) scheduled for today (${new Date().toLocaleDateString()}). Log in to your dashboard to view notes and pitch clients.`
+      })
+    });
+  } catch (e) {
+    console.error("Failed to dispatch automated email notification", e);
   }
 }
 
@@ -949,7 +986,6 @@ function updateURLParams() {
 }
 
 function restoreStateFromURL() {
-  if (!currentUser) return;
   const params = new URLSearchParams(window.location.search);
   const qEl = document.getElementById('q');
   const cityEl = document.getElementById('city');
@@ -1144,7 +1180,7 @@ function filtered(){
   const s = currentUser && sortEl ? sortEl.value : 'score';
   list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
     : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
-    : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
+    : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
     : leadScore(b) - leadScore(a));
   return list;
 }
@@ -1417,5 +1453,3 @@ const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "business
 </script>
 </body>
 </html>
-
-```
