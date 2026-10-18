@@ -13,43 +13,71 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
   body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility; }
+  
+  /* Dark Mode Palette */
+  html.dark body { background-color: #0f172a; color: #e2e8f0; }
+  html.dark .card-bg { background-color: #1e293b; border-color: #334155; }
+  html.dark .header-bg { background-color: rgba(15, 23, 42, 0.9); border-color: #334155; }
+  html.dark .input-bg { background-color: #1e293b; border-color: #475569; color: #f8fafc; }
+  html.dark .table-head-bg { background-color: #1e293b; border-color: #334155; color: #94a3b8; }
+  html.dark .row-hover:hover { background-color: #26334d; }
+  html.dark .subtext { color: #94a3b8; }
+  html.dark .border-theme { border-color: #334155; }
+  html.dark .chip-btn { background-color: #1e293b; border-color: #475569; color: #cbd5e1; }
+  html.dark .chip-btn:hover { background-color: #334155; color: #ffffff; }
+
+  /* Light Mode Palette */
+  html.light body { background-color: #f8fafc; color: #0f172a; }
+  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05); }
+  html.light .header-bg { background-color: rgba(255, 255, 255, 0.95); border-color: #e2e8f0; }
+  html.light .input-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; }
+  html.light .table-head-bg { background-color: #f1f5f9; border-color: #e2e8f0; color: #475569; }
+  html.light .row-hover:hover { background-color: #f8fafc; }
+  html.light .subtext { color: #64748b; }
+  html.light .border-theme { border-color: #e2e8f0; }
+  html.light .chip-btn { background-color: #ffffff; border-color: #cbd5e1; color: #334155; }
+  html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; }
+
+  .badge { background-color: #f59e0b; color: #0f172a; }
+  .chip { cursor: pointer; transition: all 0.15s ease; }
+  .chip.active { background-color: #f59e0b !important; color: #0f172a !important; border-color: #f59e0b !important; font-weight: 600; }
+  .row { transition: background-color 0.1s ease; }
   .leadscore { font-variant-numeric: tabular-nums; }
-  /* Stable transition container to prevent CLS layout reflows */
-  .cls-stable-container { min-height: 140px; transition: opacity 0.2s ease-in-out; }
+
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
 </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-950 flex flex-col justify-between bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between transition-colors duration-200">
 
 <div>
   <!-- Header / Navbar -->
-  <header class="border-b sticky top-0 bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-800 backdrop-blur-md z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-sm transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
       <div>
         <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight cursor-pointer" onclick="switchTab('leads')">PaFaqe<span class="text-amber-500 dark:text-amber-400">.al</span></h1>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Find Albanian local businesses with <b class="text-amber-600 dark:text-amber-400 font-semibold">no website</b></p>
+        <p class="text-xs sm:text-sm subtext">Find Albanian local businesses with <b class="text-amber-500 dark:text-amber-400 font-semibold">no website</b></p>
       </div>
       
       <!-- Nav Tabs & Actions -->
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-        <nav class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-medium">
-          <button onclick="switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition">Leads</button>
-          <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">About Us</button>
-          <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Contact Us</button>
-          <button onclick="switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Profile</button>
+        <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
+          <button onclick="switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition">Leads</button>
+          <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">About Us</button>
+          <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Contact Us</button>
+          <button onclick="switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Profile</button>
         </nav>
         
         <!-- Theme Toggle Button -->
-        <button onclick="toggleTheme()" class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-amber-500 transition cursor-pointer text-xs shadow-sm" title="Toggle Light/Dark Theme">
+        <button onclick="toggleTheme()" class="p-2 rounded-xl card-bg border subtext hover:text-amber-500 transition cursor-pointer text-xs flex items-center gap-1 shadow-sm" title="Toggle Light/Dark Theme">
           <span id="themeIcon">🌙</span>
         </button>
 
         <!-- Auth User State / Button -->
         <div id="authContainer" class="flex items-center gap-2">
-          <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">…</span>
-          <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full card-bg border text-xs font-medium">…</span>
+          <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl card-bg border text-xs font-bold text-amber-500 dark:text-amber-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
             <span>Sign In</span>
           </button>
         </div>
@@ -66,119 +94,112 @@
     <!-- TAB 1: LEADS VIEW -->
     <div id="tabLeads" class="space-y-6">
       
-      <!-- STABLE TOP SECTION WRAPPER (Prevents CLS during Auth check) -->
-      <div class="cls-stable-container">
-        <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
-        <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-          <div class="max-w-3xl space-y-3 relative z-10">
-            <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 text-xs font-semibold uppercase tracking-wider">B2B Lead Generation</span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-              Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-600 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
-            </p>
-            <div class="pt-2 flex flex-wrap items-center gap-3">
-              <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
-                <span>Get Started Free</span>
-              </button>
-              <span class="text-xs text-slate-500 dark:text-slate-400">No credit card required • Instant cloud sync</span>
-            </div>
+      <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
+      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 card-bg border shadow-lg relative overflow-hidden">
+        <div class="max-w-3xl space-y-3 relative z-10">
+          <span class="px-3 py-1 rounded-full card-bg text-amber-500 dark:text-amber-400 border border-theme text-xs font-semibold uppercase tracking-wider">B2B SaaS Lead Generation</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
+          <p class="subtext text-xs sm:text-sm leading-relaxed">
+            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
+          </p>
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
+              <span>Get Started Free</span>
+            </button>
+            <span class="text-xs subtext">No credit card required • Instant cloud sync</span>
           </div>
         </div>
-
-        <!-- Filters Section (For Logged-in Users) -->
-        <section id="filterSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
-          <div class="md:col-span-3">
-            <label for="q" class="sr-only">Search businesses</label>
-            <input id="q" name="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition">
-          </div>
-          <div class="md:col-span-2">
-            <label for="city" class="sr-only">Filter by city</label>
-            <select id="city" name="city" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
-          </div>
-          <div class="md:col-span-2">
-            <label for="cat" class="sr-only">Filter by category</label>
-            <select id="cat" name="cat" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
-          </div>
-          <div class="md:col-span-2">
-            <label for="sort" class="sr-only">Sort businesses</label>
-            <select id="sort" name="sort" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer">
-              <option value="score">Sort: Lead score</option>
-              <option value="rating">Sort: Rating (High→Low)</option>
-              <option value="reviews">Sort: Reviews</option>
-              <option value="name">Sort: Name A→Z</option>
-            </select>
-          </div>
-          <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-            <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input id="phoneOnly" name="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
-            </label>
-            <div class="flex items-center gap-2 ml-auto sm:ml-0">
-              <label for="minRating" class="text-xs text-slate-500 dark:text-slate-400">Min rating:</label>
-              <input id="minRating" name="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
-              <span id="minRatingLabel" class="w-7 text-amber-600 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
-            </div>
-          </div>
-        </section>
       </div>
 
-      <!-- Quick Filter Chips & Recommendations -->
+      <!-- Filters Section -->
+      <section id="filterSection" class="hidden card-bg rounded-2xl p-4 sm:p-5 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
+        <div class="md:col-span-3">
+          <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition">
+        </div>
+        <div class="md:col-span-2">
+          <select id="city" onchange="handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer"></select>
+        </div>
+        <div class="md:col-span-2">
+          <select id="cat" onchange="handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer"></select>
+        </div>
+        <div class="md:col-span-2">
+          <select id="sort" onchange="handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer">
+            <option value="score">Sort: Lead score</option>
+            <option value="rating">Sort: Rating (High→Low)</option>
+            <option value="reviews">Sort: Reviews</option>
+            <option value="name">Sort: Name A→Z</option>
+          </select>
+        </div>
+        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input id="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
+          </label>
+          <div class="flex items-center gap-2 ml-auto sm:ml-0">
+            <span class="text-xs subtext">Min rating:</span>
+            <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
+            <span id="minRatingLabel" class="w-7 text-amber-500 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Filter Chips & High Value Recommendations -->
       <div class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-          <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold hover:bg-amber-300 transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
+          <button onclick="exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-xs font-bold hover:bg-amber-300 transition shadow-md flex items-center gap-1.5 cursor-pointer ml-auto">
             <span id="exportBtnText">Export CSV</span>
           </button>
         </div>
 
-        <!-- Hot Niches -->
-        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-slate-200 dark:border-slate-800 pt-3">
-          <span class="text-slate-500 dark:text-slate-400 text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
-          <button onclick="quickNicheFilter('Hotel')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🏨 Hotels & Tourism</button>
-          <button onclick="quickNicheFilter('Dental')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🦷 Dentists & Clinics</button>
-          <button onclick="quickNicheFilter('Auto')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🚗 Auto & Rentals</button>
-          <button onclick="quickNicheFilter('Restaurant')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-medium">🍽️ Restaurants & Cafes</button>
+        <!-- High Profit Industry Recommendations -->
+        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-3">
+          <span class="subtext text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
+          <button onclick="quickNicheFilter('Hotel')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🏨 Hotels & Tourism</button>
+          <button onclick="quickNicheFilter('Dental')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🦷 Dentists & Clinics</button>
+          <button onclick="quickNicheFilter('Auto')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🚗 Auto & Rentals</button>
+          <button onclick="quickNicheFilter('Restaurant')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🍽️ Restaurants & Cafes</button>
         </div>
       </div>
 
-      <!-- Stats Grid (Fixed min-h to prevent CLS layout shifts) -->
+      <!-- Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">No-website leads</div></div>
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">Cities covered</div></div>
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[88px] flex flex-col justify-center"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">Avg. lead score</div></div>
+        <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">No-website leads</div></div>
+        <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Cities covered</div></div>
+        <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
       <!-- Data Table Section -->
-      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm min-h-[500px] flex flex-col justify-between relative">
+      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[500px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-xs sm:text-sm text-left border-collapse table-fixed min-w-[700px]">
-            <thead id="tableHead" class="bg-slate-50 dark:bg-slate-900/90 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800"></thead>
-            <tbody id="rows" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+            <thead id="tableHead" class="table-head-bg text-xs uppercase tracking-wider border-b"></thead>
+            <tbody id="rows" class="divide-y border-theme"></tbody>
           </table>
         </div>
 
         <!-- Freemium Gating Banner for Guests -->
-        <div id="guestGatingOverlay" class="hidden p-6 sm:p-10 text-center bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 space-y-3">
-          <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 text-lg font-bold">🔒</div>
+        <div id="guestGatingOverlay" class="hidden p-6 sm:p-10 text-center card-bg border-t border-theme space-y-3">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl card-bg border text-amber-500 dark:text-amber-400 text-lg font-bold">🔒</div>
           <h3 class="text-lg font-extrabold tracking-tight">Unlock All Verified Albanian Leads</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+          <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
             You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp pitch generators, custom CRM notes, and Excel-ready CSV exports.
           </p>
           <div class="pt-1">
-            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
+            <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
               <span>Create Free Account & Unlock All Leads</span>
             </button>
           </div>
         </div>
 
-        <div id="empty" class="hidden p-12 text-center text-slate-500 dark:text-slate-400 text-xs">No businesses match your filter criteria.</div>
+        <div id="empty" class="hidden p-12 text-center subtext text-xs">No businesses match your filter criteria.</div>
         
         <!-- Pagination Bar -->
-        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 mt-auto">
+        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-theme text-xs subtext mt-auto">
           <div id="pageInfo">Showing 0-0 of 0 leads</div>
           <div class="flex items-center gap-2">
-            <button id="prevBtn" name="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
-            <span id="pageIndicator" class="px-2 py-1 font-semibold text-amber-600 dark:text-amber-400">Page 1 of 1</span>
-            <button id="nextBtn" name="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+            <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
+            <span id="pageIndicator" class="px-2 py-1 font-semibold text-amber-500 dark:text-amber-400">Page 1 of 1</span>
+            <button id="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
           </div>
         </div>
       </section>
@@ -186,15 +207,15 @@
 
     <!-- TAB 2: ABOUT US VIEW -->
     <div id="tabAbout" class="hidden space-y-6 max-w-3xl mx-auto">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
-        <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400">About PaFaqe.al</h2>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
+        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">About PaFaqe.al</h2>
+        <p class="text-xs sm:text-sm leading-relaxed">
           <b>PaFaqe.al</b> is built specifically for web design agencies, digital marketers, and freelance developers looking to connect with local businesses across Albania that do not yet have an online presence. 
         </p>
-        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p class="text-xs sm:text-sm leading-relaxed">
           Many small businesses—ranging from cafés and retail shops to auto repair and hotels—rely solely on foot traffic or social media. PaFaqe.al aggregates open data to pinpoint these exact businesses, providing accurate contact details, categories, and lead scoring so you can pitch your web development services effectively.
         </p>
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+        <div class="pt-4 border-t border-theme text-xs subtext">
           <p>Created and maintained by <b>Kristian Frroku</b>.</p>
         </div>
       </div>
@@ -202,24 +223,24 @@
 
     <!-- TAB 3: CONTACT US VIEW -->
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm">
-        <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-600 dark:text-amber-400">frrokuk2@gmail.com</b>.</p>
+      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400 mb-2">Contact Us</h2>
+        <p class="text-xs subtext mb-5">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-500 dark:text-amber-400">frrokuk2@gmail.com</b>.</p>
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
-            <label for="contactName" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Name</label>
-            <input type="text" id="contactName" name="contactName" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
+            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Your Name</label>
+            <input type="text" id="contactName" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
           </div>
           <div>
-            <label for="contactEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Email</label>
-            <input type="email" id="contactEmail" name="contactEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
+            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Your Email</label>
+            <input type="email" id="contactEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
           </div>
           <div>
-            <label for="contactMsg" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Message</label>
-            <textarea id="contactMsg" name="contactMsg" rows="4" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
+            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Message</label>
+            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
           </div>
-          <button type="submit" id="submitBtn" name="submitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Message</button>
+          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Message</button>
         </form>
         <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
           Thank you! Your message has been sent successfully to Kristian Frroku.
@@ -229,22 +250,22 @@
 
     <!-- TAB 4: PROFILE VIEW -->
     <div id="tabProfile" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
-        <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400">User Profile</h2>
+      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">User Profile</h2>
         <div class="space-y-4">
           <div>
-            <label for="profileName" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
-            <input type="text" id="profileName" name="profileName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
+            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Full Name</label>
+            <input type="text" id="profileName" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
           </div>
           <div>
-            <label for="profileEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
-            <input type="email" id="profileEmail" name="profileEmail" disabled class="w-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-500 dark:text-slate-500 cursor-not-allowed">
+            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Address</label>
+            <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-xl px-3.5 py-2 text-xs sm:text-sm subtext cursor-not-allowed">
           </div>
-          <div id="verificationStatusContainer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div id="verificationStatusContainer" class="p-3.5 rounded-xl card-bg border border-theme flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <!-- Dynamic verification status -->
           </div>
-          <button onclick="updateProfileData()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Save Changes</button>
-          <div id="profileSuccess" class="hidden text-xs text-emerald-600 dark:text-emerald-400 font-medium text-center">Profile updated successfully!</div>
+          <button onclick="updateProfileData()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Save Changes</button>
+          <div id="profileSuccess" class="hidden text-xs text-emerald-500 font-medium text-center">Profile updated successfully!</div>
         </div>
       </div>
     </div>
@@ -253,92 +274,92 @@
 
 <!-- AUTH MODAL -->
 <div id="authModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+  <div class="card-bg border rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeAuthModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
     <div id="authTitle" class="text-lg font-extrabold mb-1">Sign In to PaFaqe.al</div>
-    <p id="authSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mb-5">Access your saved lead statuses and cloud CRM notes across devices.</p>
+    <p id="authSubtitle" class="text-xs subtext mb-5">Access your saved lead statuses and cloud CRM notes across devices.</p>
     
     <form onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
       <div id="nameFieldContainer" class="hidden">
-        <label for="authName" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
-        <input type="text" id="authName" name="authName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Kristian Frroku">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Full Name</label>
+        <input type="text" id="authName" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Kristian Frroku">
       </div>
 
       <div>
-        <label for="authEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email</label>
-        <input type="email" id="authEmail" name="authEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email</label>
+        <input type="email" id="authEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
       </div>
 
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label for="authPassword" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Password</label>
-          <button type="button" id="forgotPasswordLink" onclick="openForgotPasswordModal()" class="text-xs text-amber-600 dark:text-amber-400 hover:underline">Forgot password?</button>
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext">Password</label>
+          <button type="button" id="forgotPasswordLink" onclick="openForgotPasswordModal()" class="text-xs text-amber-500 dark:text-amber-400 hover:underline">Forgot password?</button>
         </div>
-        <input type="password" id="authPassword" name="authPassword" required minlength="6" oninput="checkPasswordStrength(this.value)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
+        <input type="password" id="authPassword" required minlength="6" oninput="checkPasswordStrength(this.value)" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
         
         <div id="passwordStrengthContainer" class="hidden mt-2 space-y-1">
           <div class="flex gap-1 h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div id="strengthBar1" class="w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all"></div>
-            <div id="strengthBar2" class="w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all"></div>
-            <div id="strengthBar3" class="w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all"></div>
+            <div id="strengthBar1" class="w-1/3 h-full bg-slate-400 transition-all"></div>
+            <div id="strengthBar2" class="w-1/3 h-full bg-slate-400 transition-all"></div>
+            <div id="strengthBar3" class="w-1/3 h-full bg-slate-400 transition-all"></div>
           </div>
-          <div id="strengthText" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Password strength: Enter password</div>
+          <div id="strengthText" class="text-[11px] subtext font-medium">Password strength: Enter password</div>
         </div>
       </div>
 
       <div id="authError" class="hidden text-xs text-rose-500 font-medium"></div>
       
-      <button type="submit" id="authSubmitBtn" name="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Sign In</button>
+      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Sign In</button>
     </form>
     
-    <div class="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">
+    <div class="mt-5 text-center text-xs subtext">
       <span id="authToggleText">Don't have an account?</span> 
-      <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-amber-600 dark:text-amber-400 font-semibold hover:underline ml-1">Sign Up</button>
+      <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-amber-500 dark:text-amber-400 font-semibold hover:underline ml-1">Sign Up</button>
     </div>
   </div>
 </div>
 
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+  <div class="card-bg border rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
     <div class="text-lg font-extrabold mb-1">Reset Password</div>
-    <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Enter your registered email address below. We will send you a secure link to reset your password.</p>
+    <p class="text-xs subtext mb-5">Enter your registered email address below. We will send you a secure link to reset your password.</p>
     
     <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3.5">
       <div>
-        <label for="forgotEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
-        <input type="email" id="forgotEmail" name="forgotEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Address</label>
+        <input type="email" id="forgotEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
       </div>
       <div id="forgotError" class="hidden text-xs text-rose-500 font-medium"></div>
-      <div id="forgotSuccess" class="hidden text-xs text-emerald-600 dark:text-emerald-400 font-medium p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/50"></div>
+      <div id="forgotSuccess" class="hidden text-xs text-emerald-500 font-medium p-3 rounded-xl card-bg border border-emerald-500/50"></div>
       
-      <button type="submit" id="forgotSubmitBtn" name="forgotSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Reset Link</button>
+      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Reset Link</button>
     </form>
   </div>
 </div>
 
-<!-- NOTES MODAL -->
+<!-- NOTES MODAL WITH FOLLOW-UP REMINDER DATE -->
 <div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closeNotesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
+  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closeNotesModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
     <div class="text-lg font-extrabold mb-1">Lead CRM Notes & Reminder</div>
-    <p id="notesBusinessSubtitle" class="text-xs text-amber-600 dark:text-amber-400 mb-4 font-semibold"></p>
+    <p id="notesBusinessSubtitle" class="text-xs text-amber-500 dark:text-amber-400 mb-4 font-semibold"></p>
     
     <div class="space-y-4">
       <div>
-        <label for="leadNoteInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Custom Notes</label>
-        <textarea id="leadNoteInput" name="leadNoteInput" rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Custom Notes</label>
+        <textarea id="leadNoteInput" rows="4" class="input-bg w-full rounded-xl p-3 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
       </div>
 
       <div>
-        <label for="leadReminderInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Follow-Up Date (Reminder)</label>
-        <input type="date" id="leadReminderInput" name="leadReminderInput" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Follow-Up Date (Reminder)</label>
+        <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
       </div>
 
       <div class="flex items-center justify-end gap-3 pt-2">
-        <button onclick="closeNotesModal()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition">Cancel</button>
-        <button onclick="saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-950 transition shadow-md">Save Note & Reminder</button>
+        <button onclick="closeNotesModal()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-amber-500 text-xs font-semibold transition">Cancel</button>
+        <button onclick="saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-900 transition shadow-md">Save Note & Reminder</button>
       </div>
     </div>
   </div>
@@ -346,16 +367,15 @@
 
 <!-- PITCH GENERATOR MODAL -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="closePitchModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold text-amber-600 dark:text-amber-400 mb-1">Albanian WhatsApp Pitch</div>
-    <p id="pitchBusinessSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium"></p>
+  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+    <button onclick="closePitchModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
+    <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Albanian WhatsApp Pitch</div>
+    <p id="pitchBusinessSubtitle" class="text-xs subtext mb-4 font-medium"></p>
     
     <div class="space-y-4">
-      <label for="pitchTextOutput" class="sr-only">WhatsApp Pitch Output</label>
-      <textarea id="pitchTextOutput" name="pitchTextOutput" rows="6" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-mono select-all outline-none text-slate-800 dark:text-slate-200"></textarea>
+      <textarea id="pitchTextOutput" rows="6" readonly class="w-full card-bg border rounded-xl p-3 text-xs font-mono select-all outline-none"></textarea>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Pitch Text</button>
+        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Pitch Text</button>
         <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
           <span>Send via WhatsApp ↗</span>
         </a>
@@ -365,25 +385,25 @@
 </div>
 
 <!-- COOKIE CONSENT BANNER -->
-<div id="cookieBanner" class="hidden fixed bottom-4 left-4 right-4 sm:left-6 sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-3 text-xs text-slate-600 dark:text-slate-300">
+<div id="cookieBanner" class="hidden fixed bottom-4 left-4 right-4 sm:left-6 sm:max-w-md card-bg border p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-3 text-xs subtext">
   <div class="flex items-start justify-between gap-2">
-    <p class="leading-relaxed">Ne përdorim cookies dhe ruajtje lokale për të përmirësuar përvojën tuaj dhe për të menaxhuar sesionin në <b class="text-amber-600 dark:text-amber-400">PaFaqe.al</b>.</p>
-    <button onclick="acceptCookies()" class="text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-sm cursor-pointer">✕</button>
+    <p class="leading-relaxed">Ne përdorim cookies dhe ruajtje lokale për të përmirësuar përvojën tuaj dhe për të menaxhuar sesionin në <b class="text-amber-500 dark:text-amber-400">PaFaqe.al</b>.</p>
+    <button onclick="acceptCookies()" class="subtext hover:text-amber-500 font-bold text-sm cursor-pointer">✕</button>
   </div>
   <div class="flex items-center gap-2 justify-end">
-    <button onclick="acceptCookies()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold transition cursor-pointer">Prano të gjitha</button>
+    <button onclick="acceptCookies()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold transition cursor-pointer">Prano të gjitha</button>
   </div>
 </div>
 
 <!-- Footer -->
-<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 text-xs subtext border-t border-theme mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
-    <p class="font-semibold text-slate-700 dark:text-slate-300">PaFaqe.al — Albanian Web Design Leads</p>
-    <p class="text-[11px] mt-0.5">© 2026 Developed by <b class="text-amber-600 dark:text-amber-400">Kristian Frroku</b></p>
+    <p class="font-semibold">PaFaqe.al — Albanian Web Design Leads</p>
+    <p class="text-[11px] subtext mt-0.5">© 2026 Developed by <b class="text-amber-500 dark:text-amber-400">Kristian Frroku</b></p>
   </div>
   <div class="flex items-center gap-4">
-    <span>📞 <a href="tel:0684073212" class="text-amber-600 dark:text-amber-400 hover:underline">0684073212</a></span>
-    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-amber-600 dark:text-amber-400 hover:underline">frrokuk2@gmail.com</a></span>
+    <span>📞 <a href="tel:0684073212" class="text-amber-500 dark:text-amber-400 hover:underline">0684073212</a></span>
+    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-amber-500 dark:text-amber-400 hover:underline">frrokuk2@gmail.com</a></span>
   </div>
 </footer>
 
@@ -535,7 +555,7 @@ function checkPasswordStrength(password) {
 
   if (password.length === 0) {
     text.textContent = "Password strength: Enter password";
-    text.className = "text-[11px] text-slate-500 dark:text-slate-400 font-medium";
+    text.className = "text-[11px] subtext font-medium";
     return;
   }
 
@@ -614,11 +634,11 @@ function renderVerificationStatus() {
   if (!container || !currentUser) return;
 
   if (currentUser.emailVerified) {
-    container.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-medium">Email Verification: Verified ✓</span>`;
+    container.innerHTML = `<span class="text-emerald-500 font-medium">Email Verification: Verified ✓</span>`;
   } else {
     container.innerHTML = `
-      <span class="text-amber-600 dark:text-amber-400 font-medium">Email Verification: Not Verified</span>
-      <button onclick="resendVerificationEmail()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-amber-600 transition">Resend Verification Email</button>
+      <span class="text-amber-500 font-medium">Email Verification: Not Verified</span>
+      <button onclick="resendVerificationEmail()" class="px-3 py-1.5 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-semibold transition">Resend Verification Email</button>
     `;
   }
 }
@@ -691,7 +711,7 @@ async function handleAuthSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = err.message;
-      errBox.classList.add('hidden');
+      errBox.classList.remove('hidden');
     }
   }
 }
@@ -969,27 +989,27 @@ function switchTab(tab) {
     if (!el) return;
     if (el.id === 'navProfileBtn') {
       if (currentUser) {
-        el.className = 'hidden sm:inline-block px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+        el.className = 'hidden sm:inline-block px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition';
       } else {
         el.className = 'hidden';
       }
     } else {
-      el.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+      el.className = 'px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition';
     }
   });
 
   if (tab === 'leads') {
     document.getElementById('tabLeads').classList.remove('hidden');
-    document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+    document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   } else if (tab === 'about') {
     document.getElementById('tabAbout').classList.remove('hidden');
-    document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+    document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   } else if (tab === 'contact') {
     document.getElementById('tabContact').classList.remove('hidden');
-    document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+    document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   } else if (tab === 'profile') {
     document.getElementById('tabProfile').classList.remove('hidden');
-    document.getElementById('navProfileBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-950 font-bold transition";
+    document.getElementById('navProfileBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
   }
 }
 
@@ -1234,7 +1254,7 @@ function render(){
   const thead = document.getElementById('tableHead');
   thead.innerHTML = `
     <tr>
-      ${currentUser ? '<th class="w-[5%] px-3 py-3 text-center"><input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox" aria-label="Select all businesses" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"></th>' : ''}
+      ${currentUser ? '<th class="w-[5%] px-3 py-3 text-center"><input type="checkbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"></th>' : ''}
       <th class="w-[24%] px-3 sm:px-4 py-3 font-semibold">Business</th>
       <th class="w-[14%] px-3 sm:px-4 py-3 font-semibold">Category</th>
       <th class="w-[11%] px-3 sm:px-4 py-3 font-semibold">City</th>
@@ -1280,25 +1300,23 @@ function render(){
     const leadNote = getLeadNote(leadKey);
     const leadRem = getLeadReminder(leadKey);
     const isSelected = selectedLeads.has(leadKey);
-    const safeKey = escapeHtml(leadKey);
-    const safeName = escapeHtml(b.name);
 
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-200 dark:border-slate-800' + (noWeb ? '' : ' opacity-40');
+    tr.className = 'row row-hover transition-colors border-b border-theme' + (noWeb ? '' : ' opacity-40');
     tr.innerHTML = `
       ${currentUser ? `
         <td class="px-3 py-2.5 text-center">
-          <input type="checkbox" id="select-${safeKey}" name="leadCheckbox" aria-label="Select ${safeName}" data-key="${safeKey}" onchange="toggleSelectLead('${safeKey}', this)" class="lead-select-checkbox w-4 h-4 rounded accent-amber-400 cursor-pointer" ${isSelected ? 'checked' : ''}>
+          <input type="checkbox" data-key="${escapeHtml(leadKey)}" onchange="toggleSelectLead('${escapeHtml(leadKey)}', this)" class="lead-select-checkbox w-4 h-4 rounded accent-amber-400 cursor-pointer" ${isSelected ? 'checked' : ''}>
         </td>
       ` : ''}
       <td class="px-3 sm:px-4 py-2.5 truncate">
         <div class="font-semibold truncate flex items-center gap-1.5 ${noWeb ? '' : 'line-through opacity-60'}">
-          <span class="truncate">${safeName}</span>
+          <span class="truncate">${escapeHtml(b.name)}</span>
           ${leadRem ? `<span title="Follow-up Reminder: ${escapeHtml(leadRem)}" class="text-xs shrink-0 cursor-help">🔔</span>` : ''}
         </div>
-        <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">${escapeHtml(b.address || '')}</div>
+        <div class="text-xs subtext mt-0.5 truncate">${escapeHtml(b.address || '')}</div>
       </td>
-      <td class="px-3 sm:px-4 py-2.5 text-slate-500 dark:text-slate-400 truncate">${escapeHtml(b.category || '—')}</td>
+      <td class="px-3 sm:px-4 py-2.5 subtext truncate">${escapeHtml(b.category || '—')}</td>
       <td class="px-3 sm:px-4 py-2.5 truncate">${escapeHtml(b.city || '—')}</td>
       
       <td class="px-3 sm:px-4 py-2.5 truncate">
@@ -1306,12 +1324,12 @@ function render(){
           <div class="flex items-center gap-1.5">
             <a href="tel:${escapeHtml(b.phone)}" class="text-amber-600 dark:text-amber-400 font-medium hover:underline truncate">${escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 hover:bg-emerald-200 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-700/60 px-1.5 py-0.5 rounded transition shrink-0">WA ↗</a>` : ''}
           </div>
-        ` : '<span class="text-slate-400">—</span>'}
+        ` : '<span class="subtext">—</span>'}
       </td>
 
       ${currentUser ? `
         <td class="px-3 sm:px-4 py-2.5 truncate">
-          <select id="status-${safeKey}" name="leadStatus" aria-label="Status for ${safeName}" onchange="setLeadStatus('${safeKey}', this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-amber-400 cursor-pointer w-full text-slate-900 dark:text-slate-100">
+          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="input-bg rounded-lg px-2 py-1 text-xs border focus:ring-1 focus:ring-amber-400 cursor-pointer w-full">
             <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
             <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
             <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
@@ -1320,20 +1338,20 @@ function render(){
         </td>
       ` : ''}
 
-      <td class="px-3 sm:px-4 py-2.5 truncate">${b.rating ? `★ ${b.rating} <span class="text-slate-400 text-xs">(${b.reviews || 0})</span>` : '<span class="text-slate-400">—</span>'}</td>
-      <td class="px-3 sm:px-4 py-2.5 truncate">${noWeb ? '<span class="bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-600 dark:text-sky-400 hover:underline text-xs font-medium">has site ↗</a>`}</td>
-      <td class="px-3 sm:px-4 py-2.5 text-right leadscore font-bold truncate ${sc >= 80 ? 'text-emerald-600 dark:text-emerald-400' : sc >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500'}">${sc}</td>
+      <td class="px-3 sm:px-4 py-2.5 truncate">${b.rating ? `★ ${b.rating} <span class="subtext text-xs">(${b.reviews || 0})</span>` : '<span class="subtext">—</span>'}</td>
+      <td class="px-3 sm:px-4 py-2.5 truncate">${noWeb ? '<span class="badge px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap">NO WEBSITE ✓</span>' : `<a href="${escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-500 hover:underline text-xs font-medium">has site ↗</a>`}</td>
+      <td class="px-3 sm:px-4 py-2.5 text-right leadscore font-bold truncate ${sc >= 80 ? 'text-emerald-500 dark:text-emerald-400' : sc >= 60 ? 'text-amber-500 dark:text-amber-400' : 'subtext'}">${sc}</td>
       
       ${currentUser ? `
         <td class="px-3 sm:px-4 py-2.5 text-center truncate">
           <div class="flex items-center justify-center gap-1">
-            <button onclick="openNotesModal('${safeKey}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium ${leadNote || leadRem ? 'text-amber-600 dark:text-amber-400 border-amber-400' : 'text-slate-600 dark:text-slate-300'} hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="View/Edit Notes & Reminder">
+            <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-medium ${leadNote || leadRem ? 'text-amber-500 dark:text-amber-400 border-amber-500/50' : ''} transition" title="View/Edit Notes & Reminder">
               ${leadNote || leadRem ? 'Note*' : 'Note'}
             </button>
-            <button onclick="openPitchModal('${safeKey}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
+            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
               Pitch
             </button>
-            <button onclick="copyLeadInfo('${safeKey}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium transition" title="Copy summary">
+            <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-medium transition" title="Copy summary">
               Copy
             </button>
           </div>
@@ -1382,12 +1400,10 @@ function init(){
   ].forEach(([label, action], i) => {
     const b = document.createElement('button');
     b.textContent = label; 
-    b.className = 'px-3.5 py-1.5 rounded-xl border text-xs font-medium shadow-sm transition ' + (i === 0 ? ' bg-amber-400 text-slate-950 border-amber-400 font-semibold active' : ' bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800');
+    b.className = 'chip chip-btn px-3.5 py-1.5 rounded-full border text-xs font-medium shadow-sm' + (i === 0 ? ' active' : '');
     b.onclick = () => { 
-      [...chips.children].forEach(c => {
-        c.className = 'px-3.5 py-1.5 rounded-xl border text-xs font-medium shadow-sm transition bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
-      }); 
-      b.className = 'px-3.5 py-1.5 rounded-xl border text-xs font-medium shadow-sm transition bg-amber-400 text-slate-950 border-amber-400 font-semibold active'; 
+      [...chips.children].forEach(c => c.classList.remove('active')); 
+      b.classList.add('active'); 
       action();
       handleFilterInput(); 
     };
