@@ -88,16 +88,20 @@
         <!-- Filters Section (For Logged-in Users) -->
         <section id="filterSection" class="hidden bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
           <div class="md:col-span-3">
-            <input id="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition">
+            <label for="q" class="sr-only">Search businesses</label>
+            <input id="q" name="q" oninput="handleFilterInput()" placeholder="Search name, street..." class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-100 placeholder-slate-400 transition">
           </div>
           <div class="md:col-span-2">
-            <select id="city" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
+            <label for="city" class="sr-only">Filter by city</label>
+            <select id="city" name="city" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
           </div>
           <div class="md:col-span-2">
-            <select id="cat" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
+            <label for="cat" class="sr-only">Filter by category</label>
+            <select id="cat" name="cat" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer"></select>
           </div>
           <div class="md:col-span-2">
-            <select id="sort" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer">
+            <label for="sort" class="sr-only">Sort businesses</label>
+            <select id="sort" name="sort" onchange="handleFilterInput()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 text-slate-900 dark:text-slate-200 transition cursor-pointer">
               <option value="score">Sort: Lead score</option>
               <option value="rating">Sort: Rating (High→Low)</option>
               <option value="reviews">Sort: Reviews</option>
@@ -106,11 +110,11 @@
           </div>
           <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
             <label class="flex items-center gap-2 cursor-pointer select-none">
-              <input id="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
+              <input id="phoneOnly" name="phoneOnly" type="checkbox" onchange="handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
             </label>
             <div class="flex items-center gap-2 ml-auto sm:ml-0">
-              <span class="text-xs text-slate-500 dark:text-slate-400">Min rating:</span>
-              <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
+              <label for="minRating" class="text-xs text-slate-500 dark:text-slate-400">Min rating:</label>
+              <input id="minRating" name="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
               <span id="minRatingLabel" class="w-7 text-amber-600 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
             </div>
           </div>
@@ -172,9 +176,9 @@
         <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 mt-auto">
           <div id="pageInfo">Showing 0-0 of 0 leads</div>
           <div class="flex items-center gap-2">
-            <button id="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
+            <button id="prevBtn" name="prevBtn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
             <span id="pageIndicator" class="px-2 py-1 font-semibold text-amber-600 dark:text-amber-400">Page 1 of 1</span>
-            <button id="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+            <button id="nextBtn" name="nextBtn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
           </div>
         </div>
       </section>
@@ -204,18 +208,18 @@
         
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Name</label>
-            <input type="text" id="contactName" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
+            <label for="contactName" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Name</label>
+            <input type="text" id="contactName" name="contactName" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Email</label>
-            <input type="email" id="contactEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
+            <label for="contactEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Your Email</label>
+            <input type="email" id="contactEmail" name="contactEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Message</label>
-            <textarea id="contactMsg" rows="4" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
+            <label for="contactMsg" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Message</label>
+            <textarea id="contactMsg" name="contactMsg" rows="4" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
           </div>
-          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Message</button>
+          <button type="submit" id="submitBtn" name="submitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Message</button>
         </form>
         <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
           Thank you! Your message has been sent successfully to Kristian Frroku.
@@ -229,12 +233,12 @@
         <h2 class="text-xl font-extrabold text-amber-600 dark:text-amber-400">User Profile</h2>
         <div class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
-            <input type="text" id="profileName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
+            <label for="profileName" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
+            <input type="text" id="profileName" name="profileName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
-            <input type="email" id="profileEmail" disabled class="w-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-500 dark:text-slate-500 cursor-not-allowed">
+            <label for="profileEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
+            <input type="email" id="profileEmail" name="profileEmail" disabled class="w-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-500 dark:text-slate-500 cursor-not-allowed">
           </div>
           <div id="verificationStatusContainer" class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <!-- Dynamic verification status -->
@@ -256,21 +260,21 @@
     
     <form onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
       <div id="nameFieldContainer" class="hidden">
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
-        <input type="text" id="authName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Kristian Frroku">
+        <label for="authName" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
+        <input type="text" id="authName" name="authName" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Kristian Frroku">
       </div>
 
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email</label>
-        <input type="email" id="authEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+        <label for="authEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email</label>
+        <input type="email" id="authEmail" name="authEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
       </div>
 
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Password</label>
+          <label for="authPassword" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Password</label>
           <button type="button" id="forgotPasswordLink" onclick="openForgotPasswordModal()" class="text-xs text-amber-600 dark:text-amber-400 hover:underline">Forgot password?</button>
         </div>
-        <input type="password" id="authPassword" required minlength="6" oninput="checkPasswordStrength(this.value)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
+        <input type="password" id="authPassword" name="authPassword" required minlength="6" oninput="checkPasswordStrength(this.value)" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
         
         <div id="passwordStrengthContainer" class="hidden mt-2 space-y-1">
           <div class="flex gap-1 h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -284,7 +288,7 @@
 
       <div id="authError" class="hidden text-xs text-rose-500 font-medium"></div>
       
-      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Sign In</button>
+      <button type="submit" id="authSubmitBtn" name="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Sign In</button>
     </form>
     
     <div class="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -303,13 +307,13 @@
     
     <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3.5">
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
-        <input type="email" id="forgotEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+        <label for="forgotEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
+        <input type="email" id="forgotEmail" name="forgotEmail" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
       </div>
       <div id="forgotError" class="hidden text-xs text-rose-500 font-medium"></div>
       <div id="forgotSuccess" class="hidden text-xs text-emerald-600 dark:text-emerald-400 font-medium p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/50"></div>
       
-      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Reset Link</button>
+      <button type="submit" id="forgotSubmitBtn" name="forgotSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Reset Link</button>
     </form>
   </div>
 </div>
@@ -323,13 +327,13 @@
     
     <div class="space-y-4">
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Custom Notes</label>
-        <textarea id="leadNoteInput" rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+        <label for="leadNoteInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Custom Notes</label>
+        <textarea id="leadNoteInput" name="leadNoteInput" rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Follow-Up Date (Reminder)</label>
-        <input type="date" id="leadReminderInput" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
+        <label for="leadReminderInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Follow-Up Date (Reminder)</label>
+        <input type="date" id="leadReminderInput" name="leadReminderInput" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs sm:text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-400">
       </div>
 
       <div class="flex items-center justify-end gap-3 pt-2">
@@ -348,7 +352,8 @@
     <p id="pitchBusinessSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium"></p>
     
     <div class="space-y-4">
-      <textarea id="pitchTextOutput" rows="6" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-mono select-all outline-none text-slate-800 dark:text-slate-200"></textarea>
+      <label for="pitchTextOutput" class="sr-only">WhatsApp Pitch Output</label>
+      <textarea id="pitchTextOutput" name="pitchTextOutput" rows="6" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-mono select-all outline-none text-slate-800 dark:text-slate-200"></textarea>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
         <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Pitch Text</button>
         <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
@@ -686,7 +691,7 @@ async function handleAuthSubmit(e) {
   } catch (err) {
     if (errBox) {
       errBox.textContent = err.message;
-      errBox.classList.remove('hidden');
+      errBox.classList.add('hidden');
     }
   }
 }
@@ -1229,7 +1234,7 @@ function render(){
   const thead = document.getElementById('tableHead');
   thead.innerHTML = `
     <tr>
-      ${currentUser ? '<th class="w-[5%] px-3 py-3 text-center"><input type="checkbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"></th>' : ''}
+      ${currentUser ? '<th class="w-[5%] px-3 py-3 text-center"><input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox" aria-label="Select all businesses" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"></th>' : ''}
       <th class="w-[24%] px-3 sm:px-4 py-3 font-semibold">Business</th>
       <th class="w-[14%] px-3 sm:px-4 py-3 font-semibold">Category</th>
       <th class="w-[11%] px-3 sm:px-4 py-3 font-semibold">City</th>
@@ -1275,18 +1280,20 @@ function render(){
     const leadNote = getLeadNote(leadKey);
     const leadRem = getLeadReminder(leadKey);
     const isSelected = selectedLeads.has(leadKey);
+    const safeKey = escapeHtml(leadKey);
+    const safeName = escapeHtml(b.name);
 
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-200 dark:border-slate-800' + (noWeb ? '' : ' opacity-40');
     tr.innerHTML = `
       ${currentUser ? `
         <td class="px-3 py-2.5 text-center">
-          <input type="checkbox" data-key="${escapeHtml(leadKey)}" onchange="toggleSelectLead('${escapeHtml(leadKey)}', this)" class="lead-select-checkbox w-4 h-4 rounded accent-amber-400 cursor-pointer" ${isSelected ? 'checked' : ''}>
+          <input type="checkbox" id="select-${safeKey}" name="leadCheckbox" aria-label="Select ${safeName}" data-key="${safeKey}" onchange="toggleSelectLead('${safeKey}', this)" class="lead-select-checkbox w-4 h-4 rounded accent-amber-400 cursor-pointer" ${isSelected ? 'checked' : ''}>
         </td>
       ` : ''}
       <td class="px-3 sm:px-4 py-2.5 truncate">
         <div class="font-semibold truncate flex items-center gap-1.5 ${noWeb ? '' : 'line-through opacity-60'}">
-          <span class="truncate">${escapeHtml(b.name)}</span>
+          <span class="truncate">${safeName}</span>
           ${leadRem ? `<span title="Follow-up Reminder: ${escapeHtml(leadRem)}" class="text-xs shrink-0 cursor-help">🔔</span>` : ''}
         </div>
         <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">${escapeHtml(b.address || '')}</div>
@@ -1304,7 +1311,7 @@ function render(){
 
       ${currentUser ? `
         <td class="px-3 sm:px-4 py-2.5 truncate">
-          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-amber-400 cursor-pointer w-full text-slate-900 dark:text-slate-100">
+          <select id="status-${safeKey}" name="leadStatus" aria-label="Status for ${safeName}" onchange="setLeadStatus('${safeKey}', this.value)" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-amber-400 cursor-pointer w-full text-slate-900 dark:text-slate-100">
             <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
             <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
             <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
@@ -1320,13 +1327,13 @@ function render(){
       ${currentUser ? `
         <td class="px-3 sm:px-4 py-2.5 text-center truncate">
           <div class="flex items-center justify-center gap-1">
-            <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium ${leadNote || leadRem ? 'text-amber-600 dark:text-amber-400 border-amber-400' : 'text-slate-600 dark:text-slate-300'} hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="View/Edit Notes & Reminder">
+            <button onclick="openNotesModal('${safeKey}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium ${leadNote || leadRem ? 'text-amber-600 dark:text-amber-400 border-amber-400' : 'text-slate-600 dark:text-slate-300'} hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="View/Edit Notes & Reminder">
               ${leadNote || leadRem ? 'Note*' : 'Note'}
             </button>
-            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
+            <button onclick="openPitchModal('${safeKey}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
               Pitch
             </button>
-            <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium transition" title="Copy summary">
+            <button onclick="copyLeadInfo('${safeKey}')" class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium transition" title="Copy summary">
               Copy
             </button>
           </div>
