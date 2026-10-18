@@ -411,7 +411,6 @@
     <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-amber-500 dark:text-amber-400 hover:underline">frrokuk2@gmail.com</a></span>
   </div>
 </footer>
-
 <script>
 // ==========================================
 // 🔑 FIREBASE CONFIGURATION
@@ -954,7 +953,7 @@ function updateURLParams() {
 }
 
 function restoreStateFromURL() {
-  if (!currentUser) return;
+  // Removed `if (!currentUser) return;` so URL parameters restore correctly on page load
   const params = new URLSearchParams(window.location.search);
   const qEl = document.getElementById('q');
   const cityEl = document.getElementById('city');
