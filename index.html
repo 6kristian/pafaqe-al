@@ -545,14 +545,13 @@ auth.onAuthStateChanged(async (user) => {
     if (btn) {
       btn.innerHTML = `
         <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
-          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-lg border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
-          <span class="hover:underline">${escapeHtml(displayName)}</span>
+          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+          <span class="hover:underline font-semibold text-xs whitespace-nowrap">${escapeHtml(displayName)}</span>
         </div>
-        <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
+        <span class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
       `;
-      btn.className = "px-2 py-1 rounded-xl card-bg border text-xs font-bold text-amber-500 dark:text-amber-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm";
+      btn.className = "px-2.5 py-1.5 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
     }
-
     if (hero) hero.classList.add('hidden');
     if (filterSec) filterSec.classList.remove('hidden');
     if (navProfileBtn) navProfileBtn.classList.remove('hidden');
@@ -761,13 +760,12 @@ async function updateProfileData() {
     const avatarUrl = getPixelAvatarUrl(currentUser);
     if (btn) {
       btn.innerHTML = `
-        <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('profile')">
-          <img src="${avatarUrl}" alt="Avatar" class="w-7 h-7 rounded-lg border border-amber-500/40 bg-slate-800 object-cover shadow-sm shrink-0">
-          <span class="hover:underline font-semibold text-xs whitespace-nowrap">${escapeHtml(displayName)}</span>
+        <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
+          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+          <span class="hover:underline font-semibold text-xs whitespace-nowrap">${escapeHtml(newName || emailPrefix)}</span>
         </div>
-        <button onclick="event.stopPropagation(); auth.signOut()" class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium">[Sign Out]</button>
+        <span class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
       `;
-      btn.className = "px-2.5 py-1.5 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
     }
 
     if (succBox) {
