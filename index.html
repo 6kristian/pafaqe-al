@@ -64,6 +64,7 @@
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
         <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
           <button onclick="switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition">Leads</button>
+          <button onclick="switchTab('kanban')" id="navKanbanBtn" class="hidden px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Kanban Pipeline</button>
           <button onclick="switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">About Us</button>
           <button onclick="switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Contact Us</button>
           <button onclick="switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Profile</button>
@@ -102,7 +103,7 @@
           <span class="px-3 py-1 rounded-full card-bg text-amber-500 dark:text-amber-400 border border-theme text-xs font-semibold uppercase tracking-wider">B2B SaaS Lead Generation</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Close More Web Design Clients Across Albania</h2>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp outreach tools.
+            Discover verified local businesses in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct phone numbers, lead scoring, and instant WhatsApp & Email outreach tools.
           </p>
           <div class="pt-2 flex flex-wrap items-center gap-3">
             <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
@@ -156,10 +157,10 @@
         <!-- High Profit Industry Recommendations -->
         <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-3">
           <span class="subtext text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
-          <button onclick="quickNicheFilter('Hotel')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🏨 Hotels & Tourism</button>
-          <button onclick="quickNicheFilter('Dental')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🦷 Dentists & Clinics</button>
-          <button onclick="quickNicheFilter('Auto')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🚗 Auto & Rentals</button>
-          <button onclick="quickNicheFilter('Restaurant')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">🍽️ Restaurants & Cafes</button>
+          <button onclick="quickNicheFilter('Hotel')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Hotels & Tourism</button>
+          <button onclick="quickNicheFilter('Dental')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Dentists & Clinics</button>
+          <button onclick="quickNicheFilter('Auto')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Auto & Rentals</button>
+          <button onclick="quickNicheFilter('Restaurant')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Restaurants & Cafes</button>
         </div>
       </div>
 
@@ -186,7 +187,7 @@
           <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl card-bg border text-amber-500 dark:text-amber-400 text-lg font-bold">🔒</div>
           <h3 class="text-lg font-extrabold tracking-tight">Unlock All Verified Albanian Leads</h3>
           <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
-            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp pitch generators, custom CRM notes, and Excel-ready CSV exports.
+            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp & Email pitch generators, custom CRM notes, and Excel-ready CSV exports.
           </p>
           <div class="pt-1">
             <button onclick="openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
@@ -207,6 +208,58 @@
           </div>
         </div>
       </section>
+    </div>
+
+    <!-- TAB: KANBAN PIPELINE VIEW -->
+    <div id="tabKanban" class="hidden space-y-6">
+      <div class="card-bg border rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Sales Pipeline Kanban</h2>
+          <p class="text-xs subtext mt-0.5">Manage your leads visually across stages. Drag and drop lead cards between columns to update their status.</p>
+        </div>
+        <div class="text-xs subtext font-medium">
+          Drag & Drop enabled
+        </div>
+      </div>
+
+      <!-- Kanban Columns Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+        <!-- Column: New -->
+        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between border-b border-theme pb-2">
+            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">New Leads</span>
+            <span id="kanbanCountNew" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+          </div>
+          <div id="kanbanColNew" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'new')"></div>
+        </div>
+
+        <!-- Column: Contacted -->
+        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between border-b border-theme pb-2">
+            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Contacted</span>
+            <span id="kanbanCountContacted" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+          </div>
+          <div id="kanbanColContacted" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'contacted')"></div>
+        </div>
+
+        <!-- Column: Interested -->
+        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between border-b border-theme pb-2">
+            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Interested</span>
+            <span id="kanbanCountInterested" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+          </div>
+          <div id="kanbanColInterested" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'interested')"></div>
+        </div>
+
+        <!-- Column: Closed -->
+        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+          <div class="flex items-center justify-between border-b border-theme pb-2">
+            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Closed / Won</span>
+            <span id="kanbanCountClosed" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+          </div>
+          <div id="kanbanColClosed" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'closed')"></div>
+        </div>
+      </div>
     </div>
 
     <!-- TAB 2: ABOUT US VIEW -->
@@ -234,7 +287,7 @@
         <div class="card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2" style="flex: 1 1 300px;">
           <h3 class="font-bold text-base text-amber-500 dark:text-amber-400">The Solution</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            We aggregate open market data into a structured sales pipeline with direct contact info, direct WhatsApp outreach scripts, and local CRM tools to close web design clients effortlessly.
+            We aggregate open market data into a structured sales pipeline with direct contact info, direct WhatsApp & Email outreach scripts, and local CRM tools to close web design clients effortlessly.
           </p>
         </div>
 
@@ -281,24 +334,58 @@
       </div>
     </div>
 
-    <!-- TAB 4: PROFILE VIEW -->
-    <div id="tabProfile" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
-        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">User Profile</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Full Name</label>
-            <input type="text" id="profileName" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+    <!-- TAB 4: PROFILE & ANALYTICS VIEW -->
+    <div id="tabProfile" class="hidden space-y-6 max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Profile Settings Card -->
+        <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-5">
+          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">User Profile</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Full Name</label>
+              <input type="text" id="profileName" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Address</label>
+              <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-xl px-3.5 py-2 text-xs sm:text-sm subtext cursor-not-allowed">
+            </div>
+            <div id="verificationStatusContainer" class="p-3.5 rounded-xl card-bg border border-theme flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <!-- Dynamic verification status -->
+            </div>
+            <button onclick="updateProfileData()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Save Changes</button>
+            <div id="profileSuccess" class="hidden text-xs text-emerald-500 font-medium text-center">Profile updated successfully!</div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Address</label>
-            <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-xl px-3.5 py-2 text-xs sm:text-sm subtext cursor-not-allowed">
+        </div>
+
+        <!-- Outreach Performance & Pipeline Analytics Card -->
+        <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-5">
+          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Outreach Analytics</h2>
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">Total Tracked Leads:</span>
+              <span id="analyticsTotalLeads" class="font-bold text-amber-500 dark:text-amber-400 text-sm">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">New Stage:</span>
+              <span id="analyticsNewCount" class="font-bold text-sm">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">Contacted Stage:</span>
+              <span id="analyticsContactedCount" class="font-bold text-sm">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">Interested Stage:</span>
+              <span id="analyticsInterestedCount" class="font-bold text-sm text-amber-500">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">Closed / Won Stage:</span>
+              <span id="analyticsClosedCount" class="font-bold text-sm text-emerald-500">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">Follow-up Reminders Set:</span>
+              <span id="analyticsRemindersCount" class="font-bold text-sm">0</span>
+            </div>
           </div>
-          <div id="verificationStatusContainer" class="p-3.5 rounded-xl card-bg border border-theme flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-            <!-- Dynamic verification status -->
-          </div>
-          <button onclick="updateProfileData()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Save Changes</button>
-          <div id="profileSuccess" class="hidden text-xs text-emerald-500 font-medium text-center">Profile updated successfully!</div>
         </div>
       </div>
     </div>
@@ -398,22 +485,48 @@
   </div>
 </div>
 
-<!-- PITCH GENERATOR MODAL -->
+<!-- MULTI-CHANNEL PITCH GENERATOR MODAL -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
     <button onclick="closePitchModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Albanian WhatsApp Pitch</div>
+    <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Outreach Pitch Generator</div>
     <p id="pitchBusinessSubtitle" class="text-xs subtext mb-4 font-medium"></p>
     
-    <div class="space-y-4">
-      <textarea id="pitchTextOutput" rows="6" readonly class="w-full card-bg border rounded-xl p-3 text-xs font-mono select-all outline-none"></textarea>
+    <!-- Channel Tabs -->
+    <div class="flex items-center gap-2 mb-4 border-b border-theme pb-3">
+      <button onclick="switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold text-xs transition">WhatsApp Pitch</button>
+      <button onclick="switchPitchChannel('email')" id="pitchTabEmail" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 font-medium text-xs transition">Email Pitch</button>
+    </div>
+
+    <!-- WhatsApp Panel -->
+    <div id="pitchPanelWa" class="space-y-4">
+      <textarea id="pitchTextOutput" rows="5" readonly class="w-full card-bg border rounded-xl p-3 text-xs font-mono select-all outline-none"></textarea>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <button onclick="copyPitchToClipboard()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Pitch Text</button>
-        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
+        <button onclick="copyPitchToClipboard('whatsapp')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy WhatsApp Text</button>
+        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
           <span>Send via WhatsApp ↗</span>
         </a>
       </div>
     </div>
+
+    <!-- Email Panel -->
+    <div id="pitchPanelEmail" class="hidden space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Subject</label>
+        <input type="text" id="emailSubjectOutput" readonly class="input-bg w-full rounded-xl p-2.5 text-xs font-mono select-all outline-none border">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Body</label>
+        <textarea id="emailTextOutput" rows="5" readonly class="w-full card-bg border rounded-xl p-3 text-xs font-mono select-all outline-none"></textarea>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button onclick="copyPitchToClipboard('email')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Email Text</button>
+        <a id="emailSendBtn" href="#" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
+          <span>Open Email Client ↗</span>
+        </a>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -467,6 +580,7 @@ let cloudNotes = {};
 let cloudReminders = {};
 let activeLeadKeyForNotes = null;
 let selectedLeads = new Set();
+let currentPitchChannel = 'whatsapp';
 
 // 8-Bit Pixel Art Avatar Generator Helper
 function getPixelAvatarUrl(user) {
@@ -504,6 +618,7 @@ auth.onAuthStateChanged(async (user) => {
   const hero = document.getElementById('guestHero');
   const filterSec = document.getElementById('filterSection');
   const navProfileBtn = document.getElementById('navProfileBtn');
+  const navKanbanBtn = document.getElementById('navKanbanBtn');
   const dataSourceBadge = document.getElementById('dataSource');
   
   if (user) {
@@ -555,6 +670,7 @@ auth.onAuthStateChanged(async (user) => {
     if (hero) hero.classList.add('hidden');
     if (filterSec) filterSec.classList.remove('hidden');
     if (navProfileBtn) navProfileBtn.classList.remove('hidden');
+    if (navKanbanBtn) navKanbanBtn.classList.remove('hidden');
     
     const pName = document.getElementById('profileName');
     const pEmail = document.getElementById('profileEmail');
@@ -573,9 +689,11 @@ auth.onAuthStateChanged(async (user) => {
     if (hero) hero.classList.remove('hidden');
     if (filterSec) filterSec.classList.add('hidden');
     if (navProfileBtn) navProfileBtn.classList.add('hidden');
+    if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
     
     const profileTab = document.getElementById('tabProfile');
-    if (profileTab && !profileTab.classList.contains('hidden')) {
+    const kanbanTab = document.getElementById('tabKanban');
+    if ((profileTab && !profileTab.classList.contains('hidden')) || (kanbanTab && !kanbanTab.classList.contains('hidden'))) {
       switchTab('leads');
     }
     render();
@@ -761,7 +879,7 @@ async function updateProfileData() {
     if (btn) {
       btn.innerHTML = `
         <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
-          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+          <img src="${avatarUrl}" alt="Avatar" style="width: 18px; height: 18px; min-width: 18px; min-height: 18px;" class="rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
           <span class="hover:underline font-semibold text-xs whitespace-nowrap">${escapeHtml(newName || emailPrefix)}</span>
         </div>
         <span class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
@@ -847,6 +965,7 @@ async function loadCloudData() {
     console.error("Error loading cloud data:", err);
   } finally {
     render();
+    updateAnalytics(DATA && DATA.businesses ? DATA.businesses.length : 0);
   }
 }
 
@@ -958,6 +1077,26 @@ async function saveLeadNote() {
   render();
 }
 
+function switchPitchChannel(channel) {
+  currentPitchChannel = channel;
+  const btnWa = document.getElementById('pitchTabWa');
+  const btnEmail = document.getElementById('pitchTabEmail');
+  const panelWa = document.getElementById('pitchPanelWa');
+  const panelEmail = document.getElementById('pitchPanelEmail');
+
+  if (channel === 'whatsapp') {
+    btnWa.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold text-xs transition";
+    btnEmail.className = "px-3 py-1.5 rounded-lg subtext hover:text-amber-500 font-medium text-xs transition";
+    panelWa.classList.remove('hidden');
+    panelEmail.classList.add('hidden');
+  } else {
+    btnEmail.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold text-xs transition";
+    btnWa.className = "px-3 py-1.5 rounded-lg subtext hover:text-amber-500 font-medium text-xs transition";
+    panelEmail.classList.remove('hidden');
+    panelWa.classList.add('hidden');
+  }
+}
+
 function openPitchModal(leadKey) {
   const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
   if (!b) return;
@@ -969,17 +1108,33 @@ function openPitchModal(leadKey) {
   const sub = document.getElementById('pitchBusinessSubtitle');
   if (sub) sub.textContent = `${name} (${category} • ${city || 'Albania'})`;
   
-  const pitch = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
+  const pitchWa = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
   
-  const out = document.getElementById('pitchTextOutput');
-  if (out) out.value = pitch;
+  const outWa = document.getElementById('pitchTextOutput');
+  if (outWa) outWa.value = pitchWa;
   
   const cleanNum = phone ? phone.replace(/\D/g, '') : '';
   const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
-  const waUrl = formatted ? `https://wa.me/${formatted}?text=${encodeURIComponent(pitch)}` : `https://wa.me/?text=${encodeURIComponent(pitch)}`;
+  const waUrl = formatted ? `https://wa.me/${formatted}?text=${encodeURIComponent(pitchWa)}` : `https://wa.me/?text=${encodeURIComponent(pitchWa)}`;
   
   const waBtn = document.getElementById('whatsappSendBtn');
   if (waBtn) waBtn.href = waUrl;
+
+  // Email pitch generation
+  const emailSub = `Propozim Web Design për ${name}`;
+  const emailBody = `Përshëndetje,\n\nU bëra kërkim në zonën e ${city || 'Albania'} dhe vura re se ${name} (${category}) nuk ka ende një faqe web zyrtare për t'u shfaqur në rezultatet e Google.\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne, të shpejta dhe me kosto shumë të favorshme që ju sjellin më shumë klientë.\n\nA dëshironi një konsultë të shkurtër ose një shembull se si mund të dukej faqja juaj?\n\nMe respekt,\n[Emri Juaj]\nPaFaqe.al`;
+
+  const outEmailSub = document.getElementById('emailSubjectOutput');
+  const outEmailBody = document.getElementById('emailTextOutput');
+  if (outEmailSub) outEmailSub.value = emailSub;
+  if (outEmailBody) outEmailBody.value = emailBody;
+
+  const emailSendBtn = document.getElementById('emailSendBtn');
+  if (emailSendBtn) {
+    emailSendBtn.href = `mailto:?subject=${encodeURIComponent(emailSub)}&body=${encodeURIComponent(emailBody)}`;
+  }
+
+  switchPitchChannel('whatsapp');
   document.getElementById('pitchModal').classList.remove('hidden');
 }
 
@@ -987,12 +1142,12 @@ function closePitchModal() {
   document.getElementById('pitchModal').classList.add('hidden');
 }
 
-function copyPitchToClipboard() {
-  const txt = document.getElementById('pitchTextOutput');
+function copyPitchToClipboard(type) {
+  const txt = type === 'email' ? document.getElementById('emailTextOutput') : document.getElementById('pitchTextOutput');
   if (!txt) return;
   txt.select();
   navigator.clipboard.writeText(txt.value).then(() => {
-    alert('Pitch copied to clipboard successfully!');
+    alert(type === 'email' ? 'Email pitch copied successfully!' : 'WhatsApp pitch copied successfully!');
   });
 }
 
@@ -1098,22 +1253,22 @@ function restoreStateFromURL() {
 }
 
 function switchTab(tab) {
-  if (tab === 'profile' && !currentUser) {
+  if ((tab === 'profile' || tab === 'kanban') && !currentUser) {
     openAuthModal();
     return;
   }
 
-  const tabs = ['tabLeads', 'tabAbout', 'tabContact', 'tabProfile'];
+  const tabs = ['tabLeads', 'tabKanban', 'tabAbout', 'tabContact', 'tabProfile'];
   tabs.forEach(t => {
     const el = document.getElementById(t);
     if (el) el.classList.add('hidden');
   });
 
-  const navs = ['navLeidBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'];
+  const navs = ['navLeidBtn', 'navKanbanBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'];
   navs.forEach(n => {
     const el = document.getElementById(n);
     if (!el) return;
-    if (el.id === 'navProfileBtn') {
+    if (el.id === 'navProfileBtn' || el.id === 'navKanbanBtn') {
       if (currentUser) {
         el.className = 'hidden sm:inline-block px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition';
       } else {
@@ -1127,6 +1282,10 @@ function switchTab(tab) {
   if (tab === 'leads') {
     document.getElementById('tabLeads').classList.remove('hidden');
     document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+  } else if (tab === 'kanban') {
+    document.getElementById('tabKanban').classList.remove('hidden');
+    document.getElementById('navKanbanBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+    renderKanban();
   } else if (tab === 'about') {
     document.getElementById('tabAbout').classList.remove('hidden');
     document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
@@ -1136,6 +1295,7 @@ function switchTab(tab) {
   } else if (tab === 'profile') {
     document.getElementById('tabProfile').classList.remove('hidden');
     document.getElementById('navProfileBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
+    updateAnalytics(DATA && DATA.businesses ? DATA.businesses.length : 0);
   }
 }
 
@@ -1351,6 +1511,108 @@ function exportCSV() {
   a.click();
 }
 
+function renderKanban() {
+  if (!DATA || !DATA.businesses) return;
+  const list = DATA.businesses.filter(b => !b.website);
+  
+  const cols = {
+    new: document.getElementById('kanbanColNew'),
+    contacted: document.getElementById('kanbanColContacted'),
+    interested: document.getElementById('kanbanColInterested'),
+    closed: document.getElementById('kanbanColClosed')
+  };
+
+  const counts = {
+    new: document.getElementById('kanbanCountNew'),
+    contacted: document.getElementById('kanbanCountContacted'),
+    interested: document.getElementById('kanbanCountInterested'),
+    closed: document.getElementById('kanbanCountClosed')
+  };
+
+  Object.values(cols).forEach(col => { if(col) col.innerHTML = ''; });
+  const tallies = { new: 0, contacted: 0, interested: 0, closed: 0 };
+
+  list.forEach(b => {
+    const leadKey = b.id || b.name;
+    const status = getLeadStatus(leadKey) || 'new';
+    tallies[status] = (tallies[status] || 0) + 1;
+
+    if (cols[status]) {
+      const card = document.createElement('div');
+      card.className = 'card-bg border rounded-xl p-3 shadow-sm cursor-pointer hover:border-amber-400 transition space-y-2';
+      card.draggable = true;
+      card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', leadKey); };
+      
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-2">
+          <span class="font-bold text-xs truncate">${escapeHtml(b.name)}</span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded card-bg border text-amber-500 shrink-0">${leadScore(b)} pts</span>
+        </div>
+        <div class="text-[11px] subtext truncate">${escapeHtml(b.category || 'Business')} • ${escapeHtml(b.city || 'Albania')}</div>
+        <div class="flex items-center justify-between pt-1 border-t border-theme text-[11px]">
+          <span class="text-amber-600 dark:text-amber-400 font-medium">${escapeHtml(b.phone || 'No phone')}</span>
+          <div class="flex items-center gap-1">
+            <button onclick="event.stopPropagation(); openNotesModal('${escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border subtext hover:text-amber-500 text-[10px]">Note</button>
+            <button onclick="event.stopPropagation(); openPitchModal('${escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border text-emerald-600 text-[10px]">Pitch</button>
+          </div>
+        </div>
+      `;
+      card.onclick = () => { openNotesModal(leadKey); };
+      cols[status].appendChild(card);
+    }
+  });
+
+  Object.keys(counts).forEach(k => {
+    if (counts[k]) counts[k].textContent = tallies[k];
+  });
+
+  updateAnalytics(list.length);
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function dropLead(e, newStatus) {
+  e.preventDefault();
+  const leadKey = e.dataTransfer.getData('text/plain');
+  if (leadKey) {
+    setLeadStatus(leadKey, newStatus);
+    renderKanban();
+  }
+}
+
+function updateAnalytics(totalCount) {
+  const aTotal = document.getElementById('analyticsTotalLeads');
+  const aNew = document.getElementById('analyticsNewCount');
+  const aContacted = document.getElementById('analyticsContactedCount');
+  const aInterested = document.getElementById('analyticsInterestedCount');
+  const aClosed = document.getElementById('analyticsClosedCount');
+  const aReminders = document.getElementById('analyticsRemindersCount');
+
+  if (aTotal) aTotal.textContent = totalCount.toLocaleString();
+
+  let cNew = 0, cContacted = 0, cInterested = 0, cClosed = 0, cRem = 0;
+  if (DATA && DATA.businesses) {
+    DATA.businesses.forEach(b => {
+      const k = b.id || b.name;
+      const st = getLeadStatus(k);
+      if (st === 'contacted') cContacted++;
+      else if (st === 'interested') cInterested++;
+      else if (st === 'closed') cClosed++;
+      else cNew++;
+
+      if (getLeadReminder(k)) cRem++;
+    });
+  }
+
+  if (aNew) aNew.textContent = cNew;
+  if (aContacted) aContacted.textContent = cContacted;
+  if (aInterested) aInterested.textContent = cInterested;
+  if (aClosed) aClosed.textContent = cClosed;
+  if (aReminders) aReminders.textContent = cRem;
+}
+
 function render(){
   if (!DATA || !DATA.businesses) return;
   const list = filtered();
@@ -1455,7 +1717,7 @@ function render(){
 
       ${currentUser ? `
         <td class="px-3 sm:px-4 py-2.5 truncate">
-          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value)" class="input-bg rounded-lg px-2 py-1 text-xs border focus:ring-1 focus:ring-amber-400 cursor-pointer w-full">
+          <select onchange="setLeadStatus('${escapeHtml(leadKey)}', this.value); if(!document.getElementById('tabKanban').classList.contains('hidden')) renderKanban();" class="input-bg rounded-lg px-2 py-1 text-xs border focus:ring-1 focus:ring-amber-400 cursor-pointer w-full">
             <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
             <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
             <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
@@ -1474,7 +1736,7 @@ function render(){
             <button onclick="openNotesModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-medium ${leadNote || leadRem ? 'text-amber-500 dark:text-amber-400 border-amber-500/50' : ''} transition" title="View/Edit Notes & Reminder">
               ${leadNote || leadRem ? 'Note*' : 'Note'}
             </button>
-            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
+            <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate Pitch">
               Pitch
             </button>
           </div>
