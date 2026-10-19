@@ -86,11 +86,6 @@
       </div>
       
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-        <button onclick="UIController.openCommandPalette()" class="px-3 py-1.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 text-xs font-medium flex items-center gap-1.5 shadow-sm cursor-pointer" title="Menu e Shpejtë (Cmd+K)">
-          <span>🔍 Kërko</span>
-          <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-500 dark:text-slate-400 border border-theme font-mono">⌘K</kbd>
-        </button>
-
         <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
           <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold transition cursor-pointer shadow-sm">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Tubacioni</button>
@@ -304,7 +299,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: ABOUT US -->
+    <!-- TAB 3: ABOUT US (Fixed spacing / gap-6) -->
     <div id="tabAbout" class="hidden space-y-6 max-w-4xl mx-auto py-6 px-2 sm:px-0">
       <div class="card-bg border border-theme rounded-2xl p-8 shadow-sm space-y-3">
         <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura e Platformës</span>
@@ -314,7 +309,7 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div class="card-bg border border-theme rounded-xl p-6 space-y-2">
           <h3 class="font-bold text-sm text-blue-600 dark:text-blue-400">Përputhshmëria & Siguria</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">Të dhënat indeksohen nga regjistrat publikë komercialë në përputhje të plotë me standardet e privatësisë dhe sigurisë cloud të nivelit të lartë.</p>
@@ -431,22 +426,6 @@
       </div>
     </div>
   </main>
-</div>
-
-<!-- GLOBAL COMMAND PALETTE (Cmd+K) -->
-<div id="commandPaletteModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start justify-center pt-20 p-4">
-  <div class="card-bg border rounded-2xl max-w-xl w-full p-5 shadow-2xl space-y-3 relative">
-    <div class="flex items-center justify-between border-b border-theme pb-2.5">
-      <span class="font-mono text-xs text-blue-600 dark:text-blue-400 uppercase tracking-wider font-bold">Menu e Shpejtë (Command Palette)</span>
-      <span class="text-[10px] subtext font-mono">Shtyp ESC për të mbyllur</span>
-    </div>
-    <input id="commandInput" type="text" placeholder="Shkruaj komandë (p.sh. 'Tirana', 'Hotel', 'Tubacioni')..." oninput="UIController.handleCommandSearch()" class="input-bg w-full rounded-lg p-3 text-xs font-mono border outline-none focus:ring-1 focus:ring-blue-600">
-    <div id="commandResults" class="space-y-1.5 max-h-60 overflow-y-auto text-xs">
-      <div class="p-2.5 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="UIController.switchTab('leads'); UIController.closeCommandPalette();">📁 Hape Workspace-in e Leads</div>
-      <div class="p-2.5 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="UIController.switchTab('kanban'); UIController.closeCommandPalette();">📊 Hape Tubacionin Kanban</div>
-      <div class="p-2.5 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="CRMStore.exportCSV(); UIController.closeCommandPalette();">📥 Eksporto CSV Të Dhënat</div>
-    </div>
-  </div>
 </div>
 
 <!-- AUTH MODAL WITH ROLE SELECTION -->
@@ -1389,7 +1368,9 @@ const CRMStore = {
   },
 
   changePage(dir) {
-    this.currentPage += dir;
+    const list = this.filtered();
+    const maxPage = Math.ceil(list.length / this.pageSize) || 1;
+    this.currentPage = Math.max(1, Math.min(maxPage, this.currentPage + dir));
     this.render();
   },
 
@@ -1402,8 +1383,12 @@ const CRMStore = {
     const sc = this.DATA.businesses.filter(b => !b.website).map(b => this.leadScore(b));
     document.getElementById('statAvg').textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
 
+    const totalRecords = list.length;
+    const maxPage = Math.ceil(totalRecords / this.pageSize) || 1;
+    if (this.currentPage > maxPage) this.currentPage = maxPage;
+
     const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
+    const end = Math.min(start + this.pageSize, totalRecords);
     const displayList = AuthService.currentUser ? list.slice(start, end) : list.slice(0, 5);
 
     document.getElementById('tableHead').innerHTML = `
@@ -1464,6 +1449,17 @@ const CRMStore = {
 
     document.getElementById('guestGatingOverlay').classList.toggle('hidden', !!AuthService.currentUser);
     document.getElementById('paginationBar').classList.toggle('hidden', !AuthService.currentUser);
+
+    // Update Pagination Info
+    const pageInfo = document.getElementById('pageInfo');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (pageInfo) pageInfo.textContent = totalRecords > 0 ? `Duke shfaqur ${start + 1}-${end} nga ${totalRecords} rreshta` : `0 rreshta`;
+    if (pageIndicator) pageIndicator.textContent = `Faqja ${this.currentPage} nga ${maxPage}`;
+    if (prevBtn) prevBtn.disabled = (this.currentPage <= 1);
+    if (nextBtn) nextBtn.disabled = (this.currentPage >= maxPage);
   },
 
   init() {
@@ -1478,7 +1474,7 @@ const CRMStore = {
 };
 
 // ==========================================
-// 🎨 UI CONTROLLER & COMMAND PALETTE
+// 🎨 UI CONTROLLER
 // ==========================================
 const UIController = {
   getPixelAvatarUrl(user) {
@@ -1496,23 +1492,6 @@ const UIController = {
     const c = document.getElementById('verificationStatusContainer');
     if (c && AuthService.currentUser) {
       c.innerHTML = AuthService.currentUser.emailVerified ? `<span class="text-emerald-400 font-mono text-xs">Email i Verifikuar ✓</span>` : `<span class="text-amber-500 font-mono text-xs">Email i Paverifikuar</span>`;
-    }
-  },
-
-  openCommandPalette() {
-    document.getElementById('commandPaletteModal').classList.remove('hidden');
-    document.getElementById('commandInput').focus();
-  },
-
-  closeCommandPalette() {
-    document.getElementById('commandPaletteModal').classList.add('hidden');
-  },
-
-  handleCommandSearch() {
-    const q = document.getElementById('commandInput').value.toLowerCase();
-    const results = document.getElementById('commandResults');
-    if (q.includes('tirana') || q.includes('tiranë')) {
-      results.innerHTML = `<div class="p-3 card-bg border rounded-lg cursor-pointer hover:border-blue-500 text-xs" onclick="document.getElementById('city').value='Tirana'; UIController.handleFilterInput(); UIController.closeCommandPalette();">Filtro sipas Tiranës</div>`;
     }
   },
 
@@ -1629,12 +1608,7 @@ const UIController = {
 };
 
 window.addEventListener('keydown', (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-    e.preventDefault();
-    UIController.openCommandPalette();
-  }
   if (e.key === 'Escape') {
-    UIController.closeCommandPalette();
     UIController.closeNotesModal();
     UIController.closePitchModal();
   }
