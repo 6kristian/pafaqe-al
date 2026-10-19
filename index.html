@@ -555,7 +555,7 @@
     <div id="pitchPanelWa" class="space-y-4">
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext">WhatsApp Template (Use {name}, {city}, {category}, {ratingText})</label>
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext">WhatsApp Template (Use {name}, {city}, {category}, {ratingContext})</label>
           <button onclick="CRMStore.resetPitchTemplate('whatsapp')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
         </div>
         <textarea id="pitchTemplateWaInput" rows="6" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
@@ -620,22 +620,6 @@
 // ==========================================
 // 🔑 FIREBASE CONFIGURATION & SECURITY NOTE
 // ==========================================
-/*
-  IMPORTANT: Ensure your Firebase Firestore Security Rules are set to restrict access to authenticated owners:
-  
-  rules_version = '2';
-  service cloud.firestore {
-    match /databases/{database}/documents {
-      match /lead_chunks/{chunkId} {
-        allow read: if request.auth != null;
-        allow write: if false; // Admin managed chunks
-      }
-      match /users/{userId}/{document=**} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
-    }
-  }
-*/
 const firebaseConfig = {
   apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
   authDomain: "pafaqeal.firebaseapp.com",
@@ -1198,7 +1182,7 @@ const CRMStore = {
     const sortEl = document.getElementById('sort');
     const s = AuthService.currentUser && sortEl ? sortEl.value : 'score';
     list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
-      : s==='rating' ? ((b.rating || 0) - (b.rating || 0))
+      : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
       : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
       : this.leadScore(b) - this.leadScore(a));
     return list;
@@ -1449,7 +1433,7 @@ const CRMStore = {
               <span class="font-bold text-xs truncate">${UIController.escapeHtml(b.name)}</span>
               <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded card-bg border text-amber-500 shrink-0">${this.leadScore(b)} pts</span>
             </div>
-            <div class="text-[11px] subtext truncate">${UIController.escapeHtml(b.category \vert{}\vert{} 'Business')} •${UIController.escapeHtml(b.city || 'Albania')}</div>
+            <div class="text-[11px] subtext truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
             <div class="flex items-center justify-between pt-1 border-t border-theme text-[11px]">
               <span class="text-amber-600 dark:text-amber-400 font-medium">${UIController.escapeHtml(b.phone || 'No phone')}</span>
               <div class="flex items-center gap-1">
@@ -1547,11 +1531,9 @@ const CRMStore = {
 
     let ratingContext = "";
     if (rating >= 4.5) {
-      ratingContext = ` Duke qenë se keni një reputacion fantastik me vlerësim ${rating}★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.`;
+      ratingContext = " Duke qenë se keni një reputacion fantastik me vlerësim " + rating + "★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.";
     } else if (rating > 0 && rating < 3.5) {
-      ratingContext = ` Vura re se keni disa sfida me vlerësimet online (★${rating}), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin dhe të tërhiqni klientë më cilësorë.`;
-    } else {
-      ratingContext = ``;
+      ratingContext = " Vura re se keni disa sfida me vlerësimet online (★" + rating + "), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin dhe të tërhiqni klientë më cilësorë.";
     }
 
     const waTemplate = document.getElementById('pitchTemplateWaInput').value;
@@ -1616,8 +1598,8 @@ const CRMStore = {
     const rating = b.rating || 0;
 
     let ratingContext = "";
-    if (rating >= 4.5) ratingContext = ` Duke qenë se keni një reputacion fantastik me vlerësim ${rating}★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.`;
-    else if (rating > 0 && rating < 3.5) ratingContext = ` Vura re se keni disa sfida me vlerësimet online (★${rating}), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin.`;
+    if (rating >= 4.5) ratingContext = " Duke qenë se keni një reputacion fantastik me vlerësim " + rating + "★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.";
+    else if (rating > 0 && rating < 3.5) ratingContext = " Vura re se keni disa sfida me vlerësimet online (★" + rating + "), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin.";
 
     let textToCopy = '';
     if (type === 'whatsapp') {
@@ -1720,7 +1702,6 @@ const CRMStore = {
       const leadRem = this.getLeadReminder(leadKey);
       const isSelected = this.selectedLeads.has(leadKey);
 
-      // Visual Rating Health Badge formatting
       let ratingHtml = '<span class="subtext">—</span>';
       if (b.rating) {
         const r = b.rating;
