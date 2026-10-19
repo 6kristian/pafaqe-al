@@ -215,7 +215,7 @@
       <div class="card-bg border rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Sales Pipeline Kanban</h2>
-          <p class="text-xs subtext mt-0.5">Manage your leads visually across stages. Drag and drop lead cards between columns to update their status.</p>
+          <p class="text-xs subtext mt-0.5">Manage your leads visually across stages (max 25 leads per page per column). Drag and drop lead cards between columns to update their status.</p>
         </div>
         <div class="text-xs subtext font-medium">
           Drag & Drop enabled
@@ -230,7 +230,8 @@
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">New Leads</span>
             <span id="kanbanCountNew" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
           </div>
-          <div id="kanbanColNew" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'new')"></div>
+          <div id="kanbanColNew" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'new')"></div>
+          <div id="kanbanPaginationNew" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
         </div>
 
         <!-- Column: Contacted -->
@@ -239,7 +240,8 @@
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Contacted</span>
             <span id="kanbanCountContacted" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
           </div>
-          <div id="kanbanColContacted" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'contacted')"></div>
+          <div id="kanbanColContacted" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'contacted')"></div>
+          <div id="kanbanPaginationContacted" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
         </div>
 
         <!-- Column: Interested -->
@@ -248,7 +250,8 @@
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Interested</span>
             <span id="kanbanCountInterested" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
           </div>
-          <div id="kanbanColInterested" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'interested')"></div>
+          <div id="kanbanColInterested" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'interested')"></div>
+          <div id="kanbanPaginationInterested" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
         </div>
 
         <!-- Column: Closed -->
@@ -257,7 +260,8 @@
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Closed / Won</span>
             <span id="kanbanCountClosed" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
           </div>
-          <div id="kanbanColClosed" class="space-y-3 overflow-y-auto max-h-[650px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'closed')"></div>
+          <div id="kanbanColClosed" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="allowDrop(event)" ondrop="dropLead(event, 'closed')"></div>
+          <div id="kanbanPaginationClosed" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
         </div>
       </div>
     </div>
@@ -581,6 +585,10 @@ let cloudReminders = {};
 let activeLeadKeyForNotes = null;
 let selectedLeads = new Set();
 let currentPitchChannel = 'whatsapp';
+
+// Kanban pagination states (max 25 per page per category)
+let kanbanPages = { new: 1, contacted: 1, interested: 1, closed: 1 };
+const kanbanPageSize = 25;
 
 // 8-Bit Pixel Art Avatar Generator Helper
 function getPixelAvatarUrl(user) {
@@ -1511,6 +1519,12 @@ function exportCSV() {
   a.click();
 }
 
+function changeKanbanPage(status, direction) {
+  kanbanPages[status] += direction;
+  if (kanbanPages[status] < 1) kanbanPages[status] = 1;
+  renderKanban();
+}
+
 function renderKanban() {
   if (!DATA || !DATA.businesses) return;
   const list = DATA.businesses.filter(b => !b.website);
@@ -1529,41 +1543,77 @@ function renderKanban() {
     closed: document.getElementById('kanbanCountClosed')
   };
 
-  Object.values(cols).forEach(col => { if(col) col.innerHTML = ''; });
-  const tallies = { new: 0, contacted: 0, interested: 0, closed: 0 };
+  const paginations = {
+    new: document.getElementById('kanbanPaginationNew'),
+    contacted: document.getElementById('kanbanPaginationContacted'),
+    interested: document.getElementById('kanbanPaginationInterested'),
+    closed: document.getElementById('kanbanPaginationClosed')
+  };
 
+  const categorized = { new: [], contacted: [], interested: [], closed: [] };
   list.forEach(b => {
     const leadKey = b.id || b.name;
     const status = getLeadStatus(leadKey) || 'new';
-    tallies[status] = (tallies[status] || 0) + 1;
-
-    if (cols[status]) {
-      const card = document.createElement('div');
-      card.className = 'card-bg border rounded-xl p-3 shadow-sm cursor-pointer hover:border-amber-400 transition space-y-2';
-      card.draggable = true;
-      card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', leadKey); };
-      
-      card.innerHTML = `
-        <div class="flex items-start justify-between gap-2">
-          <span class="font-bold text-xs truncate">${escapeHtml(b.name)}</span>
-          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded card-bg border text-amber-500 shrink-0">${leadScore(b)} pts</span>
-        </div>
-        <div class="text-[11px] subtext truncate">${escapeHtml(b.category || 'Business')} • ${escapeHtml(b.city || 'Albania')}</div>
-        <div class="flex items-center justify-between pt-1 border-t border-theme text-[11px]">
-          <span class="text-amber-600 dark:text-amber-400 font-medium">${escapeHtml(b.phone || 'No phone')}</span>
-          <div class="flex items-center gap-1">
-            <button onclick="event.stopPropagation(); openNotesModal('${escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border subtext hover:text-amber-500 text-[10px]">Note</button>
-            <button onclick="event.stopPropagation(); openPitchModal('${escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border text-emerald-600 text-[10px]">Pitch</button>
-          </div>
-        </div>
-      `;
-      card.onclick = () => { openNotesModal(leadKey); };
-      cols[status].appendChild(card);
+    if (categorized[status]) {
+      categorized[status].push(b);
+    } else {
+      categorized.new.push(b);
     }
   });
 
-  Object.keys(counts).forEach(k => {
-    if (counts[k]) counts[k].textContent = tallies[k];
+  Object.keys(cols).forEach(status => {
+    const statusList = categorized[status];
+    if (counts[status]) counts[status].textContent = statusList.length;
+
+    const totalPages = Math.ceil(statusList.length / kanbanPageSize) || 1;
+    if (kanbanPages[status] > totalPages) kanbanPages[status] = totalPages;
+    if (kanbanPages[status] < 1) kanbanPages[status] = 1;
+
+    const start = (kanbanPages[status] - 1) * kanbanPageSize;
+    const displayList = statusList.slice(start, start + kanbanPageSize);
+
+    if (cols[status]) {
+      cols[status].innerHTML = '';
+      displayList.forEach(b => {
+        const leadKey = b.id || b.name;
+        const card = document.createElement('div');
+        card.className = 'card-bg border rounded-xl p-3 shadow-sm cursor-pointer hover:border-amber-400 transition space-y-2';
+        card.draggable = true;
+        card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', leadKey); };
+        
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <span class="font-bold text-xs truncate">${escapeHtml(b.name)}</span>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded card-bg border text-amber-500 shrink-0">${leadScore(b)} pts</span>
+          </div>
+          <div class="text-[11px] subtext truncate">${escapeHtml(b.category || 'Business')} • ${escapeHtml(b.city || 'Albania')}</div>
+          <div class="flex items-center justify-between pt-1 border-t border-theme text-[11px]">
+            <span class="text-amber-600 dark:text-amber-400 font-medium">${escapeHtml(b.phone || 'No phone')}</span>
+            <div class="flex items-center gap-1">
+              <button onclick="event.stopPropagation(); openNotesModal('${escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border subtext hover:text-amber-500 text-[10px]">Note</button>
+              <button onclick="event.stopPropagation(); openPitchModal('${escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border text-emerald-600 text-[10px]">Pitch</button>
+            </div>
+          </div>
+        `;
+        card.onclick = () => { openNotesModal(leadKey); };
+        cols[status].appendChild(card);
+      });
+    }
+
+    if (paginations[status]) {
+      if (statusList.length > kanbanPageSize) {
+        paginations[status].classList.remove('hidden');
+        paginations[status].innerHTML = `
+          <span>P.${kanbanPages[status]}/${totalPages} (${statusList.length})</span>
+          <div class="flex items-center gap-1">
+            <button onclick="changeKanbanPage('${status}', -1)" ${kanbanPages[status] === 1 ? 'disabled class="opacity-30 cursor-not-allowed px-1"' : 'class="hover:text-amber-500 font-bold px-1"'} >‹ Prev</button>
+            <button onclick="changeKanbanPage('${status}', 1)" ${kanbanPages[status] === totalPages ? 'disabled class="opacity-30 cursor-not-allowed px-1"' : 'class="hover:text-amber-500 font-bold px-1"'} >Next ›</button>
+          </div>
+        `;
+      } else {
+        paginations[status].innerHTML = `<span>Total: ${statusList.length}</span>`;
+      }
+    }
   });
 
   updateAnalytics(list.length);
