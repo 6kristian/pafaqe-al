@@ -208,7 +208,7 @@
       </section>
     </div>
 
- <!-- TAB 2: ABOUT US VIEW -->
+<!-- TAB 2: ABOUT US VIEW -->
     <div id="tabAbout" class="hidden space-y-6 max-w-5xl mx-auto py-6">
       
       <!-- Main Hero Header -->
@@ -220,30 +220,32 @@
         </p>
       </div>
 
-      <!-- Two Side-by-Side Cards (Flex Layout) -->
-      <div class="flex flex-col md:flex-row gap-6">
-        <div class="flex-1 card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2">
+      <!-- Guaranteed 2-Column Side-by-Side Cards -->
+      <div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+        
+        <div class="card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2" style="flex: 1 1 300px;">
           <h3 class="font-bold text-base text-amber-500 dark:text-amber-400">The Problem</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
             Thousands of local Albanian enterprises rely exclusively on physical foot traffic or social media, missing out on organic search traffic and high-intent customer queries.
           </p>
         </div>
         
-        <div class="flex-1 card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2">
+        <div class="card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2" style="flex: 1 1 300px;">
           <h3 class="font-bold text-base text-amber-500 dark:text-amber-400">The Solution</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
             We aggregate open market data into a structured sales pipeline with direct contact info, direct WhatsApp outreach scripts, and local CRM tools to close web design clients effortlessly.
           </p>
         </div>
+
       </div>
 
       <!-- Footer Info Bar -->
-      <div class="card-bg border border-theme rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+      <div class="card-bg border border-theme rounded-2xl p-6" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
           <p class="font-bold text-sm">Albanian Business Directory</p>
-          <p class="subtext">Over 13,900 verified local lead records.</p>
+          <p class="subtext text-xs">Over 13,900 verified local lead records.</p>
         </div>
-        <div class="subtext text-right">
+        <div class="subtext text-xs text-right">
           <span>Engineered by </span>
           <b class="text-amber-500 dark:text-amber-400 font-semibold">Kristian Frroku</b>
         </div>
