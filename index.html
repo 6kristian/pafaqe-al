@@ -673,6 +673,39 @@ const AuthService = {
       
       if (user) {
         await user.reload();
+        await user.getIdToken(true); 
+
+        if (user.emailVerified) {
+          try {
+            if (dataSourceBadge) dataSourceBadge.textContent = "Syncing Firestore...";
+            const querySnapshot = await db.collection('lead_chunks').get();
+            let allBusinesses = [];
+            querySnapshot.forEach((doc) => {
+              const chunkData = doc.data();
+              if (chunkData.rows && Array.isArray(chunkData.rows)) {
+                allBusinesses.push(...chunkData.rows);
+              }
+            });
+
+            if (allBusinesses.length > 0) {
+              CRMStore.DATA = {
+                source: "live",
+                generated: new Date().toISOString().split('T')[0],
+                count: allBusinesses.length,
+                businesses: allBusinesses
+              };
+              if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
+              CRMStore.init();
+            } else {
+              if (dataSourceBadge) dataSourceBadge.textContent = "0 Leads Found";
+            }
+          } catch (err) {
+            console.error("Error fetching leads from Firestore:", err);
+            if (dataSourceBadge) dataSourceBadge.textContent = "Offline Cache";
+          }
+        } else {
+          if (dataSourceBadge) dataSourceBadge.textContent = "Unverified Email";
+        }
         
         if (user.emailVerified) {
           try {
