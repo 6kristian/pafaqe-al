@@ -145,6 +145,15 @@
         </div>
       </section>
 
+      <!-- Saved Filter Presets Bar -->
+      <div id="filterPresetsSection" class="hidden flex flex-wrap items-center gap-2 text-xs card-bg border rounded-xl p-3 shadow-sm">
+        <span class="subtext font-semibold uppercase tracking-wider text-[11px] mr-1">Saved Presets:</span>
+        <div id="presetChipsContainer" class="flex flex-wrap items-center gap-2"></div>
+        <button onclick="saveCurrentPresetPrompt()" class="ml-auto px-3 py-1 rounded-lg card-bg border subtext hover:text-amber-500 font-semibold text-xs transition flex items-center gap-1">
+          <span>+ Save Current Filter</span>
+        </button>
+      </div>
+
       <!-- Quick Filter Chips & High Value Recommendations -->
       <div class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -169,6 +178,25 @@
         <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">No-website leads</div></div>
         <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Cities covered</div></div>
         <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Avg. lead score</div></div>
+      </div>
+
+      <!-- BULK ACTIONS FLOATING TOOLBAR -->
+      <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-amber-500/60 rounded-2xl p-3.5 shadow-xl flex flex-wrap items-center justify-between gap-3 bg-slate-900/95 backdrop-blur-md">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="font-bold px-2.5 py-1 rounded-lg bg-amber-400 text-slate-900" id="selectedCountBadge">0 selected</span>
+          <span class="subtext">Bulk Action:</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <select id="bulkStatusSelect" class="input-bg rounded-xl px-3 py-1.5 border outline-none">
+            <option value="new">Set Status: New</option>
+            <option value="contacted">Set Status: Contacted</option>
+            <option value="interested">Set Status: Interested</option>
+            <option value="closed">Set Status: Closed / Won</option>
+          </select>
+          <button onclick="applyBulkStatus()" class="px-3.5 py-1.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition">Update Status</button>
+          <button onclick="exportCSV()" class="px-3.5 py-1.5 rounded-xl card-bg border subtext hover:text-amber-500 font-semibold transition">Export Selected</button>
+          <button onclick="clearSelection()" class="px-3 py-1.5 rounded-xl card-bg border text-rose-400 hover:text-rose-300 transition">Clear</button>
+        </div>
       </div>
 
       <!-- Data Table Section -->
@@ -463,22 +491,30 @@
   </div>
 </div>
 
-<!-- NOTES MODAL WITH FOLLOW-UP REMINDER DATE -->
+<!-- NOTES MODAL WITH FOLLOW-UP REMINDER DATE & ACTIVITY TIMELINE -->
 <div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+  <div class="card-bg border rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
     <button onclick="closeNotesModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold mb-1">Lead CRM Notes & Reminder</div>
+    <div class="text-lg font-extrabold mb-1">Lead CRM Notes & Activity Log</div>
     <p id="notesBusinessSubtitle" class="text-xs text-amber-500 dark:text-amber-400 mb-4 font-semibold"></p>
     
     <div class="space-y-4">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Custom Notes</label>
-        <textarea id="leadNoteInput" rows="4" class="input-bg w-full rounded-xl p-3 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-xl p-3 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
       </div>
 
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Follow-Up Date (Reminder)</label>
         <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+      </div>
+
+      <!-- Activity Timeline History -->
+      <div class="border-t border-theme pt-3">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-2">Activity Timeline / History</label>
+        <div id="activityTimelineContainer" class="space-y-2 max-h-40 overflow-y-auto text-xs card-bg border rounded-xl p-3">
+          <span class="subtext">No activity history recorded yet.</span>
+        </div>
       </div>
 
       <div class="flex items-center justify-end gap-3 pt-2">
@@ -489,9 +525,9 @@
   </div>
 </div>
 
-<!-- MULTI-CHANNEL PITCH GENERATOR MODAL -->
+<!-- MULTI-CHANNEL PITCH GENERATOR MODAL WITH CUSTOMIZABLE TEMPLATES -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
     <button onclick="closePitchModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
     <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Outreach Pitch Generator</div>
     <p id="pitchBusinessSubtitle" class="text-xs subtext mb-4 font-medium"></p>
@@ -504,8 +540,15 @@
 
     <!-- WhatsApp Panel -->
     <div id="pitchPanelWa" class="space-y-4">
-      <textarea id="pitchTextOutput" rows="5" readonly class="w-full card-bg border rounded-xl p-3 text-xs font-mono select-all outline-none"></textarea>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext">WhatsApp Template (Use {name}, {city}, {category})</label>
+          <button onclick="resetPitchTemplate('whatsapp')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
+        </div>
+        <textarea id="pitchTemplateWaInput" rows="5" oninput="updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
         <button onclick="copyPitchToClipboard('whatsapp')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy WhatsApp Text</button>
         <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
           <span>Send via WhatsApp ↗</span>
@@ -516,14 +559,17 @@
     <!-- Email Panel -->
     <div id="pitchPanelEmail" class="hidden space-y-4">
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Subject</label>
-        <input type="text" id="emailSubjectOutput" readonly class="input-bg w-full rounded-xl p-2.5 text-xs font-mono select-all outline-none border">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Subject Template</label>
+        <input type="text" id="emailSubjectTemplateInput" oninput="updateLivePitchPreview()" class="input-bg w-full rounded-xl p-2.5 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400">
       </div>
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Body</label>
-        <textarea id="emailTextOutput" rows="5" readonly class="w-full card-bg border rounded-xl p-3 text-xs font-mono select-all outline-none"></textarea>
+        <div class="flex items-center justify-between mb-1">
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext">Email Body Template</label>
+          <button onclick="resetPitchTemplate('email')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
+        </div>
+        <textarea id="emailBodyTemplateInput" rows="5" oninput="updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
       </div>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
         <button onclick="copyPitchToClipboard('email')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Email Text</button>
         <a id="emailSendBtn" href="#" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
           <span>Open Email Client ↗</span>
@@ -582,13 +628,20 @@ let currentUser = null;
 let cloudStatuses = {};
 let cloudNotes = {};
 let cloudReminders = {};
+let cloudHistory = {};
 let activeLeadKeyForNotes = null;
 let selectedLeads = new Set();
 let currentPitchChannel = 'whatsapp';
+let currentPitchLeadKey = null;
 
 // Kanban pagination states (max 25 per page per category)
 let kanbanPages = { new: 1, contacted: 1, interested: 1, closed: 1 };
 const kanbanPageSize = 25;
+
+// Default Pitch Templates
+const DEFAULT_WA_TEMPLATE = "Përshëndetje! Vura re se {name} në {city} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?";
+const DEFAULT_EMAIL_SUB_TEMPLATE = "Propozim Web Design për {name}";
+const DEFAULT_EMAIL_BODY_TEMPLATE = "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare për t'u shfaqur në rezultatet e Google.\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne, të shpejta dhe me kosto shumë të favorshme që ju sjellin më shumë klientë.\n\nA dëshironi një konsultë të shkurtër ose një shembull se si mund të dukej faqja juaj?\n\nMe respekt,\n[Emri Juaj]\nPaFaqe.al";
 
 // 8-Bit Pixel Art Avatar Generator Helper
 function getPixelAvatarUrl(user) {
@@ -625,6 +678,7 @@ auth.onAuthStateChanged(async (user) => {
   const btn = document.getElementById('authActionBtn');
   const hero = document.getElementById('guestHero');
   const filterSec = document.getElementById('filterSection');
+  const filterPresetsSec = document.getElementById('filterPresetsSection');
   const navProfileBtn = document.getElementById('navProfileBtn');
   const navKanbanBtn = document.getElementById('navKanbanBtn');
   const dataSourceBadge = document.getElementById('dataSource');
@@ -677,6 +731,7 @@ auth.onAuthStateChanged(async (user) => {
     }
     if (hero) hero.classList.add('hidden');
     if (filterSec) filterSec.classList.remove('hidden');
+    if (filterPresetsSec) filterPresetsSec.classList.remove('hidden');
     if (navProfileBtn) navProfileBtn.classList.remove('hidden');
     if (navKanbanBtn) navKanbanBtn.classList.remove('hidden');
     
@@ -687,15 +742,18 @@ auth.onAuthStateChanged(async (user) => {
     renderVerificationStatus();
 
     await loadCloudData();
+    renderFilterPresets();
   } else {
     if (btn) btn.innerHTML = `<span>Sign In</span>`;
     if (dataSourceBadge) dataSourceBadge.textContent = "Demo Mode";
     cloudStatuses = {};
     cloudNotes = {};
     cloudReminders = {};
+    cloudHistory = {};
     DATA = DEMO; // Reset back to demo for guests
     if (hero) hero.classList.remove('hidden');
     if (filterSec) filterSec.classList.add('hidden');
+    if (filterPresetsSec) filterPresetsSec.classList.add('hidden');
     if (navProfileBtn) navProfileBtn.classList.add('hidden');
     if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
     
@@ -941,10 +999,12 @@ async function handleAuthSubmit(e) {
 async function loadCloudData() {
   if (!currentUser) return;
   try {
-    const [statusSnap, notesSnap] = await Promise.all([
+    const [statusSnap, notesSnap, historySnap] = await Promise.all([
       db.collection('users').doc(currentUser.uid).collection('lead_statuses').get(),
-      db.collection('users').doc(currentUser.uid).collection('lead_notes').get()
+      db.collection('users').doc(currentUser.uid).collection('lead_notes').get(),
+      db.collection('users').doc(currentUser.uid).collection('lead_history').get()
     ]);
+    
     cloudStatuses = {};
     statusSnap.forEach(doc => { cloudStatuses[doc.id] = doc.data().status; });
     
@@ -964,6 +1024,11 @@ async function loadCloudData() {
       }
     });
 
+    cloudHistory = {};
+    historySnap.forEach(doc => {
+      cloudHistory[doc.id] = doc.data().events || [];
+    });
+
     if (dueRemindersCount > 0 && !sessionStorage.getItem('reminder_sent_' + todayStr)) {
       sessionStorage.setItem('reminder_sent_' + todayStr, 'true');
       triggerAutomatedEmailReminder(dueRemindersCount, currentUser.email);
@@ -974,6 +1039,28 @@ async function loadCloudData() {
   } finally {
     render();
     updateAnalytics(DATA && DATA.businesses ? DATA.businesses.length : 0);
+  }
+}
+
+async function recordLeadHistoryEvent(leadKey, eventText) {
+  const timestamp = new Date().toLocaleString();
+  const newEvent = { date: timestamp, text: eventText };
+  
+  if (!cloudHistory[leadKey]) cloudHistory[leadKey] = [];
+  cloudHistory[leadKey].unshift(newEvent);
+
+  if (currentUser) {
+    try {
+      await db.collection('users').doc(currentUser.uid).collection('lead_history').doc(leadKey).set({
+        events: cloudHistory[leadKey]
+      });
+    } catch (err) {
+      console.error("Error saving lead history to cloud:", err);
+    }
+  } else {
+    const localHist = JSON.parse(localStorage.getItem('pafaqe_lead_history') || '{}');
+    localHist[leadKey] = cloudHistory[leadKey];
+    localStorage.setItem('pafaqe_lead_history', JSON.stringify(localHist));
   }
 }
 
@@ -1005,21 +1092,24 @@ function getLeadStatus(id) {
 }
 
 async function setLeadStatus(id, status) {
+  const oldStatus = getLeadStatus(id);
+  if (oldStatus === status) return;
+
   if (!currentUser) {
     const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
     statuses[id] = status;
     localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
-    render();
-    return;
+  } else {
+    cloudStatuses[id] = status;
+    try {
+      await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
+    } catch (err) {
+      console.error("Error saving status to cloud:", err);
+    }
   }
 
-  cloudStatuses[id] = status;
+  await recordLeadHistoryEvent(id, `Status changed from "${oldStatus}" to "${status}"`);
   render();
-  try {
-    await db.collection('users').doc(currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
-  } catch (err) {
-    console.error("Error saving status to cloud:", err);
-  }
 }
 
 function getLeadNote(id) {
@@ -1050,7 +1140,34 @@ function openNotesModal(leadKey) {
   if (sub) sub.textContent = name;
   if (input) input.value = getLeadNote(leadKey);
   if (remInput) remInput.value = getLeadReminder(leadKey);
+  
+  renderActivityTimeline(leadKey);
   document.getElementById('notesModal').classList.remove('hidden');
+}
+
+function renderActivityTimeline(leadKey) {
+  const container = document.getElementById('activityTimelineContainer');
+  if (!container) return;
+
+  let historyEvents = [];
+  if (currentUser) {
+    historyEvents = cloudHistory[leadKey] || [];
+  } else {
+    const localHist = JSON.parse(localStorage.getItem('pafaqe_lead_history') || '{}');
+    historyEvents = localHist[leadKey] || [];
+  }
+
+  if (historyEvents.length === 0) {
+    container.innerHTML = `<span class="subtext">No activity history recorded yet.</span>`;
+    return;
+  }
+
+  container.innerHTML = historyEvents.map(ev => `
+    <div class="flex items-start justify-between gap-2 border-b border-theme pb-1.5 text-[11px]">
+      <span class="font-medium">${escapeHtml(ev.text)}</span>
+      <span class="subtext shrink-0">${escapeHtml(ev.date)}</span>
+    </div>
+  `).join('');
 }
 
 function closeNotesModal() {
@@ -1081,6 +1198,8 @@ async function saveLeadNote() {
     localStorage.setItem('pafaqe_lead_notes', JSON.stringify(notes));
     localStorage.setItem('pafaqe_lead_reminders', JSON.stringify(rems));
   }
+
+  await recordLeadHistoryEvent(activeLeadKeyForNotes, `Note updated / Reminder set for ${remDate || 'None'}`);
   closeNotesModal();
   render();
 }
@@ -1108,53 +1227,117 @@ function switchPitchChannel(channel) {
 function openPitchModal(leadKey) {
   const b = DATA.businesses.find(item => (item.id || item.name) === leadKey);
   if (!b) return;
+  currentPitchLeadKey = leadKey;
   const name = b.name || '';
   const city = b.city || '';
   const category = b.category || 'Business';
-  const phone = b.phone ? String(b.phone) : '';
 
   const sub = document.getElementById('pitchBusinessSubtitle');
   if (sub) sub.textContent = `${name} (${category} • ${city || 'Albania'})`;
   
-  const pitchWa = `Përshëndetje! Vura re se ${name} në ${city || 'Albania'} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?`;
-  
-  const outWa = document.getElementById('pitchTextOutput');
-  if (outWa) outWa.value = pitchWa;
-  
-  const cleanNum = phone ? phone.replace(/\D/g, '') : '';
-  const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
-  const waUrl = formatted ? `https://wa.me/${formatted}?text=${encodeURIComponent(pitchWa)}` : `https://wa.me/?text=${encodeURIComponent(pitchWa)}`;
-  
-  const waBtn = document.getElementById('whatsappSendBtn');
-  if (waBtn) waBtn.href = waUrl;
+  // Load custom templates from localStorage or default
+  const savedWa = localStorage.getItem('pafaqe_wa_template') || DEFAULT_WA_TEMPLATE;
+  const savedEmailSub = localStorage.getItem('pafaqe_email_sub_template') || DEFAULT_EMAIL_SUB_TEMPLATE;
+  const savedEmailBody = localStorage.getItem('pafaqe_email_body_template') || DEFAULT_EMAIL_BODY_TEMPLATE;
 
-  // Email pitch generation
-  const emailSub = `Propozim Web Design për ${name}`;
-  const emailBody = `Përshëndetje,\n\nU bëra kërkim në zonën e ${city || 'Albania'} dhe vura re se ${name} (${category}) nuk ka ende një faqe web zyrtare për t'u shfaqur në rezultatet e Google.\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne, të shpejta dhe me kosto shumë të favorshme që ju sjellin më shumë klientë.\n\nA dëshironi një konsultë të shkurtër ose një shembull se si mund të dukej faqja juaj?\n\nMe respekt,\n[Emri Juaj]\nPaFaqe.al`;
+  const waInput = document.getElementById('pitchTemplateWaInput');
+  const emailSubInput = document.getElementById('emailSubjectTemplateInput');
+  const emailBodyInput = document.getElementById('emailBodyTemplateInput');
 
-  const outEmailSub = document.getElementById('emailSubjectOutput');
-  const outEmailBody = document.getElementById('emailTextOutput');
-  if (outEmailSub) outEmailSub.value = emailSub;
-  if (outEmailBody) outEmailBody.value = emailBody;
+  if (waInput) waInput.value = savedWa;
+  if (emailSubInput) emailSubInput.value = savedEmailSub;
+  if (emailBodyInput) emailBodyInput.value = savedEmailBody;
 
-  const emailSendBtn = document.getElementById('emailSendBtn');
-  if (emailSendBtn) {
-    emailSendBtn.href = `mailto:?subject=${encodeURIComponent(emailSub)}&body=${encodeURIComponent(emailBody)}`;
-  }
-
+  updateLivePitchPreview();
   switchPitchChannel('whatsapp');
   document.getElementById('pitchModal').classList.remove('hidden');
 }
 
+function updateLivePitchPreview() {
+  if (!currentPitchLeadKey) return;
+  const b = DATA.businesses.find(item => (item.id || item.name) === currentPitchLeadKey);
+  if (!b) return;
+
+  const name = b.name || '';
+  const city = b.city || 'Albania';
+  const category = b.category || 'Business';
+  const phone = b.phone ? String(b.phone) : '';
+
+  const waTemplate = document.getElementById('pitchTemplateWaInput').value;
+  const emailSubTemplate = document.getElementById('emailSubjectTemplateInput').value;
+  const emailBodyTemplate = document.getElementById('emailBodyTemplateInput').value;
+
+  // Save templates to localStorage
+  localStorage.setItem('pafaqe_wa_template', waTemplate);
+  localStorage.setItem('pafaqe_email_sub_template', emailSubTemplate);
+  localStorage.setItem('pafaqe_email_body_template', emailBodyTemplate);
+
+  const formattedWa = waTemplate
+    .replace(/{name}/g, name)
+    .replace(/{city}/g, city)
+    .replace(/{category}/g, category);
+
+  const cleanNum = phone ? phone.replace(/\D/g, '') : '';
+  const phoneFormatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+  const waUrl = phoneFormatted ? `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(formattedWa)}` : `https://wa.me/?text=${encodeURIComponent(formattedWa)}`;
+  
+  const waBtn = document.getElementById('whatsappSendBtn');
+  if (waBtn) waBtn.href = waUrl;
+
+  const formattedEmailSub = emailSubTemplate
+    .replace(/{name}/g, name)
+    .replace(/{city}/g, city)
+    .replace(/{category}/g, category);
+
+  const formattedEmailBody = emailBodyTemplate
+    .replace(/{name}/g, name)
+    .replace(/{city}/g, city)
+    .replace(/{category}/g, category);
+
+  const emailSendBtn = document.getElementById('emailSendBtn');
+  if (emailSendBtn) {
+    emailSendBtn.href = `mailto:?subject=${encodeURIComponent(formattedEmailSub)}&body=${encodeURIComponent(formattedEmailBody)}`;
+  }
+}
+
+function resetPitchTemplate(type) {
+  if (type === 'whatsapp') {
+    document.getElementById('pitchTemplateWaInput').value = DEFAULT_WA_TEMPLATE;
+    localStorage.removeItem('pafaqe_wa_template');
+  } else {
+    document.getElementById('emailSubjectTemplateInput').value = DEFAULT_EMAIL_SUB_TEMPLATE;
+    document.getElementById('emailBodyTemplateInput').value = DEFAULT_EMAIL_BODY_TEMPLATE;
+    localStorage.removeItem('pafaqe_email_sub_template');
+    localStorage.removeItem('pafaqe_email_body_template');
+  }
+  updateLivePitchPreview();
+}
+
 function closePitchModal() {
   document.getElementById('pitchModal').classList.add('hidden');
+  currentPitchLeadKey = null;
 }
 
 function copyPitchToClipboard(type) {
-  const txt = type === 'email' ? document.getElementById('emailTextOutput') : document.getElementById('pitchTextOutput');
-  if (!txt) return;
-  txt.select();
-  navigator.clipboard.writeText(txt.value).then(() => {
+  if (!currentPitchLeadKey) return;
+  const b = DATA.businesses.find(item => (item.id || item.name) === currentPitchLeadKey);
+  if (!b) return;
+
+  const name = b.name || '';
+  const city = b.city || 'Albania';
+  const category = b.category || 'Business';
+
+  let textToCopy = '';
+  if (type === 'whatsapp') {
+    const tmpl = document.getElementById('pitchTemplateWaInput').value;
+    textToCopy = tmpl.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category);
+  } else {
+    const subTmpl = document.getElementById('emailSubjectTemplateInput').value;
+    const bodyTmpl = document.getElementById('emailBodyTemplateInput').value;
+    textToCopy = `Subject: ${subTmpl}\n\n${bodyTmpl}`.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category);
+  }
+
+  navigator.clipboard.writeText(textToCopy).then(() => {
     alert(type === 'email' ? 'Email pitch copied successfully!' : 'WhatsApp pitch copied successfully!');
   });
 }
@@ -1461,6 +1644,7 @@ function toggleSelectAll(masterCheckbox) {
     else selectedLeads.delete(key);
   });
   updateExportBtnLabel();
+  updateBulkToolbar();
 }
 
 function toggleSelectLead(key, checkbox) {
@@ -1470,6 +1654,111 @@ function toggleSelectLead(key, checkbox) {
     selectedLeads.delete(key);
   }
   updateExportBtnLabel();
+  updateBulkToolbar();
+}
+
+function clearSelection() {
+  selectedLeads.clear();
+  const checkboxes = document.querySelectorAll('.lead-select-checkbox');
+  checkboxes.forEach(cb => cb.checked = false);
+  const master = document.querySelector('thead input[type="checkbox"]');
+  if (master) master.checked = false;
+  updateExportBtnLabel();
+  updateBulkToolbar();
+}
+
+function updateBulkToolbar() {
+  const toolbar = document.getElementById('bulkActionsToolbar');
+  const badge = document.getElementById('selectedCountBadge');
+  if (!toolbar || !badge) return;
+
+  if (selectedLeads.size > 0) {
+    toolbar.classList.remove('hidden');
+    badge.textContent = `${selectedLeads.size} selected`;
+  } else {
+    toolbar.classList.add('hidden');
+  }
+}
+
+async function applyBulkStatus() {
+  if (selectedLeads.size === 0) return;
+  const targetStatus = document.getElementById('bulkStatusSelect').value;
+  
+  for (const leadKey of selectedLeads) {
+    await setLeadStatus(leadKey, targetStatus);
+  }
+  
+  alert(`Successfully updated status for ${selectedLeads.size} leads to "${targetStatus}".`);
+  clearSelection();
+  render();
+}
+
+// Saved Filter Presets Logic
+function getSavedPresets() {
+  try {
+    return JSON.parse(localStorage.getItem('pafaqe_filter_presets') || '[]');
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveCurrentPresetPrompt() {
+  const presetName = prompt("Enter a name for this filter preset (e.g., 'Dentists in Tirana'):");
+  if (!presetName) return;
+
+  const currentFilters = {
+    name: presetName,
+    q: document.getElementById('q').value,
+    city: document.getElementById('city').value,
+    cat: document.getElementById('cat').value,
+    minRating: document.getElementById('minRating').value,
+    phoneOnly: document.getElementById('phoneOnly').checked
+  };
+
+  const presets = getSavedPresets();
+  presets.push(currentFilters);
+  localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
+  renderFilterPresets();
+}
+
+function applyPreset(index) {
+  const presets = getSavedPresets();
+  const p = presets[index];
+  if (!p) return;
+
+  document.getElementById('q').value = p.q || '';
+  document.getElementById('city').value = p.city || '';
+  document.getElementById('cat').value = p.cat || '';
+  document.getElementById('minRating').value = p.minRating || '0';
+  document.getElementById('phoneOnly').checked = !!p.phoneOnly;
+
+  handleFilterInput();
+}
+
+function deletePreset(index, event) {
+  event.stopPropagation();
+  const presets = getSavedPresets();
+  presets.splice(index, 1);
+  localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
+  renderFilterPresets();
+}
+
+function renderFilterPresets() {
+  const container = document.getElementById('presetChipsContainer');
+  if (!container) return;
+  const presets = getSavedPresets();
+
+  if (presets.length === 0) {
+    container.innerHTML = `<span class="subtext italic text-[11px]">No saved presets yet.</span>`;
+    return;
+  }
+
+  container.innerHTML = presets.map((p, idx) => `
+    <span onclick="applyPreset(${idx})" class="chip chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium flex items-center gap-1.5 cursor-pointer">
+      <span>${escapeHtml(p.name)}</span>
+      <span onclick="deletePreset(${idx}, event)" class="text-rose-400 hover:text-rose-300 font-bold ml-1">×</span>
+    </span>
+  `).join('');
 }
 
 function updateExportBtnLabel() {
