@@ -504,22 +504,37 @@
   </div>
 </div>
 
-<!-- NOTES MODAL WITH FOLLOW-UP REMINDER DATE & ACTIVITY TIMELINE -->
+<!-- NOTES & MANUAL RATING MODAL -->
 <div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
     <button onclick="UIController.closeNotesModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold mb-1">Lead CRM Notes & Activity Log</div>
+    <div class="text-lg font-extrabold mb-1">Lead CRM Notes, Rating & Reminders</div>
     <p id="notesBusinessSubtitle" class="text-xs text-amber-500 dark:text-amber-400 mb-4 font-semibold"></p>
     
     <div class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Custom Notes</label>
-        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-xl p-3 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Manual Rating (★)</label>
+          <select id="leadCustomRatingInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+            <option value="">(Default Database Rating)</option>
+            <option value="5.0">5.0 ★ (Elite)</option>
+            <option value="4.5">4.5 ★ (Great)</option>
+            <option value="4.0">4.0 ★ (Good)</option>
+            <option value="3.5">3.5 ★ (Average)</option>
+            <option value="3.0">3.0 ★ (Fair)</option>
+            <option value="2.0">2.0 ★ (Poor / Risk)</option>
+            <option value="1.0">1.0 ★ (Critical)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Follow-Up Date (Reminder)</label>
+          <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+        </div>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Follow-Up Date (Reminder)</label>
-        <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Custom Notes</label>
+        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-xl p-3 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
       </div>
 
       <!-- Activity Timeline History -->
@@ -532,7 +547,7 @@
 
       <div class="flex items-center justify-end gap-3 pt-2">
         <button onclick="UIController.closeNotesModal()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-amber-500 text-xs font-semibold transition">Cancel</button>
-        <button onclick="CRMStore.saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-900 transition shadow-md">Save Note & Reminder</button>
+        <button onclick="CRMStore.saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-900 transition shadow-md">Save Changes</button>
       </div>
     </div>
   </div>
@@ -722,6 +737,7 @@ const AuthService = {
         CRMStore.cloudStatuses = {};
         CRMStore.cloudNotes = {};
         CRMStore.cloudReminders = {};
+        CRMStore.cloudRatings = {};
         CRMStore.cloudHistory = {};
         CRMStore.DATA = DEMO;
         if (hero) hero.classList.remove('hidden');
@@ -863,7 +879,7 @@ const AuthService = {
     } catch (err) {
       if (errBox) {
         errBox.textContent = err.message;
-        errBox.classList.remove('hidden');
+        errBox.classList.add('hidden');
       }
     } finally {
       if (submitBtn) {
@@ -938,7 +954,7 @@ const AuthService = {
     } catch (err) {
       if (errBox) {
         errBox.textContent = err.message;
-        errBox.classList.remove('hidden');
+        errBox.classList.add('hidden');
       }
     }
   }
@@ -952,6 +968,7 @@ const CRMStore = {
   cloudStatuses: {},
   cloudNotes: {},
   cloudReminders: {},
+  cloudRatings: {},
   cloudHistory: {},
   activeLeadKeyForNotes: null,
   selectedLeads: new Set(),
@@ -982,6 +999,7 @@ const CRMStore = {
       
       this.cloudNotes = {};
       this.cloudReminders = {};
+      this.cloudRatings = {};
       let dueRemindersCount = 0;
       const todayStr = new Date().toISOString().split('T')[0];
 
@@ -991,6 +1009,9 @@ const CRMStore = {
         if (d.reminder) {
           this.cloudReminders[doc.id] = d.reminder;
           if (d.reminder === todayStr) dueRemindersCount++;
+        }
+        if (d.customRating) {
+          this.cloudRatings[doc.id] = d.customRating;
         }
       });
 
@@ -1099,31 +1120,57 @@ const CRMStore = {
     }
   },
 
+  getLeadRating(b) {
+    const key = b.id || b.name;
+    let custom = null;
+    if (AuthService.currentUser) {
+      custom = this.cloudRatings[key];
+    } else {
+      const ratings = JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}');
+      custom = ratings[key];
+    }
+    return custom !== undefined && custom !== null && custom !== "" ? parseFloat(custom) : (b.rating || null);
+  },
+
   async saveLeadNote() {
     if (!this.activeLeadKeyForNotes) return;
     const input = document.getElementById('leadNoteInput');
     const remInput = document.getElementById('leadReminderInput');
+    const ratingInput = document.getElementById('leadCustomRatingInput');
     const noteText = input ? input.value.trim() : '';
     const remDate = remInput ? remInput.value : '';
+    const customRating = ratingInput ? ratingInput.value : '';
     
     if (AuthService.currentUser) {
       this.cloudNotes[this.activeLeadKeyForNotes] = noteText;
       this.cloudReminders[this.activeLeadKeyForNotes] = remDate;
+      if (customRating) this.cloudRatings[this.activeLeadKeyForNotes] = customRating;
+      else delete this.cloudRatings[this.activeLeadKeyForNotes];
+
       try {
-        await db.collection('users').doc(AuthService.currentUser.uid).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ note: noteText, reminder: remDate });
+        await db.collection('users').doc(AuthService.currentUser.uid).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ 
+          note: noteText, 
+          reminder: remDate,
+          customRating: customRating
+        });
       } catch (err) {
         console.error("Error saving note to cloud:", err);
       }
     } else {
       const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
       const rems = JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}');
+      const ratings = JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}');
       notes[this.activeLeadKeyForNotes] = noteText;
       rems[this.activeLeadKeyForNotes] = remDate;
+      if (customRating) ratings[this.activeLeadKeyForNotes] = customRating;
+      else delete ratings[this.activeLeadKeyForNotes];
+
       localStorage.setItem('pafaqe_lead_notes', JSON.stringify(notes));
       localStorage.setItem('pafaqe_lead_reminders', JSON.stringify(rems));
+      localStorage.setItem('pafaqe_lead_ratings', JSON.stringify(ratings));
     }
 
-    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Note updated / Reminder set for ${remDate || 'None'}`);
+    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Note / Rating updated (Rating: ${customRating || 'Default'})`);
     UIController.closeNotesModal();
     this.render();
   },
@@ -1132,7 +1179,8 @@ const CRMStore = {
     let s = 50;
     if(!b.website) s += 25;
     if(b.phone) s += 10;
-    if(b.rating){ s += Math.round((b.rating-3)*6); if(b.rating>=4.5) s+=5; }
+    const effectiveRating = this.getLeadRating(b);
+    if(effectiveRating){ s += Math.round((effectiveRating-3)*6); if(effectiveRating>=4.5) s+=5; }
     if(b.reviews>50) s += 5;
     return Math.max(0,Math.min(100,s));
   },
@@ -1144,7 +1192,9 @@ const CRMStore = {
     let list = this.DATA.businesses.filter(b => {
       if(!this.showAll && b.website) return false;
       if(highPriorityOnly && (this.leadScore(b) < 80 || !b.phone)) return false;
-      if(this.lowRatingOnly && (b.rating && b.rating >= 3.5)) return false;
+      
+      const effectiveRating = this.getLeadRating(b);
+      if(this.lowRatingOnly && (effectiveRating && effectiveRating >= 3.5)) return false;
       
       if (AuthService.currentUser) {
         const qEl = document.getElementById('q');
@@ -1164,8 +1214,7 @@ const CRMStore = {
         if(cat && (b.category || '').trim() !== cat) return false;
         if(phoneOnly && !b.phone) return false;
         
-        const bRating = b.rating || 0;
-        if(mr > 0 && bRating < mr) return false;
+        if(mr > 0 && (effectiveRating || 0) < mr) return false;
       }
       return true;
     });
@@ -1182,8 +1231,8 @@ const CRMStore = {
     const sortEl = document.getElementById('sort');
     const s = AuthService.currentUser && sortEl ? sortEl.value : 'score';
     list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
-      : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
-      : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
+      : s==='rating' ? ((this.getLeadRating(b) || 0) - (this.getLeadRating(a) || 0))
+      : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
       : this.leadScore(b) - this.leadScore(a));
     return list;
   },
@@ -1349,13 +1398,14 @@ const CRMStore = {
     const body = list.map(b => {
       const rawPhone = b.phone ? String(b.phone) : '';
       const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
+      const effectiveRating = this.getLeadRating(b);
       return [
         `"${(b.name || '').replace(/"/g, '""')}"`,
         `"${(b.category || '').replace(/"/g, '""')}"`,
         `"${(b.city || '').replace(/"/g, '""')}"`,
         `"${(b.address || '').replace(/"/g, '""')}"`,
         excelPhone,
-        b.rating || '',
+        effectiveRating || '',
         b.reviews || '',
         `"${(b.website || '').replace(/"/g, '""')}"`,
         this.leadScore(b)
@@ -1499,7 +1549,7 @@ const CRMStore = {
         else if (st === 'closed') cClosed++;
         else cNew++;
 
-        const r = b.rating || 0;
+        const r = this.getLeadRating(b) || 0;
         if (r >= 4.5) cElite++;
         else if (r >= 3.5) cStandard++;
         else cOpportunity++;
@@ -1527,7 +1577,7 @@ const CRMStore = {
     const city = b.city || 'Albania';
     const category = b.category || 'Business';
     const phone = b.phone ? String(b.phone) : '';
-    const rating = b.rating || 0;
+    const rating = this.getLeadRating(b) || 0;
 
     let ratingContext = "";
     if (rating >= 4.5) {
@@ -1595,7 +1645,7 @@ const CRMStore = {
     const name = b.name || '';
     const city = b.city || 'Albania';
     const category = b.category || 'Business';
-    const rating = b.rating || 0;
+    const rating = this.getLeadRating(b) || 0;
 
     let ratingContext = "";
     if (rating >= 4.5) ratingContext = " Duke qenë se keni një reputacion fantastik me vlerësim " + rating + "★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.";
@@ -1701,12 +1751,12 @@ const CRMStore = {
       const leadNote = this.getLeadNote(leadKey);
       const leadRem = this.getLeadReminder(leadKey);
       const isSelected = this.selectedLeads.has(leadKey);
+      const effectiveRating = this.getLeadRating(b);
 
       let ratingHtml = '<span class="subtext">—</span>';
-      if (b.rating) {
-        const r = b.rating;
-        let badgeColor = r >= 4.5 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : r >= 3.5 ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40';
-        ratingHtml = `<span class="px-2 py-0.5 rounded-md border text-[11px] font-semibold ${badgeColor}">★ ${r} <span class="text-[10px] opacity-75">(${b.reviews || 0})</span></span>`;
+      if (effectiveRating) {
+        let badgeColor = effectiveRating >= 4.5 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : effectiveRating >= 3.5 ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40';
+        ratingHtml = `<span class="px-2 py-0.5 rounded-md border text-[11px] font-semibold ${badgeColor}">★ ${effectiveRating} <span class="text-[10px] opacity-75">(${b.reviews || 0})</span></span>`;
       }
 
       const tr = document.createElement('tr');
@@ -2031,6 +2081,10 @@ const UIController = {
     document.getElementById('notesBusinessSubtitle').textContent = name;
     document.getElementById('leadNoteInput').value = CRMStore.getLeadNote(leadKey);
     document.getElementById('leadReminderInput').value = CRMStore.getLeadReminder(leadKey);
+    
+    const currentRating = AuthService.currentUser ? CRMStore.cloudRatings[leadKey] : (JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}')[leadKey] || '');
+    document.getElementById('leadCustomRatingInput').value = currentRating || '';
+
     this.renderActivityTimeline(leadKey);
     document.getElementById('notesModal').classList.remove('hidden');
   },
@@ -2092,7 +2146,7 @@ const UIController = {
     const name = b.name || '';
     const city = b.city || '';
     const category = b.category || 'Business';
-    const rating = b.rating || 0;
+    const rating = CRMStore.getLeadRating(b) || 0;
 
     document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category} • ${city || 'Albania'})`;
     
