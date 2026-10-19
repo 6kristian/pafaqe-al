@@ -24,9 +24,9 @@
     -webkit-font-smoothing: antialiased;
   }
   
-  /* Enterprise Obsidian Dark Mode */
+  /* Dark Mode Styles */
   html.dark body { background-color: #0b0f19; color: #cbd5e1; }
-  html.dark .card-bg { background-color: #111827; border-color: #1f293d; }
+  html.dark .card-bg { background-color: #111827; border-color: #1f293d; color: #cbd5e1; }
   html.dark .header-bg { background-color: rgba(11, 15, 25, 0.94); border-color: #1f293d; }
   html.dark .input-bg { background-color: #0f172a; border-color: #334155; color: #f8fafc; }
   html.dark .table-head-bg { background-color: #0f172a; border-color: #1f293d; color: #64748b; }
@@ -35,31 +35,34 @@
   html.dark .border-theme { border-color: #1f293d; }
   html.dark .chip-btn { background-color: #0f172a; border-color: #1f293d; color: #94a3b8; }
   html.dark .chip-btn:hover { background-color: #1e293b; color: #f8fafc; border-color: #334155; }
+  html.dark .logo-text { color: #ffffff; }
 
-  /* Enterprise Clean Light Mode */
+  /* Light Mode Styles */
   html.light body { background-color: #f8fafc; color: #0f172a; }
-  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); }
+  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; color: #0f172a; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); }
   html.light .header-bg { background-color: rgba(255, 255, 255, 0.96); border-color: #e2e8f0; }
   html.light .input-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; }
   html.light .table-head-bg { background-color: #f1f5f9; border-color: #e2e8f0; color: #475569; }
   html.light .row-hover:hover { background-color: #f8fafc; }
   html.light .subtext { color: #64748b; }
   html.light .border-theme { border-color: #e2e8f0; }
-  html.light .chip-btn { background-color: #ffffff; border-color: #e2e8f0; color: #475569; }
+  html.light .chip-btn { background-color: #ffffff; border-color: #cbd5e1; color: #334155; }
   html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; }
+  html.light .logo-text { color: #0f172a; }
 
-  .badge { background-color: #d97706; color: #ffffff; }
   .chip { cursor: pointer; transition: all 0.15s ease; }
   .chip.active { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; font-weight: 600; }
   .row { transition: background-color 0.15s ease; }
-  .leadscore { font-variant-numeric: tabular-nums; }
-  
-  /* Smooth Interactive Elements */
+
   button, input, select, textarea, a, label {
     transition: all 0.15s ease-in-out;
   }
   button:hover, a:hover {
     opacity: 0.92;
+  }
+
+  .kanban-col {
+    min-height: 480px;
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -74,10 +77,10 @@
   <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <!-- Logo (Adapts to White in Dark Mode) -->
+        <!-- Logo -->
         <h1 class="text-lg font-bold tracking-tight cursor-pointer flex items-center gap-2 group" onclick="UIController.switchTab('leads')">
           <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-          <span class="tracking-tight font-extrabold text-slate-900 dark:text-white">PaFaqe<span class="text-blue-600 dark:text-blue-400">.al</span></span>
+          <span class="tracking-tight font-extrabold logo-text">PaFaqe<span class="text-blue-600 dark:text-blue-400">.al</span></span>
         </h1>
         <span class="hidden md:inline-block text-xs subtext border-l border-theme pl-3 font-medium">Inteligjencë Shitjesh B2B</span>
       </div>
@@ -156,7 +159,7 @@
             <option value="name">Rendit: Emri A→Z</option>
           </select>
         </div>
-        <div class="md:col-span-3 flex items-center justify-between sm:justify-between gap-3 text-xs">
+        <div class="md:col-span-3 flex items-center justify-between gap-3 text-xs">
           <label class="flex items-center gap-2 cursor-pointer select-none subtext">
             <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Vetëm me Telefon
           </label>
@@ -177,7 +180,7 @@
       <div class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
+          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
             <span id="exportBtnText">Eksporto CSV</span>
           </button>
         </div>
@@ -267,40 +270,36 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col min-h-[520px]">
+        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')">
           <div class="flex items-center justify-between border-b border-theme pb-2.5">
             <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Të Reja (New)</span>
             <span id="kanbanCountNew" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColNew" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')"></div>
-          <div id="kanbanPaginationNew" class="pt-2 border-t border-theme flex items-center justify-between text-xs subtext font-mono"></div>
+          <div id="kanbanColNew" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col min-h-[520px]">
+        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')">
           <div class="flex items-center justify-between border-b border-theme pb-2.5">
             <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Në Kontakt (Contacted)</span>
             <span id="kanbanCountContacted" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColContacted" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')"></div>
-          <div id="kanbanPaginationContacted" class="pt-2 border-t border-theme flex items-center justify-between text-xs subtext font-mono"></div>
+          <div id="kanbanColContacted" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col min-h-[520px]">
+        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')">
           <div class="flex items-center justify-between border-b border-theme pb-2.5">
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 font-mono">Të Interesuar (Interested)</span>
             <span id="kanbanCountInterested" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColInterested" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')"></div>
-          <div id="kanbanPaginationInterested" class="pt-2 border-t border-theme flex items-center justify-between text-xs subtext font-mono"></div>
+          <div id="kanbanColInterested" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col min-h-[520px]">
+        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')">
           <div class="flex items-center justify-between border-b border-theme pb-2.5">
             <span class="font-bold text-xs uppercase tracking-wider text-emerald-500 font-mono">Mbyllur / Fituar (Closed)</span>
             <span id="kanbanCountClosed" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColClosed" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')"></div>
-          <div id="kanbanPaginationClosed" class="pt-2 border-t border-theme flex items-center justify-between text-xs subtext font-mono"></div>
+          <div id="kanbanColClosed" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
         </div>
       </div>
     </div>
@@ -372,7 +371,7 @@
                 <button onclick="CRMStore.copyOrgId()" class="px-3.5 py-2 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-semibold shrink-0 cursor-pointer">Kopjo</button>
               </div>
               <p class="text-[11px] subtext mt-1">Shpërndaj këtë ID me anëtarët e ekipit për të ndarë të njëjtin tubacion.</p>
-              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-1" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
+              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-1.5" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
             </div>
 
             <div>
@@ -589,7 +588,7 @@
   <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
     <button onclick="UIController.closePitchModal()" class="absolute top-4 right-4 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
     <div>
-      <div class="text-lg font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave <span id="pitchRatingBadge" class="ml-2 text-xs px-2 py-0.5 rounded border font-mono"></span></div>
+      <div class="text-lg font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
       <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium mt-0.5"></p>
     </div>
     
@@ -640,7 +639,7 @@
 <!-- Footer -->
 <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 text-xs subtext border-t border-theme mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
-    <p class="font-semibold text-slate-900 dark:text-white">PaFaqe.al — B2B Lead Intelligence CRM</p>
+    <p class="font-semibold logo-text">PaFaqe.al — B2B Lead Intelligence CRM</p>
     <p class="text-[11px] subtext mt-0.5">© 2026 Zhvilluar nga Kristian Frroku</p>
   </div>
   <div class="flex items-center gap-4 font-mono text-xs">
@@ -761,9 +760,9 @@ const AuthService = {
           btn.innerHTML = `
             <div class="flex items-center gap-1.5 cursor-pointer" onclick="UIController.switchTab('profile')">
               <img src="${avatarUrl}" alt="Avatar" style="width: 18px; height: 18px;" class="rounded-full border border-blue-600/40 bg-slate-800 object-cover shadow-sm">
-              <span class="hover:underline font-semibold text-xs whitespace-nowrap">${UIController.escapeHtml(displayName)}</span>
+              <span class="hover:underline font-semibold text-xs whitespace-nowrap text-slate-800 dark:text-slate-100">${UIController.escapeHtml(displayName)}</span>
             </div>
-            <span class="text-xs text-rose-400 hover:text-rose-300 ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Dil]</span>
+            <span class="text-xs text-rose-500 hover:text-rose-400 ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Dil]</span>
           `;
           btn.className = "px-3 py-1.5 rounded-lg card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
         }
@@ -922,6 +921,8 @@ const CRMStore = {
       if (countLabel) countLabel.textContent = `Anëtarë në ekip: ${count}`;
     } catch (e) {
       console.error("Error fetching team member count:", e);
+      const countLabel = document.getElementById('teamMemberCountLabel');
+      if (countLabel) countLabel.textContent = `Anëtarë në ekip: 1`;
     }
   },
 
@@ -1196,6 +1197,14 @@ const CRMStore = {
     this.renderFilterPresets();
   },
 
+  deletePreset(idx, e) {
+    if (e) e.stopPropagation();
+    const presets = this.getSavedPresets();
+    presets.splice(idx, 1);
+    localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
+    this.renderFilterPresets();
+  },
+
   applyPreset(idx) {
     const p = this.getSavedPresets()[idx];
     if (!p) return;
@@ -1212,8 +1221,9 @@ const CRMStore = {
     if (!container) return;
     const presets = this.getSavedPresets();
     container.innerHTML = presets.map((p, idx) => `
-      <span onclick="CRMStore.applyPreset(${idx})" class="chip chip-btn px-2.5 py-1 rounded border text-xs font-medium flex items-center gap-1 cursor-pointer">
-        <span>${UIController.escapeHtml(p.name)}</span>
+      <span class="chip chip-btn px-2.5 py-1 rounded border text-xs font-medium flex items-center gap-1.5 cursor-pointer">
+        <span onclick="CRMStore.applyPreset(${idx})">${UIController.escapeHtml(p.name)}</span>
+        <button onclick="CRMStore.deletePreset(${idx}, event)" class="text-rose-500 hover:text-rose-400 font-bold text-xs" title="Fshij filtrin">×</button>
       </span>
     `).join('');
   },
@@ -1277,10 +1287,12 @@ const CRMStore = {
       if (counts[status]) counts[status].textContent = statusList.length;
 
       if (cols[status]) {
-        cols[status].innerHTML = statusList.slice(0, 25).map(b => {
+        cols[status].innerHTML = statusList.slice(0, 30).map(b => {
           const leadKey = b.id || b.name;
           return `
-            <div class="card-bg border rounded-xl p-3 shadow-sm cursor-pointer hover:border-blue-500 transition space-y-2 text-xs" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${UIController.escapeHtml(leadKey)}')">
+            <div class="card-bg border rounded-xl p-3 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-500 transition space-y-2 text-xs" 
+                 draggable="true" 
+                 ondragstart="CRMStore.dragLead(event, '${UIController.escapeHtml(leadKey)}')">
               <div class="flex items-start justify-between gap-2">
                 <span class="font-bold truncate">${UIController.escapeHtml(b.name)}</span>
                 <span class="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 shrink-0">${this.leadScore(b)} pts</span>
@@ -1302,7 +1314,16 @@ const CRMStore = {
     this.updateAnalytics(list.length);
   },
 
-  allowDrop(e) { e.preventDefault(); },
+  dragLead(e, leadKey) {
+    e.dataTransfer.setData('text/plain', leadKey);
+    e.dataTransfer.effectAllowed = 'move';
+  },
+
+  allowDrop(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  },
+
   dropLead(e, newStatus) {
     e.preventDefault();
     const leadKey = e.dataTransfer.getData('text/plain');
