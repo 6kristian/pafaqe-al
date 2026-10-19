@@ -545,12 +545,12 @@ auth.onAuthStateChanged(async (user) => {
     if (btn) {
       btn.innerHTML = `
         <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
-          <img src="${avatarUrl}" alt="Avatar" class="w-5 h-5 rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+          <img src="${avatarUrl}" alt="Avatar" style="width: 18px; height: 18px; min-width: 18px; min-height: 18px;" class="rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
           <span class="hover:underline font-semibold text-xs whitespace-nowrap">${escapeHtml(displayName)}</span>
         </div>
         <span class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
       `;
-      btn.className = "px-2 py-1 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
+      btn.className = "px-2.5 py-1.5 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
     }
     if (hero) hero.classList.add('hidden');
     if (filterSec) filterSec.classList.remove('hidden');
