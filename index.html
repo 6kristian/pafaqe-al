@@ -103,7 +103,7 @@
           <span class="px-3 py-1 rounded-full card-bg text-amber-500 dark:text-amber-400 border border-theme text-xs font-semibold uppercase tracking-wider">B2B SaaS Lead Intelligence</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Scale Your Web Agency Outreach Across Albania</h2>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Discover verified local enterprises in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct contact details, lead scoring, and structured B2B sales pipelines.
+            Discover verified local enterprises in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct contact details, lead scoring, rating insights, and structured B2B sales pipelines.
           </p>
           <div class="pt-2 flex flex-wrap items-center gap-3">
             <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
@@ -163,13 +163,14 @@
           </button>
         </div>
 
-        <!-- High Profit Industry Recommendations -->
+        <!-- High Profit Industry & Rating Recommendations -->
         <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-3">
           <span class="subtext text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
           <button onclick="UIController.quickNicheFilter('Hotel')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Hotels & Tourism</button>
           <button onclick="UIController.quickNicheFilter('Dental')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Dentists & Clinics</button>
           <button onclick="UIController.quickNicheFilter('Auto')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Auto & Rentals</button>
           <button onclick="UIController.quickNicheFilter('Restaurant')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Restaurants & Cafes</button>
+          <button onclick="UIController.quickRatingFilter('low')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition text-rose-400">🔴 Reputation Risk (&lt;3.5★)</button>
         </div>
       </div>
 
@@ -215,7 +216,7 @@
           <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl card-bg border text-amber-500 dark:text-amber-400 text-lg font-bold">🔒</div>
           <h3 class="text-lg font-extrabold tracking-tight">Unlock All Verified Albanian Leads</h3>
           <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
-            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, instant WhatsApp & Email pitch generators, custom CRM notes, and Excel-ready CSV exports.
+            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, rating health insights, instant WhatsApp & Email pitch generators, custom CRM notes, and Excel-ready CSV exports.
           </p>
           <div class="pt-1">
             <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
@@ -319,7 +320,7 @@
         <div class="card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2" style="flex: 1 1 300px;">
           <h3 class="font-bold text-base text-amber-500 dark:text-amber-400">Technical Architecture</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Engineered with secure Firebase Cloud Firestore synchronization, modular client state stores, reactive Kanban sales pipelines, and automated reminder triggers.
+            Engineered with secure Firebase Cloud Firestore synchronization, modular client state stores, reactive Kanban sales pipelines, and rating-informed dynamic pitch generators.
           </p>
         </div>
 
@@ -389,9 +390,9 @@
           </div>
         </div>
 
-        <!-- Outreach Performance & Pipeline Analytics Card -->
+        <!-- Outreach Performance & Rating Analytics Card -->
         <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-5">
-          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Outreach Analytics</h2>
+          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Outreach & Rating Analytics</h2>
           <div class="space-y-3 text-xs">
             <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
               <span class="subtext font-medium">Total Tracked Leads:</span>
@@ -412,6 +413,18 @@
             <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
               <span class="subtext font-medium">Closed / Won Stage:</span>
               <span id="analyticsClosedCount" class="font-bold text-sm text-emerald-500">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">🟢 Elite Reputation (4.5★+):</span>
+              <span id="analyticsEliteCount" class="font-bold text-sm text-emerald-400">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">🟡 Standard Rating (3.5–4.4★):</span>
+              <span id="analyticsStandardCount" class="font-bold text-sm text-amber-400">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+              <span class="subtext font-medium">🔴 Reputation Opportunity (&lt;3.5★ / Unrated):</span>
+              <span id="analyticsOpportunityCount" class="font-bold text-sm text-rose-400">0</span>
             </div>
             <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
               <span class="subtext font-medium">Follow-up Reminders Set:</span>
@@ -525,11 +538,11 @@
   </div>
 </div>
 
-<!-- MULTI-CHANNEL PITCH GENERATOR MODAL WITH CUSTOMIZABLE TEMPLATES -->
+<!-- MULTI-CHANNEL PITCH GENERATOR MODAL WITH DYNAMIC RATING TEMPLATES -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
     <button onclick="UIController.closePitchModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Outreach Pitch Generator</div>
+    <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Outreach Pitch Generator <span id="pitchRatingBadge" class="ml-2 text-xs px-2 py-0.5 rounded-md border font-normal"></span></div>
     <p id="pitchBusinessSubtitle" class="text-xs subtext mb-4 font-medium"></p>
     
     <!-- Channel Tabs -->
@@ -542,10 +555,10 @@
     <div id="pitchPanelWa" class="space-y-4">
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext">WhatsApp Template (Use {name}, {city}, {category})</label>
+          <label class="block text-xs font-semibold uppercase tracking-wider subtext">WhatsApp Template (Use {name}, {city}, {category}, {ratingText})</label>
           <button onclick="CRMStore.resetPitchTemplate('whatsapp')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
         </div>
-        <textarea id="pitchTemplateWaInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
+        <textarea id="pitchTemplateWaInput" rows="6" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
       </div>
 
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
@@ -567,7 +580,7 @@
           <label class="block text-xs font-semibold uppercase tracking-wider subtext">Email Body Template</label>
           <button onclick="CRMStore.resetPitchTemplate('email')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
         </div>
-        <textarea id="emailBodyTemplateInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
+        <textarea id="emailBodyTemplateInput" rows="6" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
       </div>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
         <button onclick="CRMStore.copyPitchToClipboard('email')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Email Text</button>
@@ -965,10 +978,11 @@ const CRMStore = {
   showAll: false,
   currentPage: 1,
   pageSize: 50,
+  lowRatingOnly: false,
 
-  DEFAULT_WA_TEMPLATE: "Përshëndetje! Vura re se {name} në {city} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?",
+  DEFAULT_WA_TEMPLATE: "Përshëndetje! Vura re se {name} në {city} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.{ratingContext}\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?",
   DEFAULT_EMAIL_SUB_TEMPLATE: "Propozim Web Design për {name}",
-  DEFAULT_EMAIL_BODY_TEMPLATE: "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare për t'u shfaqur në rezultatet e Google.\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne, të shpejta dhe me kosto shumë të favorshme që ju sjellin më shumë klientë.\n\nA dëshironi një konsultë të shkurtër ose një shembull se si mund të dukej faqja juaj?\n\nMe respekt,\n[Emri Juaj]\nPaFaqe.al",
+  DEFAULT_EMAIL_BODY_TEMPLATE: "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare për t'u shfaqur në rezultatet e Google.{ratingContext}\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne, të shpejta dhe me kosto shumë të favorshme që ju sjellin më shumë klientë.\n\nA dëshironi një konsultë të shkurtër ose një shembull se si mund të dukej faqja juaj?\n\nMe respekt,\n[Emri Juaj]\nPaFaqe.al",
 
   async loadCloudData() {
     if (!AuthService.currentUser) return;
@@ -1146,6 +1160,7 @@ const CRMStore = {
     let list = this.DATA.businesses.filter(b => {
       if(!this.showAll && b.website) return false;
       if(highPriorityOnly && (this.leadScore(b) < 80 || !b.phone)) return false;
+      if(this.lowRatingOnly && (b.rating && b.rating >= 3.5)) return false;
       
       if (AuthService.currentUser) {
         const qEl = document.getElementById('q');
@@ -1183,7 +1198,7 @@ const CRMStore = {
     const sortEl = document.getElementById('sort');
     const s = AuthService.currentUser && sortEl ? sortEl.value : 'score';
     list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
-      : s==='rating' ? ((b.rating || 0) - (a.rating || 0))
+      : s==='rating' ? ((b.rating || 0) - (b.rating || 0))
       : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
       : this.leadScore(b) - this.leadScore(a));
     return list;
@@ -1434,7 +1449,7 @@ const CRMStore = {
               <span class="font-bold text-xs truncate">${UIController.escapeHtml(b.name)}</span>
               <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded card-bg border text-amber-500 shrink-0">${this.leadScore(b)} pts</span>
             </div>
-            <div class="text-[11px] subtext truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
+            <div class="text-[11px] subtext truncate">${UIController.escapeHtml(b.category \vert{}\vert{} 'Business')} •${UIController.escapeHtml(b.city || 'Albania')}</div>
             <div class="flex items-center justify-between pt-1 border-t border-theme text-[11px]">
               <span class="text-amber-600 dark:text-amber-400 font-medium">${UIController.escapeHtml(b.phone || 'No phone')}</span>
               <div class="flex items-center gap-1">
@@ -1483,11 +1498,14 @@ const CRMStore = {
     const aContacted = document.getElementById('analyticsContactedCount');
     const aInterested = document.getElementById('analyticsInterestedCount');
     const aClosed = document.getElementById('analyticsClosedCount');
+    const aElite = document.getElementById('analyticsEliteCount');
+    const aStandard = document.getElementById('analyticsStandardCount');
+    const aOpportunity = document.getElementById('analyticsOpportunityCount');
     const aReminders = document.getElementById('analyticsRemindersCount');
 
     if (aTotal) aTotal.textContent = totalCount.toLocaleString();
 
-    let cNew = 0, cContacted = 0, cInterested = 0, cClosed = 0, cRem = 0;
+    let cNew = 0, cContacted = 0, cInterested = 0, cClosed = 0, cElite = 0, cStandard = 0, cOpportunity = 0, cRem = 0;
     if (this.DATA && this.DATA.businesses) {
       this.DATA.businesses.forEach(b => {
         const k = b.id || b.name;
@@ -1497,6 +1515,11 @@ const CRMStore = {
         else if (st === 'closed') cClosed++;
         else cNew++;
 
+        const r = b.rating || 0;
+        if (r >= 4.5) cElite++;
+        else if (r >= 3.5) cStandard++;
+        else cOpportunity++;
+
         if (this.getLeadReminder(k)) cRem++;
       });
     }
@@ -1505,7 +1528,110 @@ const CRMStore = {
     if (aContacted) aContacted.textContent = cContacted;
     if (aInterested) aInterested.textContent = cInterested;
     if (aClosed) aClosed.textContent = cClosed;
+    if (aElite) aElite.textContent = cElite;
+    if (aStandard) aStandard.textContent = cStandard;
+    if (aOpportunity) aOpportunity.textContent = cOpportunity;
     if (aReminders) aReminders.textContent = cRem;
+  },
+
+  updateLivePitchPreview() {
+    if (!this.currentPitchLeadKey) return;
+    const b = this.DATA.businesses.find(item => (item.id || item.name) === this.currentPitchLeadKey);
+    if (!b) return;
+
+    const name = b.name || '';
+    const city = b.city || 'Albania';
+    const category = b.category || 'Business';
+    const phone = b.phone ? String(b.phone) : '';
+    const rating = b.rating || 0;
+
+    let ratingContext = "";
+    if (rating >= 4.5) {
+      ratingContext = ` Duke qenë se keni një reputacion fantastik me vlerësim ${rating}★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.`;
+    } else if (rating > 0 && rating < 3.5) {
+      ratingContext = ` Vura re se keni disa sfida me vlerësimet online (★${rating}), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin dhe të tërhiqni klientë më cilësorë.`;
+    } else {
+      ratingContext = ``;
+    }
+
+    const waTemplate = document.getElementById('pitchTemplateWaInput').value;
+    const emailSubTemplate = document.getElementById('emailSubjectTemplateInput').value;
+    const emailBodyTemplate = document.getElementById('emailBodyTemplateInput').value;
+
+    localStorage.setItem('pafaqe_wa_template', waTemplate);
+    localStorage.setItem('pafaqe_email_sub_template', emailSubTemplate);
+    localStorage.setItem('pafaqe_email_body_template', emailBodyTemplate);
+
+    const formattedWa = waTemplate
+      .replace(/{name}/g, name)
+      .replace(/{city}/g, city)
+      .replace(/{category}/g, category)
+      .replace(/{ratingContext}/g, ratingContext);
+
+    const cleanNum = phone ? phone.replace(/\D/g, '') : '';
+    const phoneFormatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+    const waUrl = phoneFormatted ? `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(formattedWa)}` : `https://wa.me/?text=${encodeURIComponent(formattedWa)}`;
+    
+    const waBtn = document.getElementById('whatsappSendBtn');
+    if (waBtn) waBtn.href = waUrl;
+
+    const formattedEmailSub = emailSubTemplate
+      .replace(/{name}/g, name)
+      .replace(/{city}/g, city)
+      .replace(/{category}/g, category);
+
+    const formattedEmailBody = emailBodyTemplate
+      .replace(/{name}/g, name)
+      .replace(/{city}/g, city)
+      .replace(/{category}/g, category)
+      .replace(/{ratingContext}/g, ratingContext);
+
+    const emailSendBtn = document.getElementById('emailSendBtn');
+    if (emailSendBtn) {
+      emailSendBtn.href = `mailto:?subject=${encodeURIComponent(formattedEmailSub)}&body=${encodeURIComponent(formattedEmailBody)}`;
+    }
+  },
+
+  resetPitchTemplate(type) {
+    if (type === 'whatsapp') {
+      document.getElementById('pitchTemplateWaInput').value = this.DEFAULT_WA_TEMPLATE;
+      localStorage.removeItem('pafaqe_wa_template');
+    } else {
+      document.getElementById('emailSubjectTemplateInput').value = this.DEFAULT_EMAIL_SUB_TEMPLATE;
+      document.getElementById('emailBodyTemplateInput').value = this.DEFAULT_EMAIL_BODY_TEMPLATE;
+      localStorage.removeItem('pafaqe_email_sub_template');
+      localStorage.removeItem('pafaqe_email_body_template');
+    }
+    this.updateLivePitchPreview();
+  },
+
+  copyPitchToClipboard(type) {
+    if (!this.currentPitchLeadKey) return;
+    const b = this.DATA.businesses.find(item => (item.id || item.name) === this.currentPitchLeadKey);
+    if (!b) return;
+
+    const name = b.name || '';
+    const city = b.city || 'Albania';
+    const category = b.category || 'Business';
+    const rating = b.rating || 0;
+
+    let ratingContext = "";
+    if (rating >= 4.5) ratingContext = ` Duke qenë se keni një reputacion fantastik me vlerësim ${rating}★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.`;
+    else if (rating > 0 && rating < 3.5) ratingContext = ` Vura re se keni disa sfida me vlerësimet online (★${rating}), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin.`;
+
+    let textToCopy = '';
+    if (type === 'whatsapp') {
+      const tmpl = document.getElementById('pitchTemplateWaInput').value;
+      textToCopy = tmpl.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+    } else {
+      const subTmpl = document.getElementById('emailSubjectTemplateInput').value;
+      const bodyTmpl = document.getElementById('emailBodyTemplateInput').value;
+      textToCopy = `Subject: ${subTmpl}\n\n${bodyTmpl}`.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+    }
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      alert(type === 'email' ? 'Email pitch copied successfully!' : 'WhatsApp pitch copied successfully!');
+    });
   },
 
   changePage(direction) {
@@ -1594,6 +1720,14 @@ const CRMStore = {
       const leadRem = this.getLeadReminder(leadKey);
       const isSelected = this.selectedLeads.has(leadKey);
 
+      // Visual Rating Health Badge formatting
+      let ratingHtml = '<span class="subtext">—</span>';
+      if (b.rating) {
+        const r = b.rating;
+        let badgeColor = r >= 4.5 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : r >= 3.5 ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40';
+        ratingHtml = `<span class="px-2 py-0.5 rounded-md border text-[11px] font-semibold ${badgeColor}">★ ${r} <span class="text-[10px] opacity-75">(${b.reviews || 0})</span></span>`;
+      }
+
       const tr = document.createElement('tr');
       tr.className = 'row row-hover transition-colors border-b border-theme' + (noWeb ? '' : ' opacity-40');
       tr.innerHTML = `
@@ -1631,7 +1765,7 @@ const CRMStore = {
           </td>
         ` : ''}
 
-        <td class="px-3 sm:px-4 py-2.5 truncate">${b.rating ? `★ ${b.rating} <span class="subtext text-xs">(${b.reviews || 0})</span>` : '<span class="subtext">—</span>'}</td>
+        <td class="px-3 sm:px-4 py-2.5 truncate">${ratingHtml}</td>
         <td class="px-3 sm:px-4 py-2.5 truncate">${noWeb ? '<span class="badge px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap">NO WEBSITE ✓</span>' : `<a href="${UIController.escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-500 hover:underline text-xs font-medium">has site ↗</a>`}</td>
         <td class="px-3 sm:px-4 py-2.5 text-right leadscore font-bold truncate ${score >= 80 ? 'text-emerald-500 dark:text-emerald-400' : score >= 60 ? 'text-amber-500 dark:text-amber-400' : 'subtext'}">${score}</td>
         
@@ -1671,9 +1805,9 @@ const CRMStore = {
     if (chips) {
       chips.innerHTML = '';
       [
-        ['Leads only', () => { this.showAll = false; window.highPriorityOnly = false; }],
-        ['High Priority (Score 80+)', () => { this.showAll = false; window.highPriorityOnly = true; }],
-        ['Show all', () => { this.showAll = true; window.highPriorityOnly = false; }]
+        ['Leads only', () => { this.showAll = false; window.highPriorityOnly = false; this.lowRatingOnly = false; }],
+        ['High Priority (Score 80+)', () => { this.showAll = false; window.highPriorityOnly = true; this.lowRatingOnly = false; }],
+        ['Show all', () => { this.showAll = true; window.highPriorityOnly = false; this.lowRatingOnly = false; }]
       ].forEach(([label, action], i) => {
         const b = document.createElement('button');
         b.textContent = label; 
@@ -1892,9 +2026,19 @@ const UIController = {
   },
 
   quickNicheFilter(keyword) {
+    CRMStore.lowRatingOnly = false;
     const qEl = document.getElementById('q');
     if (qEl) {
       qEl.value = keyword;
+      this.handleFilterInput();
+    }
+  },
+
+  quickRatingFilter(type) {
+    if (type === 'low') {
+      CRMStore.lowRatingOnly = true;
+      const qEl = document.getElementById('q');
+      if (qEl) qEl.value = '';
       this.handleFilterInput();
     }
   },
@@ -1967,9 +2111,27 @@ const UIController = {
     const name = b.name || '';
     const city = b.city || '';
     const category = b.category || 'Business';
+    const rating = b.rating || 0;
 
     document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category} • ${city || 'Albania'})`;
     
+    const badgeEl = document.getElementById('pitchRatingBadge');
+    if (badgeEl) {
+      if (rating >= 4.5) {
+        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal bg-emerald-500/20 text-emerald-400 border-emerald-500/40";
+        badgeEl.textContent = `★ ${rating} (Elite Reputation)`;
+      } else if (rating > 0 && rating < 3.5) {
+        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal bg-rose-500/20 text-rose-400 border-rose-500/40";
+        badgeEl.textContent = `★ ${rating} (Reputation Opportunity)`;
+      } else if (rating > 0) {
+        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal bg-amber-500/20 text-amber-400 border-amber-500/40";
+        badgeEl.textContent = `★ ${rating} (Standard Rating)`;
+      } else {
+        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal subtext";
+        badgeEl.textContent = `Unrated`;
+      }
+    }
+
     const savedWa = localStorage.getItem('pafaqe_wa_template') || CRMStore.DEFAULT_WA_TEMPLATE;
     const savedEmailSub = localStorage.getItem('pafaqe_email_sub_template') || CRMStore.DEFAULT_EMAIL_SUB_TEMPLATE;
     const savedEmailBody = localStorage.getItem('pafaqe_email_body_template') || CRMStore.DEFAULT_EMAIL_BODY_TEMPLATE;
