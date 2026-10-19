@@ -761,12 +761,13 @@ async function updateProfileData() {
     const avatarUrl = getPixelAvatarUrl(currentUser);
     if (btn) {
       btn.innerHTML = `
-        <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
-          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-lg border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
-          <span class="hover:underline">${escapeHtml(newName || emailPrefix)}</span>
+        <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('profile')">
+          <img src="${avatarUrl}" alt="Avatar" class="w-7 h-7 rounded-lg border border-amber-500/40 bg-slate-800 object-cover shadow-sm shrink-0">
+          <span class="hover:underline font-semibold text-xs whitespace-nowrap">${escapeHtml(displayName)}</span>
         </div>
-        <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
+        <button onclick="event.stopPropagation(); auth.signOut()" class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium">[Sign Out]</button>
       `;
+      btn.className = "px-2.5 py-1.5 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
     }
 
     if (succBox) {
