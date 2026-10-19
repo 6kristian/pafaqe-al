@@ -429,6 +429,7 @@ if (!firebase.apps.length) {
 }
 const auth = firebase.auth();
 const db = firebase.firestore();
+const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
 
 let currentUser = null;
 let cloudStatuses = {};
@@ -457,7 +458,7 @@ function initTheme() {
   if (icon) icon.textContent = saved === 'dark' ? '🌙' : '☀️';
 }
 
-// Auth Observer
+// Auth Observer with Cloud Firestore Lead Chunk Integration
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
   const btn = document.getElementById('authActionBtn');
@@ -466,6 +467,34 @@ auth.onAuthStateChanged(async (user) => {
   const navProfileBtn = document.getElementById('navProfileBtn');
   
   if (user) {
+    await user.reload(); // Ensure email_verified state is fresh
+    
+    if (user.emailVerified) {
+      try {
+        // Fetch all 28 lead chunks from Firestore securely
+        const querySnapshot = await db.collection('lead_chunks').get();
+        let allBusinesses = [];
+        querySnapshot.forEach((doc) => {
+          const chunkData = doc.data();
+          if (chunkData.rows && Array.isArray(chunkData.rows)) {
+            allBusinesses.push(...chunkData.rows);
+          }
+        });
+
+        if (allBusinesses.length > 0) {
+          DATA = {
+            source: "live",
+            generated: new Date().toISOString().split('T')[0],
+            count: allBusinesses.length,
+            businesses: allBusinesses
+          };
+	  init();
+        }
+      } catch (err) {
+        console.error("Error fetching leads from Firestore:", err);
+      }
+    }
+
     const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
     if (btn) btn.innerHTML = `<span onclick="switchTab('profile')" class="cursor-pointer hover:underline">${escapeHtml(displayName)}</span> <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
     if (hero) hero.classList.add('hidden');
@@ -484,6 +513,7 @@ auth.onAuthStateChanged(async (user) => {
     cloudStatuses = {};
     cloudNotes = {};
     cloudReminders = {};
+    DATA = DEMO; // Reset back to demo for guests
     if (hero) hero.classList.remove('hidden');
     if (filterSec) filterSec.classList.add('hidden');
     if (navProfileBtn) navProfileBtn.classList.add('hidden');
@@ -745,7 +775,6 @@ async function loadCloudData() {
       }
     });
 
-    // 🚀 Automated Email Reminder Trigger via Web3Forms if reminders are due today!
     if (dueRemindersCount > 0 && !sessionStorage.getItem('reminder_sent_' + todayStr)) {
       sessionStorage.setItem('reminder_sent_' + todayStr, 'true');
       triggerAutomatedEmailReminder(dueRemindersCount, currentUser.email);
@@ -758,7 +787,6 @@ async function loadCloudData() {
   }
 }
 
-// Function to send automated email reminder via Web3Forms API
 async function triggerAutomatedEmailReminder(count, userEmail) {
   try {
     await fetch('https://api.web3forms.com/submit', {
@@ -950,10 +978,9 @@ if (window.location.protocol === 'file:') {
   if (corsWarning) corsWarning.classList.remove('hidden');
 }
 
-fetch('leads.json')
-  .then(r => r.ok ? r.json() : Promise.reject())
-  .then(j => { DATA = j; init(); })
-  .catch(() => { DATA = DEMO; init(); });
+// Default to demo data initialization for guest/fast rendering
+DATA = DEMO;
+init();
 
 function updateURLParams() {
   if (!currentUser) return;
@@ -1413,43 +1440,46 @@ function escapeHtml(str) {
 }
 
 function init(){
-  initTheme();
-  document.getElementById('dataSource').textContent =
-    DATA.source === 'live' ? `LIVE · ${DATA.businesses.length.toLocaleString()} businesses` : `DEMO data`;
+  if (!DATA || !DATA.businesses) return;
+  const list = filtered();
+  const noWebCount = DATA.businesses.filter(b => !b.website).length;
+  const cities = [...new Set(DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))];
   
   const cs = document.getElementById('city'), ks = document.getElementById('cat');
   
   const cleanCities = [...new Set(DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
   const cleanCats = [...new Set(DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
 
-  cs.innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  ks.innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  if (cs) cs.innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  if (ks) ks.innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
   
   restoreStateFromURL();
 
   const chips = document.getElementById('chips');
-  chips.innerHTML = '';
-  [
-    ['Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
-    ['High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
-    ['Show all', () => { showAll = true; window.highPriorityOnly = false; }]
-  ].forEach(([label, action], i) => {
-    const b = document.createElement('button');
-    b.textContent = label; 
-    b.className = 'chip chip-btn px-3.5 py-1.5 rounded-full border text-xs font-medium shadow-sm' + (i === 0 ? ' active' : '');
-    b.onclick = () => { 
-      [...chips.children].forEach(c => c.classList.remove('active')); 
-      b.classList.add('active'); 
-      action();
-      handleFilterInput(); 
-    };
-    chips.appendChild(b);
-  });
+  if (chips) {
+    chips.innerHTML = '';
+    [
+      ['Leads only', () => { showAll = false; window.highPriorityOnly = false; }],
+      ['High Priority (Score 80+)', () => { showAll = false; window.highPriorityOnly = true; }],
+      ['Show all', () => { showAll = true; window.highPriorityOnly = false; }]
+    ].forEach(([label, action], i) => {
+      const b = document.createElement('button');
+      b.textContent = label; 
+      b.className = 'chip chip-btn px-3.5 py-1.5 rounded-full border text-xs font-medium shadow-sm' + (i === 0 ? ' active' : '');
+      b.onclick = () => { 
+        [...chips.children].forEach(c => c.classList.remove('active')); 
+        b.classList.add('active'); 
+        action();
+        handleFilterInput(); 
+      };
+      chips.appendChild(b);
+    });
+  }
   render();
   setTimeout(checkCookieConsent, 1000);
 }
 
-const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
+
 </script>
 </body>
 </html>
