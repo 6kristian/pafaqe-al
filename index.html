@@ -3,84 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaFaqe.al — B2B Web Design Lead Intelligence CRM</title>
-<meta name="description" content="Professional B2B lead intelligence directory for discovering local Albanian businesses operating without a website.">
+<title>PaFaqe.al — Enterprise B2B Lead Intelligence & CRM</title>
+<meta name="description" content="Enterprise B2B lead intelligence directory for web agencies in Albania. Discover verified local businesses operating without a website.">
 <link rel="stylesheet" href="output.css">
 
 <!-- Firebase Compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<style>
-  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility; }
-  
-  /* Dark Mode Palette */
-  html.dark body { background-color: #0f172a; color: #e2e8f0; }
-  html.dark .card-bg { background-color: #1e293b; border-color: #334155; }
-  html.dark .header-bg { background-color: rgba(15, 23, 42, 0.9); border-color: #334155; }
-  html.dark .input-bg { background-color: #1e293b; border-color: #475569; color: #f8fafc; }
-  html.dark .table-head-bg { background-color: #1e293b; border-color: #334155; color: #94a3b8; }
-  html.dark .row-hover:hover { background-color: #26334d; }
-  html.dark .subtext { color: #94a3b8; }
-  html.dark .border-theme { border-color: #334155; }
-  html.dark .chip-btn { background-color: #1e293b; border-color: #475569; color: #cbd5e1; }
-  html.dark .chip-btn:hover { background-color: #334155; color: #ffffff; }
 
-  /* Light Mode Palette */
+<style>
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+    -webkit-tap-highlight-color: transparent; 
+    text-rendering: optimizeLegibility; 
+  }
+  
+  /* Enterprise Obsidian Dark Mode Palette */
+  html.dark body { background-color: #0b0f19; color: #cbd5e1; }
+  html.dark .card-bg { background-color: #111827; border-color: #1f293d; }
+  html.dark .header-bg { background-color: rgba(11, 15, 25, 0.92); border-color: #1f293d; }
+  html.dark .input-bg { background-color: #0f172a; border-color: #334155; color: #f8fafc; }
+  html.dark .table-head-bg { background-color: #0f172a; border-color: #1f293d; color: #64748b; }
+  html.dark .row-hover:hover { background-color: #172033; }
+  html.dark .subtext { color: #64748b; }
+  html.dark .border-theme { border-color: #1f293d; }
+  html.dark .chip-btn { background-color: #0f172a; border-color: #1f293d; color: #94a3b8; }
+  html.dark .chip-btn:hover { background-color: #1e293b; color: #f8fafc; border-color: #334155; }
+
+  /* Enterprise Clean Light Mode Palette */
   html.light body { background-color: #f8fafc; color: #0f172a; }
-  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05); }
+  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); }
   html.light .header-bg { background-color: rgba(255, 255, 255, 0.95); border-color: #e2e8f0; }
   html.light .input-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; }
   html.light .table-head-bg { background-color: #f1f5f9; border-color: #e2e8f0; color: #475569; }
   html.light .row-hover:hover { background-color: #f8fafc; }
   html.light .subtext { color: #64748b; }
   html.light .border-theme { border-color: #e2e8f0; }
-  html.light .chip-btn { background-color: #ffffff; border-color: #cbd5e1; color: #334155; }
+  html.light .chip-btn { background-color: #ffffff; border-color: #e2e8f0; color: #475569; }
   html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; }
 
-  .badge { background-color: #f59e0b; color: #0f172a; }
-  .chip { cursor: pointer; transition: all 0.15s ease; }
-  .chip.active { background-color: #f59e0b !important; color: #0f172a !important; border-color: #f59e0b !important; font-weight: 600; }
+  .badge { background-color: #d97706; color: #ffffff; }
+  .chip { cursor: pointer; transition: all 0.12s ease; }
+  .chip.active { background-color: #3b82f6 !important; color: #ffffff !important; border-color: #3b82f6 !important; font-weight: 600; }
   .row { transition: background-color 0.1s ease; }
   .leadscore { font-variant-numeric: tabular-nums; }
 
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
   ::-webkit-scrollbar-track { background: transparent; }
 </style>
 </head>
-<body class="min-h-screen antialiased selection:bg-amber-400 selection:text-slate-900 flex flex-col justify-between transition-colors duration-200">
+<body class="min-h-screen antialiased selection:bg-blue-500 selection:text-white flex flex-col justify-between transition-colors duration-200">
 
 <div>
-  <!-- Header / Navbar -->
-  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-sm transition-colors duration-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <div>
-        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight cursor-pointer" onclick="UIController.switchTab('leads')">PaFaqe<span class="text-amber-500 dark:text-amber-400">.al</span></h1>
-        <p class="text-xs sm:text-sm subtext">B2B Lead Intelligence for Web Agencies</p>
+  <!-- Header / Nav -->
+  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 transition-colors duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <h1 class="text-lg font-bold tracking-tight cursor-pointer flex items-center gap-2" onclick="UIController.switchTab('leads')">
+          <span class="px-2 py-0.5 rounded-md bg-blue-600 text-white font-extrabold text-xs tracking-wider">ENTERPRISE</span>
+          <span>PaFaqe<span class="text-blue-500">.al</span></span>
+        </h1>
+        <span class="hidden md:inline-block text-xs subtext border-l border-theme pl-3">B2B Intelligence & Sales Workspace</span>
       </div>
       
-      <!-- Nav Tabs & Actions -->
-      <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+        <!-- Command Palette Trigger Button -->
+        <button onclick="UIController.openCommandPalette()" class="px-2.5 py-1 rounded-lg card-bg border subtext hover:text-blue-400 text-xs font-mono transition flex items-center gap-1.5 shadow-sm" title="Open Global Command Palette (Cmd+K)">
+          <span>🔍 Search</span>
+          <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400 border border-slate-700">⌘K</kbd>
+        </button>
+
         <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
-          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition">Leads</button>
-          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Kanban Pipeline</button>
-          <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">About</button>
-          <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Contact</button>
-          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition">Profile</button>
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-semibold transition">Leads</button>
+          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3 py-1 rounded-lg subtext hover:text-blue-400 transition">Pipeline</button>
+          <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-3 py-1 rounded-lg subtext hover:text-blue-400 transition">About</button>
+          <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-3 py-1 rounded-lg subtext hover:text-blue-400 transition">Contact</button>
+          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-3 py-1 rounded-lg subtext hover:text-blue-400 transition">Team Workspace</button>
         </nav>
-        
-        <!-- Theme Toggle Button -->
-        <button onclick="UIController.toggleTheme()" class="p-2 rounded-xl card-bg border subtext hover:text-amber-500 transition cursor-pointer text-xs flex items-center gap-1 shadow-sm" title="Toggle Light/Dark Theme">
+
+        <button onclick="UIController.toggleTheme()" class="p-1.5 rounded-lg card-bg border subtext hover:text-blue-400 transition text-xs shadow-sm" title="Toggle Theme">
           <span id="themeIcon">🌙</span>
         </button>
 
-        <!-- Data Source Indicator Badge -->
-        <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full card-bg border text-xs font-medium">…</span>
+        <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-md card-bg border text-[11px] font-mono subtext">…</span>
 
-        <!-- Auth User State / Button -->
         <div id="authContainer" class="flex items-center gap-2">
-          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl card-bg border text-xs font-bold text-amber-500 dark:text-amber-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-3 py-1 rounded-lg card-bg border text-xs font-semibold text-blue-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
             <span>Sign In</span>
           </button>
         </div>
@@ -88,347 +98,326 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-    <!-- Localhost Warning Banner -->
-    <div id="corsWarning" class="hidden p-4 rounded-2xl bg-amber-950/90 border border-amber-600/60 text-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
-      <span><b>CORS Notice:</b> Opened via <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">file://</code>. Run <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">python -m http.server 8000</code> and visit <a href="http://localhost:8000" class="underline font-bold text-white hover:text-amber-200">http://localhost:8000</a>.</span>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5">
+    <!-- Localhost Notice -->
+    <div id="corsWarning" class="hidden p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs flex items-center justify-between shadow-md">
+      <span><b>CORS Notice:</b> Opened via <code class="bg-black/50 px-1.5 py-0.5 rounded text-blue-400">file://</code>. Run <code class="bg-black/50 px-1.5 py-0.5 rounded text-blue-400">python -m http.server 8000</code> and visit <a href="http://localhost:8000" class="underline text-blue-400">http://localhost:8000</a>.</span>
     </div>
 
-    <!-- TAB 1: LEADS VIEW -->
-    <div id="tabLeads" class="space-y-6">
+    <!-- TAB 1: LEADS WORKSPACE -->
+    <div id="tabLeads" class="space-y-4">
       
-      <!-- LANDING PAGE HERO BANNER (Only for Guest Users) -->
-      <div id="guestHero" class="hidden rounded-3xl p-6 sm:p-8 card-bg border shadow-lg relative overflow-hidden">
-        <div class="max-w-3xl space-y-3 relative z-10">
-          <span class="px-3 py-1 rounded-full card-bg text-amber-500 dark:text-amber-400 border border-theme text-xs font-semibold uppercase tracking-wider">B2B SaaS Lead Intelligence</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Scale Your Web Agency Outreach Across Albania</h2>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Discover verified local enterprises in Tirana, Durrës, Vlorë, and beyond operating <b class="text-amber-500 dark:text-amber-400">without a website</b>. Access direct contact details, lead scoring, rating insights, and structured B2B sales pipelines.
+      <!-- Collapsible Enterprise Welcome Banner (Guest Only) -->
+      <div id="guestHero" class="hidden rounded-2xl p-5 card-bg border relative overflow-hidden">
+        <div class="max-w-3xl space-y-2 relative z-10">
+          <span class="px-2.5 py-0.5 rounded card-bg text-blue-400 border border-theme text-[10px] font-mono uppercase tracking-wider">Enterprise Intelligence Engine</span>
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight">Albanian Commercial Directory Workspace</h2>
+          <p class="subtext text-xs leading-relaxed">
+            Index, filter, and assign verified local Albanian enterprises operating without a digital web presence. Features real-time multi-user organization sync, automated pitch sequences, and pipeline auditing.
           </p>
-          <div class="pt-2 flex flex-wrap items-center gap-3">
-            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs sm:text-sm cursor-pointer flex items-center gap-2">
-              <span>Get Started Free</span>
+          <div class="pt-1 flex items-center gap-3">
+            <button onclick="AuthService.openAuthModal()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm cursor-pointer">
+              <span>Create Workspace Account</span>
             </button>
-            <span class="text-xs subtext">Secure Firebase Cloud Sync • Professional B2B Tool</span>
           </div>
         </div>
       </div>
 
-      <!-- Filters Section -->
-      <section id="filterSection" class="hidden card-bg rounded-2xl p-4 sm:p-5 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
+      <!-- Filters Toolbar -->
+      <section id="filterSection" class="hidden card-bg rounded-xl p-3.5 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 shadow-sm">
         <div class="md:col-span-3">
-          <input id="q" oninput="UIController.handleFilterInput()" placeholder="Search name, street..." class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition">
+          <input id="q" oninput="UIController.handleFilterInput()" placeholder="Filter business, location..." class="input-bg w-full rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500 border transition">
         </div>
         <div class="md:col-span-2">
-          <select id="city" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer"></select>
+          <select id="city" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500 border transition cursor-pointer"></select>
         </div>
         <div class="md:col-span-2">
-          <select id="cat" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer"></select>
+          <select id="cat" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500 border transition cursor-pointer"></select>
         </div>
         <div class="md:col-span-2">
-          <select id="sort" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3 py-2 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-amber-400 border transition cursor-pointer">
-            <option value="score">Sort: Lead score</option>
+          <select id="sort" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500 border transition cursor-pointer">
+            <option value="score">Sort: Lead Score</option>
             <option value="rating">Sort: Rating (High→Low)</option>
-            <option value="reviews">Sort: Reviews</option>
-            <option value="name">Sort: Name A→Z</option>
+            <option value="reviews">Sort: Reviews Count</option>
+            <option value="name">Sort: Business Name</option>
           </select>
         </div>
-        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 px-1 text-xs sm:text-sm">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"> Phone only
+        <div class="md:col-span-3 flex items-center justify-between sm:justify-start gap-3 text-xs">
+          <label class="flex items-center gap-1.5 cursor-pointer select-none subtext">
+            <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-3.5 h-3.5 rounded accent-blue-600 cursor-pointer"> Verified Phone
           </label>
-          <div class="flex items-center gap-2 ml-auto sm:ml-0">
-            <span class="text-xs subtext">Min rating:</span>
-            <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="UIController.handleFilterInput()" class="accent-amber-400 w-16 sm:w-20 cursor-pointer">
-            <span id="minRatingLabel" class="w-7 text-amber-500 dark:text-amber-400 font-semibold text-right text-xs">0★</span>
+          <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
+            <span class="text-[11px] subtext">Min ★:</span>
+            <input id="minRating" type="range" min="0" max="5" step="0.5" value="0" oninput="UIController.handleFilterInput()" class="accent-blue-600 w-16 cursor-pointer">
+            <span id="minRatingLabel" class="w-6 text-blue-400 font-mono text-right text-[11px]">0★</span>
           </div>
         </div>
       </section>
 
-      <!-- Saved Filter Presets Bar -->
-      <div id="filterPresetsSection" class="hidden flex flex-wrap items-center gap-2 text-xs card-bg border rounded-xl p-3 shadow-sm">
-        <span class="subtext font-semibold uppercase tracking-wider text-[11px] mr-1">Saved Presets:</span>
-        <div id="presetChipsContainer" class="flex flex-wrap items-center gap-2"></div>
-        <button onclick="CRMStore.saveCurrentPresetPrompt()" class="ml-auto px-3 py-1 rounded-lg card-bg border subtext hover:text-amber-500 font-semibold text-xs transition flex items-center gap-1">
+      <!-- Saved Filter Presets -->
+      <div id="filterPresetsSection" class="hidden flex flex-wrap items-center gap-2 text-xs card-bg border rounded-xl p-2.5 shadow-sm">
+        <span class="subtext font-mono uppercase text-[10px] tracking-wider mr-1">Filter Presets:</span>
+        <div id="presetChipsContainer" class="flex flex-wrap items-center gap-1.5"></div>
+        <button onclick="CRMStore.saveCurrentPresetPrompt()" class="ml-auto px-2.5 py-1 rounded-md card-bg border subtext hover:text-blue-400 font-medium text-[11px] transition">
           <span>+ Save Current Filter</span>
         </button>
       </div>
 
-      <!-- Quick Filter Chips & High Value Recommendations -->
-      <div class="space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-xs font-bold hover:bg-amber-300 transition shadow-md flex items-center gap-1.5 cursor-pointer ml-auto">
+      <!-- Quick Action Chips -->
+      <div class="space-y-2">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div id="chips" class="flex flex-wrap gap-1.5 text-xs"></div>
+          <button onclick="CRMStore.exportCSV()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
             <span id="exportBtnText">Export CSV</span>
           </button>
         </div>
 
-        <!-- High Profit Industry & Rating Recommendations -->
-        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-3">
-          <span class="subtext text-[11px] font-semibold uppercase tracking-wider mr-1">Hot Niches:</span>
-          <button onclick="UIController.quickNicheFilter('Hotel')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Hotels & Tourism</button>
-          <button onclick="UIController.quickNicheFilter('Dental')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Dentists & Clinics</button>
-          <button onclick="UIController.quickNicheFilter('Auto')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Auto & Rentals</button>
-          <button onclick="UIController.quickNicheFilter('Restaurant')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition">Restaurants & Cafes</button>
-          <button onclick="UIController.quickRatingFilter('low')" class="chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium transition text-rose-400">🔴 Reputation Risk (&lt;3.5★)</button>
+        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-2">
+          <span class="subtext text-[10px] font-mono uppercase tracking-wider mr-1">Industry Filters:</span>
+          <button onclick="UIController.quickNicheFilter('Hotel')" class="chip-btn px-2 py-0.5 rounded-md border text-[11px] transition">Hotels & Tourism</button>
+          <button onclick="UIController.quickNicheFilter('Dental')" class="chip-btn px-2 py-0.5 rounded-md border text-[11px] transition">Dentists & Clinics</button>
+          <button onclick="UIController.quickNicheFilter('Auto')" class="chip-btn px-2 py-0.5 rounded-md border text-[11px] transition">Auto & Rentals</button>
+          <button onclick="UIController.quickNicheFilter('Restaurant')" class="chip-btn px-2 py-0.5 rounded-md border text-[11px] transition">Restaurants</button>
+          <button onclick="UIController.quickRatingFilter('low')" class="chip-btn px-2 py-0.5 rounded-md border text-[11px] transition text-rose-400">Reputation Risk (&lt;3.5★)</button>
         </div>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
-        <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statLeads" class="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">No-website leads</div></div>
-        <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statCities" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Cities covered</div></div>
-        <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Avg. lead score</div></div>
+      <!-- Metrics Bar -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-center text-xs">
+        <div class="card-bg rounded-xl p-3 border shadow-sm"><div id="statLeads" class="text-xl font-mono font-bold text-blue-400">0</div><div class="subtext text-[10px] uppercase font-mono mt-0.5">Unwebbed Records</div></div>
+        <div class="card-bg rounded-xl p-3 border shadow-sm"><div id="statCities" class="text-xl font-mono font-bold">0</div><div class="subtext text-[10px] uppercase font-mono mt-0.5">Municipal Regions</div></div>
+        <div class="card-bg rounded-xl p-3 border shadow-sm"><div id="statAvg" class="text-xl font-mono font-bold">0</div><div class="subtext text-[10px] uppercase font-mono mt-0.5">Mean Opportunity Score</div></div>
+        <div class="card-bg rounded-xl p-3 border shadow-sm"><div id="statOrgName" class="text-xl font-mono font-bold text-amber-500 truncate">Solo Workspace</div><div class="subtext text-[10px] uppercase font-mono mt-0.5">Active Tenant Context</div></div>
       </div>
 
-      <!-- BULK ACTIONS FLOATING TOOLBAR -->
-      <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-amber-500/60 rounded-2xl p-3.5 shadow-xl flex flex-wrap items-center justify-between gap-3 bg-slate-900/95 backdrop-blur-md">
+      <!-- Bulk Actions Toolbar -->
+      <div id="bulkActionsToolbar" class="hidden sticky top-16 z-20 card-bg border border-blue-500/50 rounded-xl p-2.5 shadow-xl flex flex-wrap items-center justify-between gap-3 backdrop-blur-md">
         <div class="flex items-center gap-2 text-xs">
-          <span class="font-bold px-2.5 py-1 rounded-lg bg-amber-400 text-slate-900" id="selectedCountBadge">0 selected</span>
-          <span class="subtext">Bulk Action:</span>
+          <span class="font-bold px-2 py-0.5 rounded bg-blue-600 text-white text-[11px]" id="selectedCountBadge">0 selected</span>
+          <span class="subtext">Bulk Execution:</span>
         </div>
         <div class="flex flex-wrap items-center gap-2 text-xs">
-          <select id="bulkStatusSelect" class="input-bg rounded-xl px-3 py-1.5 border outline-none">
-            <option value="new">Set Status: New</option>
-            <option value="contacted">Set Status: Contacted</option>
-            <option value="interested">Set Status: Interested</option>
-            <option value="closed">Set Status: Closed / Won</option>
+          <select id="bulkStatusSelect" class="input-bg rounded-lg px-2.5 py-1 border outline-none">
+            <option value="new">Status: New</option>
+            <option value="contacted">Status: Contacted</option>
+            <option value="interested">Status: Interested</option>
+            <option value="closed">Status: Closed / Won</option>
           </select>
-          <button onclick="CRMStore.applyBulkStatus()" class="px-3.5 py-1.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition">Update Status</button>
-          <button onclick="CRMStore.exportCSV()" class="px-3.5 py-1.5 rounded-xl card-bg border subtext hover:text-amber-500 font-semibold transition">Export Selected</button>
-          <button onclick="CRMStore.clearSelection()" class="px-3 py-1.5 rounded-xl card-bg border text-rose-400 hover:text-rose-300 transition">Clear</button>
+          <button onclick="CRMStore.applyBulkStatus()" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-semibold transition">Update Pipeline</button>
+          <button onclick="CRMStore.exportCSV()" class="px-3 py-1 rounded-lg card-bg border subtext hover:text-blue-400 transition">Export Selected</button>
+          <button onclick="CRMStore.clearSelection()" class="px-2.5 py-1 rounded-lg card-bg border text-rose-400 hover:text-rose-300 transition">Clear</button>
         </div>
       </div>
 
-      <!-- Data Table Section -->
-      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[600px] flex flex-col justify-between relative">
+      <!-- Main Enterprise Table -->
+      <section class="card-bg rounded-xl border overflow-hidden shadow-sm min-h-[550px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
-          <table class="w-full text-xs sm:text-sm text-left border-collapse table-fixed min-w-[700px]">
-            <thead id="tableHead" class="table-head-bg text-xs uppercase tracking-wider border-b"></thead>
-            <tbody id="rows" class="divide-y border-theme">
-              <tr><td colspan="10" class="p-16 text-center subtext">Loading verified leads...</td></tr>
+          <table class="w-full text-xs text-left border-collapse table-fixed min-w-[750px]">
+            <thead id="tableHead" class="table-head-bg text-[11px] font-mono uppercase tracking-wider border-b"></thead>
+            <tbody id="rows" class="divide-y border-theme font-sans">
+              <tr><td colspan="10" class="p-12 text-center subtext">Initialising enterprise data workspace...</td></tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Freemium Gating Banner for Guests -->
-        <div id="guestGatingOverlay" class="hidden p-6 sm:p-10 text-center card-bg border-t border-theme space-y-3">
-          <div class="inline-flex items-center justify-center w-10 h-10 rounded-2xl card-bg border text-amber-500 dark:text-amber-400 text-lg font-bold">🔒</div>
-          <h3 class="text-lg font-extrabold tracking-tight">Unlock All Verified Albanian Leads</h3>
-          <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
-            You are viewing a free preview. Sign in or create a free account to unlock full access to all phone numbers, rating health insights, instant WhatsApp & Email pitch generators, custom CRM notes, and Excel-ready CSV exports.
+        <div id="guestGatingOverlay" class="hidden p-8 text-center card-bg border-t border-theme space-y-2">
+          <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg card-bg border text-blue-400 font-bold">🔒</div>
+          <h3 class="text-base font-bold">Enterprise Authentication Required</h3>
+          <p class="text-xs subtext max-w-md mx-auto">
+            You are viewing a restricted preview. Sign in to access complete business contact numbers, cloud synchronization, and pipeline tools.
           </p>
           <div class="pt-1">
-            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md text-xs cursor-pointer inline-flex items-center gap-2">
-              <span>Create Free Account & Unlock All Leads</span>
+            <button onclick="AuthService.openAuthModal()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-sm inline-flex items-center gap-1.5">
+              <span>Sign In / Register</span>
             </button>
           </div>
         </div>
 
-        <div id="empty" class="hidden p-12 text-center subtext text-xs">No businesses match your filter criteria.</div>
+        <div id="empty" class="hidden p-12 text-center subtext text-xs">No records match the active query parameters.</div>
         
-        <!-- Pagination Bar -->
-        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-theme text-xs subtext mt-auto">
-          <div id="pageInfo">Showing 0-0 of 0 leads</div>
+        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-2.5 border-t border-theme text-xs subtext mt-auto">
+          <div id="pageInfo" class="font-mono text-[11px]">Showing 0-0 of 0 records</div>
           <div class="flex items-center gap-2">
-            <button id="prevBtn" onclick="CRMStore.changePage(-1)" class="px-3 py-1.5 rounded-lg card-bg border border-theme hover:border-amber-400 hover:text-amber-500 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">← Previous</button>
-            <span id="pageIndicator" class="px-2 py-1 font-semibold text-amber-500 dark:text-amber-400">Page 1 of 1</span>
-            <button id="nextBtn" onclick="CRMStore.changePage(1)" class="px-3 py-1.5 rounded-lg card-bg border border-theme hover:border-amber-400 hover:text-amber-500 transition font-medium disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+            <button id="prevBtn" onclick="CRMStore.changePage(-1)" class="px-2.5 py-1 rounded-md card-bg border border-theme hover:border-blue-500 transition disabled:opacity-30 disabled:cursor-not-allowed">← Prev</button>
+            <span id="pageIndicator" class="px-2 font-mono text-blue-400 font-semibold">Page 1 of 1</span>
+            <button id="nextBtn" onclick="CRMStore.changePage(1)" class="px-2.5 py-1 rounded-md card-bg border border-theme hover:border-blue-500 transition disabled:opacity-30 disabled:cursor-not-allowed">Next →</button>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- TAB: KANBAN PIPELINE VIEW -->
-    <div id="tabKanban" class="hidden space-y-6">
-      <div class="card-bg border rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <!-- TAB 2: KANBAN PIPELINE -->
+    <div id="tabKanban" class="hidden space-y-4">
+      <div class="card-bg border rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Sales Pipeline Kanban</h2>
-          <p class="text-xs subtext mt-0.5">Manage your leads visually across stages (max 25 leads per page per column). Drag and drop lead cards between columns to update their status.</p>
-        </div>
-        <div class="text-xs subtext font-medium">
-          Drag & Drop enabled
+          <h2 class="text-base font-bold text-blue-400">Multi-Stage Pipeline Management</h2>
+          <p class="text-xs subtext mt-0.5">Drag-and-drop lead tiles across deal stages. Multi-user updates synchronize automatically across organization members.</p>
         </div>
       </div>
 
-      <!-- Kanban Columns Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-        <!-- Column: New -->
-        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-start">
+        <div class="card-bg border rounded-xl p-3 space-y-2 flex flex-col min-h-[480px]">
           <div class="flex items-center justify-between border-b border-theme pb-2">
-            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">New Leads</span>
-            <span id="kanbanCountNew" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+            <span class="font-bold text-xs uppercase tracking-wider text-blue-400 font-mono">Uncontacted (New)</span>
+            <span id="kanbanCountNew" class="px-2 py-0.5 rounded card-bg border text-[10px] font-mono">0</span>
           </div>
-          <div id="kanbanColNew" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')"></div>
-          <div id="kanbanPaginationNew" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
+          <div id="kanbanColNew" class="space-y-2 overflow-y-auto max-h-[450px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')"></div>
+          <div id="kanbanPaginationNew" class="pt-2 border-t border-theme flex items-center justify-between text-[10px] subtext font-mono"></div>
         </div>
 
-        <!-- Column: Contacted -->
-        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+        <div class="card-bg border rounded-xl p-3 space-y-2 flex flex-col min-h-[480px]">
           <div class="flex items-center justify-between border-b border-theme pb-2">
-            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Contacted</span>
-            <span id="kanbanCountContacted" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+            <span class="font-bold text-xs uppercase tracking-wider text-blue-400 font-mono">In Outreach</span>
+            <span id="kanbanCountContacted" class="px-2 py-0.5 rounded card-bg border text-[10px] font-mono">0</span>
           </div>
-          <div id="kanbanColContacted" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')"></div>
-          <div id="kanbanPaginationContacted" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
+          <div id="kanbanColContacted" class="space-y-2 overflow-y-auto max-h-[450px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')"></div>
+          <div id="kanbanPaginationContacted" class="pt-2 border-t border-theme flex items-center justify-between text-[10px] subtext font-mono"></div>
         </div>
 
-        <!-- Column: Interested -->
-        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+        <div class="card-bg border rounded-xl p-3 space-y-2 flex flex-col min-h-[480px]">
           <div class="flex items-center justify-between border-b border-theme pb-2">
-            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Interested</span>
-            <span id="kanbanCountInterested" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 font-mono">Qualified / Interested</span>
+            <span id="kanbanCountInterested" class="px-2 py-0.5 rounded card-bg border text-[10px] font-mono">0</span>
           </div>
-          <div id="kanbanColInterested" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')"></div>
-          <div id="kanbanPaginationInterested" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
+          <div id="kanbanColInterested" class="space-y-2 overflow-y-auto max-h-[450px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')"></div>
+          <div id="kanbanPaginationInterested" class="pt-2 border-t border-theme flex items-center justify-between text-[10px] subtext font-mono"></div>
         </div>
 
-        <!-- Column: Closed -->
-        <div class="card-bg border rounded-2xl p-4 space-y-3 flex flex-col min-h-[500px]">
+        <div class="card-bg border rounded-xl p-3 space-y-2 flex flex-col min-h-[480px]">
           <div class="flex items-center justify-between border-b border-theme pb-2">
-            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">Closed / Won</span>
-            <span id="kanbanCountClosed" class="px-2 py-0.5 rounded-full card-bg border text-[11px] font-semibold">0</span>
+            <span class="font-bold text-xs uppercase tracking-wider text-emerald-500 font-mono">Closed / Contracted</span>
+            <span id="kanbanCountClosed" class="px-2 py-0.5 rounded card-bg border text-[10px] font-mono">0</span>
           </div>
-          <div id="kanbanColClosed" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')"></div>
-          <div id="kanbanPaginationClosed" class="pt-2 border-t border-theme flex items-center justify-between text-[11px] subtext"></div>
+          <div id="kanbanColClosed" class="space-y-2 overflow-y-auto max-h-[450px] pr-1 flex-1" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')"></div>
+          <div id="kanbanPaginationClosed" class="pt-2 border-t border-theme flex items-center justify-between text-[10px] subtext font-mono"></div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: ABOUT US VIEW -->
-    <div id="tabAbout" class="hidden space-y-6 max-w-5xl mx-auto py-6">
-      
-      <!-- Main Hero Header -->
-      <div class="card-bg border border-theme rounded-2xl p-8 shadow-sm space-y-3">
-        <span class="text-amber-500 dark:text-amber-400 text-xs font-semibold uppercase tracking-wider">Professional B2B Software</span>
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">About PaFaqe.al</h2>
-        <p class="subtext text-sm sm:text-base leading-relaxed max-w-3xl">
-          PaFaqe.al is an enterprise-grade B2B lead intelligence and CRM platform engineered specifically for digital agencies, web developers, and freelance consultants connecting with local businesses in Albania operating without a website.
+    <!-- TAB 3: ABOUT -->
+    <div id="tabAbout" class="hidden space-y-4 max-w-4xl mx-auto py-4">
+      <div class="card-bg border border-theme rounded-xl p-6 shadow-sm space-y-2">
+        <span class="text-blue-400 text-xs font-mono uppercase tracking-wider">Enterprise SaaS Architecture</span>
+        <h2 class="text-xl font-bold">About PaFaqe.al Enterprise</h2>
+        <p class="subtext text-xs leading-relaxed">
+          Engineered for software sales agencies and digital development practices targeting offline commercial entities across Albania. Operates with multi-tenant Firestore backend clustering, dynamic lead opportunity scoring, and Role-Based Access Control.
         </p>
       </div>
 
-      <!-- Guaranteed 2-Column Side-by-Side Cards -->
-      <div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
-        
-        <div class="card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2" style="flex: 1 1 300px;">
-          <h3 class="font-bold text-base text-amber-500 dark:text-amber-400">B2B Compliance & Purpose</h3>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">
-            This platform indexes publicly available commercial directory data to assist professional service providers in B2B outreach. All communications must comply with local business advertising and data protection standards.
-          </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div class="card-bg border border-theme rounded-xl p-5 space-y-1.5">
+          <h3 class="font-bold text-blue-400">Data Governance & Verification</h3>
+          <p class="subtext leading-relaxed">Indexes public commercial business registries. Enforces localized B2B privacy standards and zero-latency client synchronization.</p>
         </div>
-        
-        <div class="card-bg border border-theme rounded-2xl p-6 shadow-sm space-y-2" style="flex: 1 1 300px;">
-          <h3 class="font-bold text-base text-amber-500 dark:text-amber-400">Technical Architecture</h3>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Engineered with secure Firebase Cloud Firestore synchronization, modular client state stores, reactive Kanban sales pipelines, and rating-informed dynamic pitch generators.
-          </p>
-        </div>
-
-      </div>
-
-      <!-- Footer Info Bar -->
-      <div class="card-bg border border-theme rounded-2xl p-6" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <p class="font-bold text-sm">Albanian Business Intelligence</p>
-          <p class="subtext text-xs">Over 13,900 verified commercial records.</p>
-        </div>
-        <div class="subtext text-xs text-right">
-          <span>Engineered by </span>
-          <b class="text-amber-500 dark:text-amber-400 font-semibold">Kristian Frroku</b>
+        <div class="card-bg border border-theme rounded-xl p-5 space-y-1.5">
+          <h3 class="font-bold text-blue-400">Team Workspace Infrastructure</h3>
+          <p class="subtext leading-relaxed">Multi-user Organization IDs ensure sales reps, copywriters, and account executives share deal statuses without overwriting records.</p>
         </div>
       </div>
-
     </div>
 
-    <!-- TAB 3: CONTACT US VIEW -->
-    <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm">
-        <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400 mb-2">Contact Us</h2>
-        <p class="text-xs subtext mb-5">Have questions or feedback? Send a message directly and it will be delivered straight to <b class="text-amber-500 dark:text-amber-400">frrokuk2@gmail.com</b>.</p>
+    <!-- TAB 4: CONTACT -->
+    <div id="tabContact" class="hidden space-y-4 max-w-lg mx-auto">
+      <div class="card-bg border rounded-xl p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-blue-400 mb-1">Enterprise Support & Feedback</h2>
+        <p class="text-xs subtext mb-4">Direct dispatch to lead system maintainer <b class="text-blue-400">frrokuk2@gmail.com</b>.</p>
         
-        <form onsubmit="UIController.handleContactSubmit(event)" class="space-y-4">
+        <form onsubmit="UIController.handleContactSubmit(event)" class="space-y-3">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Your Name</label>
-            <input type="text" id="contactName" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="John Doe">
+            <label class="block text-xs font-mono uppercase subtext mb-1">Sender Name</label>
+            <input type="text" id="contactName" required class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Your Email</label>
-            <input type="email" id="contactEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="john@example.com">
+            <label class="block text-xs font-mono uppercase subtext mb-1">Business Email</label>
+            <input type="email" id="contactEmail" required class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Message</label>
-            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Type your message here..."></textarea>
+            <label class="block text-xs font-mono uppercase subtext mb-1">Message Body</label>
+            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500"></textarea>
           </div>
-          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Message</button>
+          <button type="submit" id="submitBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm">Transmit Message</button>
         </form>
-        <div id="contactSuccess" class="hidden mt-4 p-3 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
-          Thank you! Your message has been sent successfully to Kristian Frroku.
+        <div id="contactSuccess" class="hidden mt-3 p-2.5 rounded-lg bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
+          Transmission successful.
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: PROFILE & ANALYTICS VIEW -->
-    <div id="tabProfile" class="hidden space-y-6 max-w-4xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Profile Settings Card -->
-        <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-5">
-          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">User Profile</h2>
-          <div class="space-y-4">
+    <!-- TAB 5: TEAM WORKSPACE & RBAC -->
+    <div id="tabProfile" class="hidden space-y-5 max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Team Workspace Management Card -->
+        <div class="card-bg border rounded-xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-bold text-blue-400">Organization & Workspace</h2>
+            <span id="userRoleBadge" class="px-2 py-0.5 rounded bg-blue-600 text-white text-[10px] font-mono font-bold">Role: Owner</span>
+          </div>
+          <div class="space-y-3 text-xs">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Full Name</label>
-              <input type="text" id="profileName" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+              <label class="block text-[11px] font-mono uppercase subtext mb-1">Organization ID (Team Shared Context)</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="orgIdInput" class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border font-mono outline-none" readonly>
+                <button onclick="CRMStore.copyOrgId()" class="px-3 py-1.5 rounded-lg card-bg border subtext hover:text-blue-400 font-semibold shrink-0">Copy ID</button>
+              </div>
+              <p class="text-[10px] subtext mt-1">Share this Organization ID with team members so they join your shared cloud pipeline.</p>
             </div>
+
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Address</label>
-              <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-xl px-3.5 py-2 text-xs sm:text-sm subtext cursor-not-allowed">
+              <label class="block text-[11px] font-mono uppercase subtext mb-1">Join Different Organization</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="joinOrgInput" placeholder="Enter Agency Org ID..." class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border font-mono outline-none">
+                <button onclick="CRMStore.joinOrganization()" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-semibold shrink-0">Join Workspace</button>
+              </div>
             </div>
-            <div id="verificationStatusContainer" class="p-3.5 rounded-xl card-bg border border-theme flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <!-- Dynamic verification status -->
+
+            <div class="border-t border-theme pt-3 space-y-2">
+              <label class="block text-[11px] font-mono uppercase subtext">User Identity Settings</label>
+              <div>
+                <label class="block text-[10px] subtext mb-0.5">Full Display Name</label>
+                <input type="text" id="profileName" class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] subtext mb-0.5">Email Address</label>
+                <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-lg px-3 py-1.5 text-xs subtext cursor-not-allowed">
+              </div>
+              <div id="verificationStatusContainer" class="p-2.5 rounded-lg card-bg border border-theme flex items-center justify-between text-xs"></div>
+              <button onclick="AuthService.updateProfileData()" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs">Save User Profile</button>
+              <div id="profileSuccess" class="hidden text-xs text-emerald-400 font-medium text-center">Profile updated successfully.</div>
             </div>
-            <button onclick="AuthService.updateProfileData()" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Save Changes</button>
-            <div id="profileSuccess" class="hidden text-xs text-emerald-500 font-medium text-center">Profile updated successfully!</div>
           </div>
         </div>
 
-        <!-- Outreach Performance & Rating Analytics Card -->
-        <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-5">
-          <h2 class="text-xl font-extrabold text-amber-500 dark:text-amber-400">Outreach & Rating Analytics</h2>
-          <div class="space-y-3 text-xs">
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">Total Tracked Leads:</span>
-              <span id="analyticsTotalLeads" class="font-bold text-amber-500 dark:text-amber-400 text-sm">0</span>
+        <!-- Audit & Outreach Analytics Card -->
+        <div class="card-bg border rounded-xl p-5 shadow-sm space-y-4">
+          <h2 class="text-base font-bold text-blue-400">Workspace Metrics & Pipeline Health</h2>
+          <div class="space-y-2 text-xs font-mono">
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">Active Leads Indexed:</span>
+              <span id="analyticsTotalLeads" class="font-bold text-blue-400">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">New Stage:</span>
-              <span id="analyticsNewCount" class="font-bold text-sm">0</span>
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">Uncontacted Pipeline:</span>
+              <span id="analyticsNewCount" class="font-bold">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">Contacted Stage:</span>
-              <span id="analyticsContactedCount" class="font-bold text-sm">0</span>
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">In Outreach Cadence:</span>
+              <span id="analyticsContactedCount" class="font-bold">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">Interested Stage:</span>
-              <span id="analyticsInterestedCount" class="font-bold text-sm text-amber-500">0</span>
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">Qualified / Negotiating:</span>
+              <span id="analyticsInterestedCount" class="font-bold text-amber-500">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">Closed / Won Stage:</span>
-              <span id="analyticsClosedCount" class="font-bold text-sm text-emerald-500">0</span>
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">Closed / Contracted Deals:</span>
+              <span id="analyticsClosedCount" class="font-bold text-emerald-400">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">🟢 Elite Reputation (4.5★+):</span>
-              <span id="analyticsEliteCount" class="font-bold text-sm text-emerald-400">0</span>
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">Reputation Risk (&lt;3.5★):</span>
+              <span id="analyticsOpportunityCount" class="font-bold text-rose-400">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">🟡 Standard Rating (3.5–4.4★):</span>
-              <span id="analyticsStandardCount" class="font-bold text-sm text-amber-400">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">🔴 Reputation Opportunity (&lt;3.5★ / Unrated):</span>
-              <span id="analyticsOpportunityCount" class="font-bold text-sm text-rose-400">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
-              <span class="subtext font-medium">Follow-up Reminders Set:</span>
-              <span id="analyticsRemindersCount" class="font-bold text-sm">0</span>
+            <div class="flex items-center justify-between p-2.5 rounded-lg card-bg border border-theme">
+              <span class="subtext">Scheduled Reminders:</span>
+              <span id="analyticsRemindersCount" class="font-bold">0</span>
             </div>
           </div>
         </div>
@@ -437,203 +426,209 @@
   </main>
 </div>
 
+<!-- GLOBAL COMMAND PALETTE MODAL (Cmd+K) -->
+<div id="commandPaletteModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start justify-center pt-20 p-4">
+  <div class="card-bg border rounded-xl max-w-xl w-full p-4 shadow-2xl space-y-3 relative">
+    <div class="flex items-center justify-between border-b border-theme pb-2">
+      <span class="font-mono text-xs text-blue-400 uppercase tracking-wider font-bold">Global Command Palette</span>
+      <span class="text-[10px] subtext font-mono">Press ESC to exit</span>
+    </div>
+    <input id="commandInput" type="text" placeholder="Type a command (e.g., 'Tirana', 'Hotel', 'Kanban', 'Export')..." oninput="UIController.handleCommandSearch()" class="input-bg w-full rounded-lg p-2.5 text-xs font-mono border outline-none focus:ring-1 focus:ring-blue-500">
+    <div id="commandResults" class="space-y-1.5 max-h-60 overflow-y-auto text-xs">
+      <div class="p-2 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="UIController.switchTab('leads'); UIController.closeCommandPalette();">📁 Open Leads Workspace</div>
+      <div class="p-2 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="UIController.switchTab('kanban'); UIController.closeCommandPalette();">📊 Open Pipeline Kanban</div>
+      <div class="p-2 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="CRMStore.exportCSV(); UIController.closeCommandPalette();">📥 Export Filtered CSV Data</div>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH MODAL -->
-<div id="authModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="AuthService.closeAuthModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div id="authTitle" class="text-lg font-extrabold mb-1">Sign In to PaFaqe.al</div>
-    <p id="authSubtitle" class="text-xs subtext mb-5">Access your saved lead statuses and cloud CRM notes across devices.</p>
+<div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+    <button onclick="AuthService.closeAuthModal()" class="absolute top-4 right-4 subtext hover:text-blue-400 font-bold">✕</button>
+    <div>
+      <div id="authTitle" class="text-base font-bold">Enterprise Sign In</div>
+      <p id="authSubtitle" class="text-xs subtext">Authenticate to access shared team pipelines and database query tools.</p>
+    </div>
     
-    <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-3.5">
+    <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-3">
       <div id="nameFieldContainer" class="hidden">
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Full Name</label>
-        <input type="text" id="authName" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Kristian Frroku">
+        <label class="block text-[10px] font-mono uppercase subtext mb-1">Full Name</label>
+        <input type="text" id="authName" class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500">
       </div>
 
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email</label>
-        <input type="email" id="authEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+        <label class="block text-[10px] font-mono uppercase subtext mb-1">Business Email</label>
+        <input type="email" id="authEmail" required class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500">
       </div>
 
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext">Password</label>
-          <button type="button" id="forgotPasswordLink" onclick="AuthService.openForgotPasswordModal()" class="text-xs text-amber-500 dark:text-amber-400 hover:underline">Forgot password?</button>
+          <label class="block text-[10px] font-mono uppercase subtext">Password</label>
+          <button type="button" id="forgotPasswordLink" onclick="AuthService.openForgotPasswordModal()" class="text-xs text-blue-400 hover:underline">Forgot password?</button>
         </div>
-        <input type="password" id="authPassword" required minlength="6" oninput="AuthService.checkPasswordStrength(this.value)" class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="••••••••">
+        <input type="password" id="authPassword" required minlength="6" oninput="AuthService.checkPasswordStrength(this.value)" class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500">
         
         <div id="passwordStrengthContainer" class="hidden mt-2 space-y-1">
-          <div class="flex gap-1 h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div id="strengthBar1" class="w-1/3 h-full bg-slate-400 transition-all"></div>
-            <div id="strengthBar2" class="w-1/3 h-full bg-slate-400 transition-all"></div>
-            <div id="strengthBar3" class="w-1/3 h-full bg-slate-400 transition-all"></div>
+          <div class="flex gap-1 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div id="strengthBar1" class="w-1/3 h-full bg-slate-600 transition-all"></div>
+            <div id="strengthBar2" class="w-1/3 h-full bg-slate-600 transition-all"></div>
+            <div id="strengthBar3" class="w-1/3 h-full bg-slate-600 transition-all"></div>
           </div>
-          <div id="strengthText" class="text-[11px] subtext font-medium">Password strength: Enter password</div>
+          <div id="strengthText" class="text-[10px] subtext font-mono">Strength: Minimal</div>
         </div>
       </div>
 
-      <div id="authError" class="hidden text-xs text-rose-500 font-medium"></div>
+      <div id="authError" class="hidden text-xs text-rose-400 font-medium"></div>
       
-      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Sign In</button>
+      <button type="submit" id="authSubmitBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm">Sign In</button>
     </form>
     
-    <div class="mt-5 text-center text-xs subtext">
-      <span id="authToggleText">Don't have an account?</span> 
-      <button onclick="AuthService.toggleAuthMode()" id="authToggleBtn" class="text-amber-500 dark:text-amber-400 font-semibold hover:underline ml-1">Sign Up</button>
+    <div class="text-center text-xs subtext">
+      <span id="authToggleText">Need an account?</span> 
+      <button onclick="AuthService.toggleAuthMode()" id="authToggleBtn" class="text-blue-400 font-semibold hover:underline ml-1">Register</button>
     </div>
   </div>
 </div>
 
 <!-- FORGOT PASSWORD MODAL -->
-<div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
-    <button onclick="AuthService.closeForgotPasswordModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold mb-1">Reset Password</div>
-    <p class="text-xs subtext mb-5">Enter your registered email address below. We will send you a secure link to reset your password.</p>
+<div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-3">
+    <button onclick="AuthService.closeForgotPasswordModal()" class="absolute top-4 right-4 subtext hover:text-blue-400 font-bold">✕</button>
+    <div class="text-base font-bold">Password Recovery</div>
+    <p class="text-xs subtext">Enter registered account email for password reset authorization link.</p>
     
-    <form onsubmit="AuthService.handleForgotPasswordSubmit(event)" class="space-y-3.5">
+    <form onsubmit="AuthService.handleForgotPasswordSubmit(event)" class="space-y-3">
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Address</label>
-        <input type="email" id="forgotEmail" required class="input-bg w-full rounded-xl px-3.5 py-2 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="you@example.com">
+        <label class="block text-[10px] font-mono uppercase subtext mb-1">Email Address</label>
+        <input type="email" id="forgotEmail" required class="input-bg w-full rounded-lg px-3 py-1.5 text-xs border outline-none focus:ring-1 focus:ring-blue-500">
       </div>
-      <div id="forgotError" class="hidden text-xs text-rose-500 font-medium"></div>
-      <div id="forgotSuccess" class="hidden text-xs text-emerald-500 font-medium p-3 rounded-xl card-bg border border-emerald-500/50"></div>
+      <div id="forgotError" class="hidden text-xs text-rose-400 font-medium"></div>
+      <div id="forgotSuccess" class="hidden text-xs text-emerald-400 font-medium p-2.5 rounded-lg card-bg border border-emerald-500/50"></div>
       
-      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold hover:bg-amber-300 transition shadow-md cursor-pointer text-xs sm:text-sm">Send Reset Link</button>
+      <button type="submit" id="forgotSubmitBtn" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs">Dispatch Reset Link</button>
     </form>
   </div>
 </div>
 
-<!-- NOTES & MANUAL RATING MODAL -->
-<div id="notesModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-    <button onclick="UIController.closeNotesModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold mb-1">Lead CRM Notes, Rating & Reminders</div>
-    <p id="notesBusinessSubtitle" class="text-xs text-amber-500 dark:text-amber-400 mb-4 font-semibold"></p>
+<!-- NOTES & RATING MODAL -->
+<div id="notesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+    <button onclick="UIController.closeNotesModal()" class="absolute top-4 right-4 subtext hover:text-blue-400 font-bold">✕</button>
+    <div>
+      <div class="text-base font-bold">Record Notes & Audit Context</div>
+      <p id="notesBusinessSubtitle" class="text-xs text-blue-400 font-mono"></p>
+    </div>
     
-    <div class="space-y-4">
+    <div class="space-y-3 text-xs">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Manual Rating (★)</label>
-          <select id="leadCustomRatingInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
-            <option value="">(Default Database Rating)</option>
+          <label class="block text-[10px] font-mono uppercase subtext mb-1">Custom Rating Score (★)</label>
+          <select id="leadCustomRatingInput" class="input-bg w-full rounded-lg p-2 text-xs border outline-none">
+            <option value="">(Database Default)</option>
             <option value="5.0">5.0 ★ (Elite)</option>
             <option value="4.5">4.5 ★ (Great)</option>
             <option value="4.0">4.0 ★ (Good)</option>
             <option value="3.5">3.5 ★ (Average)</option>
             <option value="3.0">3.0 ★ (Fair)</option>
-            <option value="2.0">2.0 ★ (Poor / Risk)</option>
+            <option value="2.0">2.0 ★ (Risk / Low)</option>
             <option value="1.0">1.0 ★ (Critical)</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Follow-Up Date (Reminder)</label>
-          <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-2.5 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400">
+          <label class="block text-[10px] font-mono uppercase subtext mb-1">Follow-Up Cadence Date</label>
+          <input type="date" id="leadReminderInput" class="input-bg w-full rounded-lg p-2 text-xs border outline-none">
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Custom Notes</label>
-        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-xl p-3 text-xs sm:text-sm border outline-none focus:ring-2 focus:ring-amber-400" placeholder="Add custom notes (e.g. Called on Monday, requested quote...)"></textarea>
+        <label class="block text-[10px] font-mono uppercase subtext mb-1">Shared Organization Notes</label>
+        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-lg p-2.5 text-xs border outline-none" placeholder="Record interaction summaries or client quote parameters..."></textarea>
       </div>
 
-      <!-- Activity Timeline History -->
       <div class="border-t border-theme pt-3">
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-2">Activity Timeline / History</label>
-        <div id="activityTimelineContainer" class="space-y-2 max-h-40 overflow-y-auto text-xs card-bg border rounded-xl p-3">
-          <span class="subtext">No activity history recorded yet.</span>
+        <label class="block text-[10px] font-mono uppercase subtext mb-2">Team Activity & Audit History</label>
+        <div id="activityTimelineContainer" class="space-y-1.5 max-h-36 overflow-y-auto text-[11px] card-bg border rounded-lg p-2.5 font-mono">
+          <span class="subtext">No historical events recorded.</span>
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-3 pt-2">
-        <button onclick="UIController.closeNotesModal()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-amber-500 text-xs font-semibold transition">Cancel</button>
-        <button onclick="CRMStore.saveLeadNote()" class="px-5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-bold text-slate-900 transition shadow-md">Save Changes</button>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="UIController.closeNotesModal()" class="px-3 py-1.5 rounded-lg card-bg border subtext hover:text-blue-400 font-medium">Cancel</button>
+        <button onclick="CRMStore.saveLeadNote()" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm">Save Changes</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MULTI-CHANNEL PITCH GENERATOR MODAL WITH DYNAMIC RATING TEMPLATES -->
-<div id="pitchModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-    <button onclick="UIController.closePitchModal()" class="absolute top-4 right-4 subtext hover:text-amber-500 text-lg font-bold">✕</button>
-    <div class="text-lg font-extrabold text-amber-500 dark:text-amber-400 mb-1">Outreach Pitch Generator <span id="pitchRatingBadge" class="ml-2 text-xs px-2 py-0.5 rounded-md border font-normal"></span></div>
-    <p id="pitchBusinessSubtitle" class="text-xs subtext mb-4 font-medium"></p>
+<!-- OUTREACH PITCH GENERATOR MODAL -->
+<div id="pitchModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+    <button onclick="UIController.closePitchModal()" class="absolute top-4 right-4 subtext hover:text-blue-400 font-bold">✕</button>
+    <div>
+      <div class="text-base font-bold text-blue-400">Outreach Pitch Sequence <span id="pitchRatingBadge" class="ml-1.5 text-xs px-2 py-0.5 rounded border font-mono"></span></div>
+      <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium"></p>
+    </div>
     
-    <!-- Channel Tabs -->
-    <div class="flex items-center gap-2 mb-4 border-b border-theme pb-3">
-      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold text-xs transition">WhatsApp Pitch</button>
-      <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-3 py-1.5 rounded-lg subtext hover:text-amber-500 font-medium text-xs transition">Email Pitch</button>
+    <div class="flex items-center gap-2 border-b border-theme pb-2">
+      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-semibold text-xs transition">WhatsApp Sequence</button>
+      <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-3 py-1 rounded-lg subtext hover:text-blue-400 font-medium text-xs transition">Email Sequence</button>
     </div>
 
-    <!-- WhatsApp Panel -->
-    <div id="pitchPanelWa" class="space-y-4">
+    <div id="pitchPanelWa" class="space-y-3 text-xs">
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext">WhatsApp Template (Use {name}, {city}, {category}, {ratingContext})</label>
-          <button onclick="CRMStore.resetPitchTemplate('whatsapp')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
+          <label class="block text-[10px] font-mono uppercase subtext">WhatsApp Template ({name}, {city}, {category}, {ratingContext})</label>
+          <button onclick="CRMStore.resetPitchTemplate('whatsapp')" class="text-[10px] text-blue-400 hover:underline">Reset Template</button>
         </div>
-        <textarea id="pitchTemplateWaInput" rows="6" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
+        <textarea id="pitchTemplateWaInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-lg p-2.5 text-xs font-mono border outline-none"></textarea>
       </div>
 
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-        <button onclick="CRMStore.copyPitchToClipboard('whatsapp')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy WhatsApp Text</button>
-        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
-          <span>Send via WhatsApp ↗</span>
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <button onclick="CRMStore.copyPitchToClipboard('whatsapp')" class="px-3 py-1.5 rounded-lg card-bg border text-xs font-semibold">Copy Text</button>
+        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition text-center shadow-sm">
+          <span>Dispatch WhatsApp ↗</span>
         </a>
       </div>
     </div>
 
-    <!-- Email Panel -->
-    <div id="pitchPanelEmail" class="hidden space-y-4">
+    <div id="pitchPanelEmail" class="hidden space-y-3 text-xs">
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider subtext mb-1">Email Subject Template</label>
-        <input type="text" id="emailSubjectTemplateInput" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-2.5 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400">
+        <label class="block text-[10px] font-mono uppercase subtext mb-1">Email Subject Header</label>
+        <input type="text" id="emailSubjectTemplateInput" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-lg p-2 text-xs font-mono border outline-none">
       </div>
       <div>
         <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold uppercase tracking-wider subtext">Email Body Template</label>
-          <button onclick="CRMStore.resetPitchTemplate('email')" class="text-[11px] text-amber-500 hover:underline">Reset Default</button>
+          <label class="block text-[10px] font-mono uppercase subtext">Email Body Template</label>
+          <button onclick="CRMStore.resetPitchTemplate('email')" class="text-[10px] text-blue-400 hover:underline">Reset Template</button>
         </div>
-        <textarea id="emailBodyTemplateInput" rows="6" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3 text-xs font-mono outline-none border focus:ring-2 focus:ring-amber-400"></textarea>
+        <textarea id="emailBodyTemplateInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-lg p-2.5 text-xs font-mono border outline-none"></textarea>
       </div>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-        <button onclick="CRMStore.copyPitchToClipboard('email')" class="w-full sm:w-auto px-4 py-2 rounded-xl card-bg border hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Copy Email Text</button>
-        <a id="emailSendBtn" href="#" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs font-bold text-white transition text-center shadow-md flex items-center justify-center gap-1.5">
+      <div class="flex items-center justify-between gap-2 pt-1">
+        <button onclick="CRMStore.copyPitchToClipboard('email')" class="px-3 py-1.5 rounded-lg card-bg border text-xs font-semibold">Copy Text</button>
+        <a id="emailSendBtn" href="#" class="px-4 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition text-center shadow-sm">
           <span>Open Email Client ↗</span>
         </a>
       </div>
     </div>
-
-  </div>
-</div>
-
-<!-- COOKIE CONSENT BANNER -->
-<div id="cookieBanner" class="hidden fixed bottom-4 left-4 right-4 sm:left-6 sm:max-w-md card-bg border p-4 rounded-2xl shadow-2xl z-50 flex flex-col gap-3 text-xs subtext">
-  <div class="flex items-start justify-between gap-2">
-    <p class="leading-relaxed">Ne përdorim cookies dhe ruajtje lokale për të përmirësuar përvojën tuaj dhe për të menaxhuar sesionin në <b class="text-amber-500 dark:text-amber-400">PaFaqe.al</b>.</p>
-    <button onclick="UIController.acceptCookies()" class="subtext hover:text-amber-500 font-bold text-sm cursor-pointer">✕</button>
-  </div>
-  <div class="flex items-center gap-2 justify-end">
-    <button onclick="UIController.acceptCookies()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold transition cursor-pointer">Prano të gjitha</button>
   </div>
 </div>
 
 <!-- Footer -->
-<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 text-xs subtext border-t border-theme mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-4 text-xs subtext border-t border-theme mt-10 flex flex-col sm:flex-row items-center justify-between gap-3">
   <div>
-    <p class="font-semibold">PaFaqe.al — B2B Web Design Lead Intelligence</p>
-    <p class="text-[11px] subtext mt-0.5">© 2026 Developed by <b class="text-amber-500 dark:text-amber-400">Kristian Frroku</b></p>
+    <p class="font-mono font-bold">PaFaqe.al Enterprise Software</p>
+    <p class="text-[10px] subtext mt-0.5">Developed by Kristian Frroku</p>
   </div>
-  <div class="flex items-center gap-4">
-    <span>📞 <a href="tel:0684073212" class="text-amber-500 dark:text-amber-400 hover:underline">0684073212</a></span>
-    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-amber-500 dark:text-amber-400 hover:underline">frrokuk2@gmail.com</a></span>
+  <div class="flex items-center gap-4 text-xs font-mono">
+    <span>📞 <a href="tel:0684073212" class="text-blue-400 hover:underline">0684073212</a></span>
+    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-blue-400 hover:underline">frrokuk2@gmail.com</a></span>
   </div>
 </footer>
 
 <script>
 // ==========================================
-// 🔑 FIREBASE CONFIGURATION & SECURITY NOTE
+// 🔑 FIREBASE CONFIGURATION & SDK INIT
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
@@ -651,13 +646,15 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
+const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business Enterprise", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
 
 // ==========================================
-// 🛡️ MODULAR NAMESPACE 1: AuthService
+// 🛡️ AUTH SERVICE & ROLE ACCESS
 // ==========================================
 const AuthService = {
   currentUser: null,
+  currentOrgId: null,
+  userRole: 'Owner',
   isSignUpMode: false,
 
   init() {
@@ -673,43 +670,39 @@ const AuthService = {
       
       if (user) {
         await user.reload();
-        await user.getIdToken(true); 
+        await user.getIdToken(true);
 
-        if (user.emailVerified) {
-          try {
-            if (dataSourceBadge) dataSourceBadge.textContent = "Syncing Firestore...";
-            const querySnapshot = await db.collection('lead_chunks').get();
-            let allBusinesses = [];
-            querySnapshot.forEach((doc) => {
-              const chunkData = doc.data();
-              if (chunkData.rows && Array.isArray(chunkData.rows)) {
-                allBusinesses.push(...chunkData.rows);
-              }
-            });
-
-            if (allBusinesses.length > 0) {
-              CRMStore.DATA = {
-                source: "live",
-                generated: new Date().toISOString().split('T')[0],
-                count: allBusinesses.length,
-                businesses: allBusinesses
-              };
-              if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
-              CRMStore.init();
-            } else {
-              if (dataSourceBadge) dataSourceBadge.textContent = "0 Leads Found";
-            }
-          } catch (err) {
-            console.error("Error fetching leads from Firestore:", err);
-            if (dataSourceBadge) dataSourceBadge.textContent = "Offline Cache";
+        // Fetch User Org and Role
+        try {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            const uData = userDoc.data();
+            this.currentOrgId = uData.orgId || user.uid;
+            this.userRole = uData.role || 'Owner';
+          } else {
+            this.currentOrgId = user.uid;
+            this.userRole = 'Owner';
+            await db.collection('users').doc(user.uid).set({
+              email: user.email,
+              name: user.displayName || '',
+              orgId: user.uid,
+              role: 'Owner'
+            }, { merge: true });
           }
-        } else {
-          if (dataSourceBadge) dataSourceBadge.textContent = "Unverified Email";
+        } catch (e) {
+          this.currentOrgId = user.uid;
         }
-        
+
+        const orgInput = document.getElementById('orgIdInput');
+        if (orgInput) orgInput.value = this.currentOrgId;
+        const roleBadge = document.getElementById('userRoleBadge');
+        if (roleBadge) roleBadge.textContent = `Role: ${this.userRole}`;
+        const orgStat = document.getElementById('statOrgName');
+        if (orgStat) orgStat.textContent = this.currentOrgId.slice(0, 10) + '...';
+
         if (user.emailVerified) {
           try {
-            if (dataSourceBadge) dataSourceBadge.textContent = "Syncing Firestore...";
+            if (dataSourceBadge) dataSourceBadge.textContent = "Syncing...";
             const querySnapshot = await db.collection('lead_chunks').get();
             let allBusinesses = [];
             querySnapshot.forEach((doc) => {
@@ -743,12 +736,12 @@ const AuthService = {
         if (btn) {
           btn.innerHTML = `
             <div class="flex items-center gap-1.5 cursor-pointer" onclick="UIController.switchTab('profile')">
-              <img src="${avatarUrl}" alt="Avatar" style="width: 18px; height: 18px; min-width: 18px; min-height: 18px;" class="rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+              <img src="${avatarUrl}" alt="Avatar" style="width: 16px; height: 16px;" class="rounded-full border border-blue-500/40 bg-slate-800 object-cover shadow-sm">
               <span class="hover:underline font-semibold text-xs whitespace-nowrap">${UIController.escapeHtml(displayName)}</span>
             </div>
-            <span class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
+            <span class="text-xs text-rose-400 hover:text-rose-300 ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
           `;
-          btn.className = "px-2.5 py-1.5 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
+          btn.className = "px-2.5 py-1 rounded-lg card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
         }
         if (hero) hero.classList.add('hidden');
         if (filterSec) filterSec.classList.remove('hidden');
@@ -790,100 +783,25 @@ const AuthService = {
   },
 
   openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); },
-  closeAuthModal() { 
-    document.getElementById('authModal').classList.add('hidden'); 
-    const errBox = document.getElementById('authError');
-    if (errBox) errBox.classList.add('hidden'); 
-  },
+  closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); },
 
   toggleAuthMode() {
     this.isSignUpMode = !this.isSignUpMode;
-    const nameField = document.getElementById('nameFieldContainer');
-    const strengthContainer = document.getElementById('passwordStrengthContainer');
-    const forgotLink = document.getElementById('forgotPasswordLink');
-
-    if (this.isSignUpMode) {
-      if (nameField) nameField.classList.remove('hidden');
-      const authName = document.getElementById('authName');
-      if (authName) authName.required = true;
-      if (strengthContainer) strengthContainer.classList.remove('hidden');
-      if (forgotLink) forgotLink.classList.add('hidden');
-    } else {
-      if (nameField) nameField.classList.add('hidden');
-      const authName = document.getElementById('authName');
-      if (authName) authName.required = false;
-      if (strengthContainer) strengthContainer.classList.add('hidden');
-      if (forgotLink) forgotLink.classList.remove('hidden');
-    }
-
-    document.getElementById('authTitle').textContent = this.isSignUpMode ? 'Create Free Account' : 'Sign In to PaFaqe.al';
-    document.getElementById('authSubtitle').textContent = this.isSignUpMode ? 'Sign up to sync your lead notes and statuses in the cloud.' : 'Access your saved lead statuses and cloud CRM notes across devices.';
-    document.getElementById('authSubmitBtn').textContent = this.isSignUpMode ? 'Sign Up' : 'Sign In';
-    document.getElementById('authToggleText').textContent = this.isSignUpMode ? 'Already have an account?' : "Don't have an account?";
-    document.getElementById('authToggleBtn').textContent = this.isSignUpMode ? 'Sign In' : 'Sign Up';
-    const errBox = document.getElementById('authError');
-    if (errBox) errBox.classList.add('hidden');
+    document.getElementById('nameFieldContainer').classList.toggle('hidden', !this.isSignUpMode);
+    document.getElementById('passwordStrengthContainer').classList.toggle('hidden', !this.isSignUpMode);
+    document.getElementById('authTitle').textContent = this.isSignUpMode ? 'Register Workspace Account' : 'Enterprise Sign In';
+    document.getElementById('authSubmitBtn').textContent = this.isSignUpMode ? 'Register' : 'Sign In';
   },
 
-  checkPasswordStrength(password) {
-    const strengthContainer = document.getElementById('passwordStrengthContainer');
-    if (!this.isSignUpMode) {
-      if (strengthContainer) strengthContainer.classList.add('hidden');
-      return;
-    }
-    if (strengthContainer) strengthContainer.classList.remove('hidden');
-
-    const bar1 = document.getElementById('strengthBar1');
-    const bar2 = document.getElementById('strengthBar2');
-    const bar3 = document.getElementById('strengthBar3');
+  checkPasswordStrength(p) {
     const text = document.getElementById('strengthText');
-    if (!bar1 || !bar2 || !bar3 || !text) return;
-
-    let score = 0;
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-
-    bar1.className = "w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all";
-    bar2.className = "w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all";
-    bar3.className = "w-1/3 h-full bg-slate-300 dark:bg-slate-700 transition-all";
-
-    if (password.length === 0) {
-      text.textContent = "Password strength: Enter password";
-      text.className = "text-[11px] subtext font-medium";
-      return;
-    }
-
-    if (score === 1 || password.length < 6) {
-      bar1.className = "w-1/3 h-full bg-rose-500 transition-all";
-      text.textContent = "Password strength: Weak";
-      text.className = "text-[11px] text-rose-500 font-medium";
-    } else if (score === 2) {
-      bar1.className = "w-1/3 h-full bg-amber-500 transition-all";
-      bar2.className = "w-1/3 h-full bg-amber-500 transition-all";
-      text.textContent = "Password strength: Medium";
-      text.className = "text-[11px] text-amber-500 font-medium";
-    } else {
-      bar1.className = "w-1/3 h-full bg-emerald-500 transition-all";
-      bar2.className = "w-1/3 h-full bg-emerald-500 transition-all";
-      bar3.className = "w-1/3 h-full bg-emerald-500 transition-all";
-      text.textContent = "Password strength: Strong";
-      text.className = "text-[11px] text-emerald-500 font-medium";
-    }
+    if (text) text.textContent = p.length >= 8 ? 'Strength: Strong' : 'Strength: Minimal';
   },
 
   openForgotPasswordModal() {
     this.closeAuthModal();
-    const forgotEmail = document.getElementById('forgotEmail');
-    const authEmail = document.getElementById('authEmail');
-    if (forgotEmail && authEmail) forgotEmail.value = authEmail.value || '';
-    const fErr = document.getElementById('forgotError');
-    const fSucc = document.getElementById('forgotSuccess');
-    if (fErr) fErr.classList.add('hidden');
-    if (fSucc) fSucc.classList.add('hidden');
     document.getElementById('forgotPasswordModal').classList.remove('hidden');
   },
-
   closeForgotPasswordModal() {
     document.getElementById('forgotPasswordModal').classList.add('hidden');
   },
@@ -891,69 +809,23 @@ const AuthService = {
   async handleForgotPasswordSubmit(e) {
     e.preventDefault();
     const email = document.getElementById('forgotEmail').value.trim();
-    const errBox = document.getElementById('forgotError');
-    const succBox = document.getElementById('forgotSuccess');
-    const submitBtn = document.getElementById('forgotSubmitBtn');
-
-    if (errBox) errBox.classList.add('hidden');
-    if (succBox) succBox.classList.add('hidden');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Sending...";
-    }
-
     try {
       await auth.sendPasswordResetEmail(email);
-      if (succBox) {
-        succBox.textContent = `Password reset email successfully sent to ${email}. Please check your inbox and spam folder.`;
-        succBox.classList.remove('hidden');
-      }
-      setTimeout(() => { this.closeForgotPasswordModal(); }, 4000);
+      document.getElementById('forgotSuccess').textContent = "Reset link dispatched.";
+      document.getElementById('forgotSuccess').classList.remove('hidden');
     } catch (err) {
-      if (errBox) {
-        errBox.textContent = err.message;
-        errBox.classList.add('hidden');
-      }
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Send Reset Link";
-      }
+      alert(err.message);
     }
   },
 
   async updateProfileData() {
     if (!this.currentUser) return;
-    const pName = document.getElementById('profileName');
-    const succBox = document.getElementById('profileSuccess');
-    const newName = pName ? pName.value.trim() : '';
-
+    const name = document.getElementById('profileName').value.trim();
     try {
-      await this.currentUser.updateProfile({ displayName: newName });
-      await db.collection('users').doc(this.currentUser.uid).set({
-        name: newName,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-
-      const btn = document.getElementById('authActionBtn');
-      const emailPrefix = this.currentUser.email ? this.currentUser.email.split('@')[0] : 'User';
-      const avatarUrl = UIController.getPixelAvatarUrl(this.currentUser);
-      if (btn) {
-        btn.innerHTML = `
-          <div class="flex items-center gap-1.5 cursor-pointer" onclick="UIController.switchTab('profile')">
-            <img src="${avatarUrl}" alt="Avatar" style="width: 18px; height: 18px; min-width: 18px; min-height: 18px;" class="rounded-full border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
-            <span class="hover:underline font-semibold text-xs whitespace-nowrap">${UIController.escapeHtml(newName || emailPrefix)}</span>
-          </div>
-          <span class="text-xs text-rose-400 hover:text-rose-300 transition-colors ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
-        `;
-      }
-
-      if (succBox) {
-        succBox.classList.remove('hidden');
-        setTimeout(() => succBox.classList.add('hidden'), 4000);
-      }
+      await this.currentUser.updateProfile({ displayName: name });
+      alert('Profile updated successfully.');
     } catch (err) {
-      alert('Failed to update profile: ' + err.message);
+      alert(err.message);
     }
   },
 
@@ -961,40 +833,25 @@ const AuthService = {
     e.preventDefault();
     const email = document.getElementById('authEmail').value;
     const password = document.getElementById('authPassword').value;
-    const errBox = document.getElementById('authError');
-    if (errBox) errBox.classList.add('hidden');
-
     try {
       if (this.isSignUpMode) {
-        const authName = document.getElementById('authName');
-        const name = authName ? authName.value.trim() : '';
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        await userCredential.user.updateProfile({ displayName: name });
-        await userCredential.user.sendEmailVerification();
-        
-        await db.collection('users').doc(userCredential.user.uid).set({
-          name: name,
-          email: email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-
-        alert('Account created successfully! A verification email has been sent to your inbox.');
+        const name = document.getElementById('authName').value.trim();
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        await cred.user.updateProfile({ displayName: name });
+        await cred.user.sendEmailVerification();
       } else {
         await auth.signInWithEmailAndPassword(email, password);
       }
       this.closeAuthModal();
-      e.target.reset();
     } catch (err) {
-      if (errBox) {
-        errBox.textContent = err.message;
-        errBox.classList.add('hidden');
-      }
+      document.getElementById('authError').textContent = err.message;
+      document.getElementById('authError').classList.remove('hidden');
     }
   }
 };
 
 // ==========================================
-// 📊 MODULAR NAMESPACE 2: CRMStore (State & Business Logic)
+// 📊 CRM STORE & MULTI-TENANT LOGIC
 // ==========================================
 const CRMStore = {
   DATA: DEMO,
@@ -1014,17 +871,18 @@ const CRMStore = {
   pageSize: 50,
   lowRatingOnly: false,
 
-  DEFAULT_WA_TEMPLATE: "Përshëndetje! Vura re se {name} në {city} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google dhe për të tërhequr më shumë klientë.{ratingContext}\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne, të shpejtë dhe me kosto minimale. A jeni të interesuar për një propozim të shkurtër?",
+  DEFAULT_WA_TEMPLATE: "Përshëndetje! Vura re se {name} në {city} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google.{ratingContext}\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne. A jeni të interesuar për një propozim?",
   DEFAULT_EMAIL_SUB_TEMPLATE: "Propozim Web Design për {name}",
-  DEFAULT_EMAIL_BODY_TEMPLATE: "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare për t'u shfaqur në rezultatet e Google.{ratingContext}\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne, të shpejta dhe me kosto shumë të favorshme që ju sjellin më shumë klientë.\n\nA dëshironi një konsultë të shkurtër ose një shembull se si mund të dukej faqja juaj?\n\nMe respekt,\n[Emri Juaj]\nPaFaqe.al",
+  DEFAULT_EMAIL_BODY_TEMPLATE: "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare.{ratingContext}\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne që ju sjellin më shumë klientë.\n\nMe respekt,\nPaFaqe.al Enterprise",
 
   async loadCloudData() {
     if (!AuthService.currentUser) return;
+    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
     try {
       const [statusSnap, notesSnap, historySnap] = await Promise.all([
-        db.collection('users').doc(AuthService.currentUser.uid).collection('lead_statuses').get(),
-        db.collection('users').doc(AuthService.currentUser.uid).collection('lead_notes').get(),
-        db.collection('users').doc(AuthService.currentUser.uid).collection('lead_history').get()
+        db.collection('organizations').doc(orgId).collection('lead_statuses').get(),
+        db.collection('organizations').doc(orgId).collection('lead_notes').get(),
+        db.collection('organizations').doc(orgId).collection('lead_history').get()
       ]);
       
       this.cloudStatuses = {};
@@ -1033,85 +891,72 @@ const CRMStore = {
       this.cloudNotes = {};
       this.cloudReminders = {};
       this.cloudRatings = {};
-      let dueRemindersCount = 0;
-      const todayStr = new Date().toISOString().split('T')[0];
-
       notesSnap.forEach(doc => { 
         const d = doc.data();
         this.cloudNotes[doc.id] = d.note || ''; 
-        if (d.reminder) {
-          this.cloudReminders[doc.id] = d.reminder;
-          if (d.reminder === todayStr) dueRemindersCount++;
-        }
-        if (d.customRating) {
-          this.cloudRatings[doc.id] = d.customRating;
-        }
+        if (d.reminder) this.cloudReminders[doc.id] = d.reminder;
+        if (d.customRating) this.cloudRatings[doc.id] = d.customRating;
       });
 
       this.cloudHistory = {};
       historySnap.forEach(doc => {
         this.cloudHistory[doc.id] = doc.data().events || [];
       });
-
-      if (dueRemindersCount > 0 && !sessionStorage.getItem('reminder_sent_' + todayStr)) {
-        sessionStorage.setItem('reminder_sent_' + todayStr, 'true');
-        this.triggerAutomatedEmailReminder(dueRemindersCount, AuthService.currentUser.email);
-      }
     } catch (err) {
-      console.error("Error loading cloud data:", err);
+      console.error("Error loading org cloud data:", err);
     } finally {
       this.render();
       this.updateAnalytics(this.DATA && this.DATA.businesses ? this.DATA.businesses.length : 0);
     }
   },
 
+  async copyOrgId() {
+    const input = document.getElementById('orgIdInput');
+    if (input) {
+      await navigator.clipboard.writeText(input.value);
+      alert('Organization ID copied to clipboard.');
+    }
+  },
+
+  async joinOrganization() {
+    const targetOrg = document.getElementById('joinOrgInput').value.trim();
+    if (!targetOrg || !AuthService.currentUser) return;
+    try {
+      await db.collection('users').doc(AuthService.currentUser.uid).set({
+        orgId: targetOrg,
+        role: 'Sales Rep'
+      }, { merge: true });
+      AuthService.currentOrgId = targetOrg;
+      AuthService.userRole = 'Sales Rep';
+      alert(`Joined Organization ${targetOrg}. Reloading context...`);
+      await this.loadCloudData();
+    } catch (e) {
+      alert('Error joining organization: ' + e.message);
+    }
+  },
+
   async recordLeadHistoryEvent(leadKey, eventText) {
     const timestamp = new Date().toLocaleString();
-    const newEvent = { date: timestamp, text: eventText };
+    const userLabel = AuthService.currentUser ? (AuthService.currentUser.displayName || AuthService.currentUser.email) : 'Guest';
+    const newEvent = { date: timestamp, text: `[${userLabel}] ${eventText}` };
     
     if (!this.cloudHistory[leadKey]) this.cloudHistory[leadKey] = [];
     this.cloudHistory[leadKey].unshift(newEvent);
 
     if (AuthService.currentUser) {
+      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
       try {
-        await db.collection('users').doc(AuthService.currentUser.uid).collection('lead_history').doc(leadKey).set({
+        await db.collection('organizations').doc(orgId).collection('lead_history').doc(leadKey).set({
           events: this.cloudHistory[leadKey]
         });
       } catch (err) {
-        console.error("Error saving lead history to cloud:", err);
+        console.error("Error saving lead audit event:", err);
       }
-    } else {
-      const localHist = JSON.parse(localStorage.getItem('pafaqe_lead_history') || '{}');
-      localHist[leadKey] = this.cloudHistory[leadKey];
-      localStorage.setItem('pafaqe_lead_history', JSON.stringify(localHist));
-    }
-  },
-
-  async triggerAutomatedEmailReminder(count, userEmail) {
-    try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: "cfc2bac6-ad84-4aff-883c-de297e879391",
-          subject: `🔔 PaFaqe.al Reminder: You have ${count} lead follow-up(s) due today!`,
-          name: "PaFaqe.al System Bot",
-          email: userEmail || "frrokuk2@gmail.com",
-          message: `Hello! This is an automated notification from your PaFaqe.al account. You have ${count} lead follow-up reminder(s) scheduled for today (${new Date().toLocaleDateString()}). Log in to your dashboard to view notes and pitch clients.`
-        })
-      });
-    } catch (e) {
-      console.error("Failed to dispatch automated email notification", e);
     }
   },
 
   getLeadStatus(id) {
-    if (AuthService.currentUser) {
-      return this.cloudStatuses[id] || 'new';
-    } else {
-      const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
-      return statuses[id] || 'new';
-    }
+    return AuthService.currentUser ? (this.cloudStatuses[id] || 'new') : (JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}')[id] || 'new');
   },
 
   async setLeadStatus(id, status) {
@@ -1124,55 +969,37 @@ const CRMStore = {
       localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
     } else {
       this.cloudStatuses[id] = status;
+      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
       try {
-        await db.collection('users').doc(AuthService.currentUser.uid).collection('lead_statuses').doc(id).set({ status: status });
+        await db.collection('organizations').doc(orgId).collection('lead_statuses').doc(id).set({ status: status });
       } catch (err) {
-        console.error("Error saving status to cloud:", err);
+        console.error("Error saving status:", err);
       }
     }
 
-    await this.recordLeadHistoryEvent(id, `Status changed from "${oldStatus}" to "${status}"`);
+    await this.recordLeadHistoryEvent(id, `Status updated: ${oldStatus} → ${status}`);
     this.render();
   },
 
   getLeadNote(id) {
-    if (AuthService.currentUser) {
-      return this.cloudNotes[id] || '';
-    } else {
-      const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
-      return notes[id] || '';
-    }
+    return AuthService.currentUser ? (this.cloudNotes[id] || '') : (JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}')[id] || '');
   },
 
   getLeadReminder(id) {
-    if (AuthService.currentUser) {
-      return this.cloudReminders[id] || '';
-    } else {
-      const rems = JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}');
-      return rems[id] || '';
-    }
+    return AuthService.currentUser ? (this.cloudReminders[id] || '') : (JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}')[id] || '');
   },
 
   getLeadRating(b) {
     const key = b.id || b.name;
-    let custom = null;
-    if (AuthService.currentUser) {
-      custom = this.cloudRatings[key];
-    } else {
-      const ratings = JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}');
-      custom = ratings[key];
-    }
+    const custom = AuthService.currentUser ? this.cloudRatings[key] : (JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}')[key]);
     return custom !== undefined && custom !== null && custom !== "" ? parseFloat(custom) : (b.rating || null);
   },
 
   async saveLeadNote() {
     if (!this.activeLeadKeyForNotes) return;
-    const input = document.getElementById('leadNoteInput');
-    const remInput = document.getElementById('leadReminderInput');
-    const ratingInput = document.getElementById('leadCustomRatingInput');
-    const noteText = input ? input.value.trim() : '';
-    const remDate = remInput ? remInput.value : '';
-    const customRating = ratingInput ? ratingInput.value : '';
+    const noteText = document.getElementById('leadNoteInput').value.trim();
+    const remDate = document.getElementById('leadReminderInput').value;
+    const customRating = document.getElementById('leadCustomRatingInput').value;
     
     if (AuthService.currentUser) {
       this.cloudNotes[this.activeLeadKeyForNotes] = noteText;
@@ -1180,30 +1007,19 @@ const CRMStore = {
       if (customRating) this.cloudRatings[this.activeLeadKeyForNotes] = customRating;
       else delete this.cloudRatings[this.activeLeadKeyForNotes];
 
+      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
       try {
-        await db.collection('users').doc(AuthService.currentUser.uid).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ 
+        await db.collection('organizations').doc(orgId).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ 
           note: noteText, 
           reminder: remDate,
           customRating: customRating
         });
       } catch (err) {
-        console.error("Error saving note to cloud:", err);
+        console.error("Error saving note:", err);
       }
-    } else {
-      const notes = JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}');
-      const rems = JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}');
-      const ratings = JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}');
-      notes[this.activeLeadKeyForNotes] = noteText;
-      rems[this.activeLeadKeyForNotes] = remDate;
-      if (customRating) ratings[this.activeLeadKeyForNotes] = customRating;
-      else delete ratings[this.activeLeadKeyForNotes];
-
-      localStorage.setItem('pafaqe_lead_notes', JSON.stringify(notes));
-      localStorage.setItem('pafaqe_lead_reminders', JSON.stringify(rems));
-      localStorage.setItem('pafaqe_lead_ratings', JSON.stringify(ratings));
     }
 
-    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Note / Rating updated (Rating: ${customRating || 'Default'})`);
+    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Note/Rating Context Updated`);
     UIController.closeNotesModal();
     this.render();
   },
@@ -1220,49 +1036,28 @@ const CRMStore = {
 
   filtered() {
     if (!this.DATA || !this.DATA.businesses) return [];
-    const highPriorityOnly = window.highPriorityOnly || false;
-    
     let list = this.DATA.businesses.filter(b => {
       if(!this.showAll && b.website) return false;
-      if(highPriorityOnly && (this.leadScore(b) < 80 || !b.phone)) return false;
-      
       const effectiveRating = this.getLeadRating(b);
       if(this.lowRatingOnly && (effectiveRating && effectiveRating >= 3.5)) return false;
       
       if (AuthService.currentUser) {
-        const qEl = document.getElementById('q');
-        const cityEl = document.getElementById('city');
-        const catEl = document.getElementById('cat');
-        const mrEl = document.getElementById('minRating');
-        const phoneOnlyEl = document.getElementById('phoneOnly');
-
-        const q = qEl ? qEl.value.toLowerCase() : '';
-        const city = cityEl ? cityEl.value : '';
-        const cat = catEl ? catEl.value : '';
-        const mr = mrEl ? parseFloat(mrEl.value) || 0 : 0;
-        const phoneOnly = phoneOnlyEl ? phoneOnlyEl.checked : false;
+        const q = (document.getElementById('q')?.value || '').toLowerCase();
+        const city = document.getElementById('city')?.value || '';
+        const cat = document.getElementById('cat')?.value || '';
+        const mr = parseFloat(document.getElementById('minRating')?.value) || 0;
+        const phoneOnly = document.getElementById('phoneOnly')?.checked || false;
 
         if(q && !(b.name + ' ' + (b.address || '') + ' ' + (b.category || '')).toLowerCase().includes(q)) return false;
         if(city && (b.city || '').trim() !== city) return false;
         if(cat && (b.category || '').trim() !== cat) return false;
         if(phoneOnly && !b.phone) return false;
-        
         if(mr > 0 && (effectiveRating || 0) < mr) return false;
       }
       return true;
     });
-    
-    if (AuthService.currentUser) {
-      const mrLabel = document.getElementById('minRatingLabel');
-      const mrEl = document.getElementById('minRating');
-      if (mrLabel && mrEl) {
-        const mr = parseFloat(mrEl.value) || 0;
-        mrLabel.textContent = mr + '★';
-      }
-    }
-    
-    const sortEl = document.getElementById('sort');
-    const s = AuthService.currentUser && sortEl ? sortEl.value : 'score';
+
+    const s = AuthService.currentUser ? (document.getElementById('sort')?.value || 'score') : 'score';
     list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
       : s==='rating' ? ((this.getLeadRating(b) || 0) - (this.getLeadRating(a) || 0))
       : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
@@ -1278,12 +1073,11 @@ const CRMStore = {
     return `https://wa.me/${formatted}`;
   },
 
-  toggleSelectAll(masterCheckbox) {
-    const isChecked = masterCheckbox.checked;
-    const visibleCheckboxes = document.querySelectorAll('.lead-select-checkbox');
-    visibleCheckboxes.forEach(cb => {
-      cb.checked = isChecked;
-      const key = cb.getAttribute('data-key');
+  toggleSelectAll(cb) {
+    const isChecked = cb.checked;
+    document.querySelectorAll('.lead-select-checkbox').forEach(c => {
+      c.checked = isChecked;
+      const key = c.getAttribute('data-key');
       if (isChecked) this.selectedLeads.add(key);
       else this.selectedLeads.delete(key);
     });
@@ -1291,177 +1085,113 @@ const CRMStore = {
     this.updateBulkToolbar();
   },
 
-  toggleSelectLead(key, checkbox) {
-    if (checkbox.checked) {
-      this.selectedLeads.add(key);
-    } else {
-      this.selectedLeads.delete(key);
-    }
+  toggleSelectLead(key, cb) {
+    if (cb.checked) this.selectedLeads.add(key);
+    else this.selectedLeads.delete(key);
     this.updateExportBtnLabel();
     this.updateBulkToolbar();
   },
 
   clearSelection() {
     this.selectedLeads.clear();
-    const checkboxes = document.querySelectorAll('.lead-select-checkbox');
-    checkboxes.forEach(cb => cb.checked = false);
-    const master = document.querySelector('thead input[type="checkbox"]');
-    if (master) master.checked = false;
+    document.querySelectorAll('.lead-select-checkbox').forEach(cb => cb.checked = false);
     this.updateExportBtnLabel();
     this.updateBulkToolbar();
   },
 
   updateBulkToolbar() {
     const toolbar = document.getElementById('bulkActionsToolbar');
+    if (toolbar) toolbar.classList.toggle('hidden', this.selectedLeads.size === 0);
     const badge = document.getElementById('selectedCountBadge');
-    if (!toolbar || !badge) return;
-
-    if (this.selectedLeads.size > 0) {
-      toolbar.classList.remove('hidden');
-      badge.textContent = `${this.selectedLeads.size} selected`;
-    } else {
-      toolbar.classList.add('hidden');
-    }
+    if (badge) badge.textContent = `${this.selectedLeads.size} selected`;
   },
 
   async applyBulkStatus() {
     if (this.selectedLeads.size === 0) return;
     const targetStatus = document.getElementById('bulkStatusSelect').value;
-    
     for (const leadKey of this.selectedLeads) {
       await this.setLeadStatus(leadKey, targetStatus);
     }
-    
-    alert(`Successfully updated status for ${this.selectedLeads.size} leads to "${targetStatus}".`);
+    alert(`Bulk status applied to ${this.selectedLeads.size} records.`);
     this.clearSelection();
     this.render();
   },
 
   getSavedPresets() {
-    try {
-      return JSON.parse(localStorage.getItem('pafaqe_filter_presets') || '[]');
-    } catch(e) {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem('pafaqe_filter_presets') || '[]'); } catch(e) { return []; }
   },
 
   saveCurrentPresetPrompt() {
-    const presetName = prompt("Enter a name for this filter preset (e.g., 'Dentists in Tirana'):");
-    if (!presetName) return;
-
-    const currentFilters = {
-      name: presetName,
+    const name = prompt("Filter Preset Identifier:");
+    if (!name) return;
+    const presets = this.getSavedPresets();
+    presets.push({
+      name,
       q: document.getElementById('q').value,
       city: document.getElementById('city').value,
       cat: document.getElementById('cat').value,
       minRating: document.getElementById('minRating').value,
       phoneOnly: document.getElementById('phoneOnly').checked
-    };
-
-    const presets = this.getSavedPresets();
-    presets.push(currentFilters);
+    });
     localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
     this.renderFilterPresets();
   },
 
-  applyPreset(index) {
-    const presets = this.getSavedPresets();
-    const p = presets[index];
+  applyPreset(idx) {
+    const p = this.getSavedPresets()[idx];
     if (!p) return;
-
     document.getElementById('q').value = p.q || '';
     document.getElementById('city').value = p.city || '';
     document.getElementById('cat').value = p.cat || '';
     document.getElementById('minRating').value = p.minRating || '0';
     document.getElementById('phoneOnly').checked = !!p.phoneOnly;
-
     UIController.handleFilterInput();
-  },
-
-  deletePreset(index, event) {
-    event.stopPropagation();
-    const presets = this.getSavedPresets();
-    presets.splice(index, 1);
-    localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
-    this.renderFilterPresets();
   },
 
   renderFilterPresets() {
     const container = document.getElementById('presetChipsContainer');
     if (!container) return;
     const presets = this.getSavedPresets();
-
-    if (presets.length === 0) {
-      container.innerHTML = `<span class="subtext italic text-[11px]">No saved presets yet.</span>`;
-      return;
-    }
-
     container.innerHTML = presets.map((p, idx) => `
-      <span onclick="CRMStore.applyPreset(${idx})" class="chip chip-btn px-2.5 py-1 rounded-lg border text-xs font-medium flex items-center gap-1.5 cursor-pointer">
+      <span onclick="CRMStore.applyPreset(${idx})" class="chip chip-btn px-2 py-0.5 rounded border text-[11px] font-mono flex items-center gap-1 cursor-pointer">
         <span>${UIController.escapeHtml(p.name)}</span>
-        <span onclick="CRMStore.deletePreset(${idx}, event)" class="text-rose-400 hover:text-rose-300 font-bold ml-1">×</span>
       </span>
     `).join('');
   },
 
   updateExportBtnLabel() {
     const btnText = document.getElementById('exportBtnText');
-    if (btnText) {
-      if (this.selectedLeads.size > 0) {
-        btnText.textContent = `Export Selected (${this.selectedLeads.size})`;
-      } else {
-        btnText.textContent = `Export CSV`;
-      }
-    }
+    if (btnText) btnText.textContent = this.selectedLeads.size > 0 ? `Export Selected (${this.selectedLeads.size})` : `Export CSV`;
   },
 
   exportCSV() {
-    if (!AuthService.currentUser) {
-      AuthService.openAuthModal();
-      return;
-    }
+    if (!AuthService.currentUser) { AuthService.openAuthModal(); return; }
     let list = this.filtered();
-    
-    if (this.selectedLeads.size > 0) {
-      list = list.filter(b => this.selectedLeads.has(b.id || b.name));
-    }
+    if (this.selectedLeads.size > 0) list = list.filter(b => this.selectedLeads.has(b.id || b.name));
 
-    const excelHeader = 'sep=,\n';
     const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
-    const body = list.map(b => {
-      const rawPhone = b.phone ? String(b.phone) : '';
-      const excelPhone = rawPhone ? `="\t${rawPhone}"` : '""';
-      const effectiveRating = this.getLeadRating(b);
-      return [
-        `"${(b.name || '').replace(/"/g, '""')}"`,
-        `"${(b.category || '').replace(/"/g, '""')}"`,
-        `"${(b.city || '').replace(/"/g, '""')}"`,
-        `"${(b.address || '').replace(/"/g, '""')}"`,
-        excelPhone,
-        effectiveRating || '',
-        b.reviews || '',
-        `"${(b.website || '').replace(/"/g, '""')}"`,
-        this.leadScore(b)
-      ].join(',');
-    }).join('\n');
+    const body = list.map(b => [
+      `"${(b.name || '').replace(/"/g, '""')}"`,
+      `"${(b.category || '').replace(/"/g, '""')}"`,
+      `"${(b.city || '').replace(/"/g, '""')}"`,
+      `"${(b.address || '').replace(/"/g, '""')}"`,
+      `="${b.phone || ''}"`,
+      this.getLeadRating(b) || '',
+      b.reviews || '',
+      `"${(b.website || '').replace(/"/g, '""')}"`,
+      this.leadScore(b)
+    ].join(',')).join('\n');
     
-    const blob = new Blob(['\ufeff' + excelHeader + head + body], {type: 'text/csv;charset=utf-8;'});
+    const blob = new Blob(['\ufeff' + head + body], {type: 'text/csv;charset=utf-8;'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = this.selectedLeads.size > 0 ? `albania-selected-${this.selectedLeads.size}-leads.csv` : 'albania-no-website-leads.csv'; 
+    a.download = 'albania-lead-export.csv'; 
     a.click();
-  },
-
-  changeKanbanPage(status, direction) {
-    this.kanbanPages[status] += direction;
-    if (this.kanbanPages[status] < 1) this.kanbanPages[status] = 1;
-    this.renderKanban();
   },
 
   renderKanban() {
     if (!this.DATA || !this.DATA.businesses) return;
     const list = this.DATA.businesses.filter(b => !b.website);
-    
     const cols = {
       new: document.getElementById('kanbanColNew'),
       contacted: document.getElementById('kanbanColContacted'),
@@ -1469,84 +1199,30 @@ const CRMStore = {
       closed: document.getElementById('kanbanColClosed')
     };
 
-    const counts = {
-      new: document.getElementById('kanbanCountNew'),
-      contacted: document.getElementById('kanbanCountContacted'),
-      interested: document.getElementById('kanbanCountInterested'),
-      closed: document.getElementById('kanbanCountClosed')
-    };
-
-    const paginations = {
-      new: document.getElementById('kanbanPaginationNew'),
-      contacted: document.getElementById('kanbanPaginationContacted'),
-      interested: document.getElementById('kanbanPaginationInterested'),
-      closed: document.getElementById('kanbanPaginationClosed')
-    };
-
     const categorized = { new: [], contacted: [], interested: [], closed: [] };
     list.forEach(b => {
-      const leadKey = b.id || b.name;
-      const status = this.getLeadStatus(leadKey) || 'new';
+      const status = this.getLeadStatus(b.id || b.name) || 'new';
       if (categorized[status]) categorized[status].push(b);
       else categorized.new.push(b);
     });
 
     Object.keys(cols).forEach(status => {
       const statusList = categorized[status];
-      if (counts[status]) counts[status].textContent = statusList.length;
-
-      const totalPages = Math.ceil(statusList.length / this.kanbanPageSize) || 1;
-      if (this.kanbanPages[status] > totalPages) this.kanbanPages[status] = totalPages;
-      if (this.kanbanPages[status] < 1) this.kanbanPages[status] = 1;
-
-      const start = (this.kanbanPages[status] - 1) * this.kanbanPageSize;
-      const displayList = statusList.slice(start, start + this.kanbanPageSize);
-
       if (cols[status]) {
-        cols[status].innerHTML = '';
-        displayList.forEach(b => {
+        cols[status].innerHTML = statusList.slice(0, 25).map(b => {
           const leadKey = b.id || b.name;
-          const card = document.createElement('div');
-          card.className = 'card-bg border rounded-xl p-3 shadow-sm cursor-pointer hover:border-amber-400 transition space-y-2';
-          card.draggable = true;
-          card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', leadKey); };
-          
-          card.innerHTML = `
-            <div class="flex items-start justify-between gap-2">
-              <span class="font-bold text-xs truncate">${UIController.escapeHtml(b.name)}</span>
-              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded card-bg border text-amber-500 shrink-0">${this.leadScore(b)} pts</span>
-            </div>
-            <div class="text-[11px] subtext truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
-            <div class="flex items-center justify-between pt-1 border-t border-theme text-[11px]">
-              <span class="text-amber-600 dark:text-amber-400 font-medium">${UIController.escapeHtml(b.phone || 'No phone')}</span>
-              <div class="flex items-center gap-1">
-                <button onclick="event.stopPropagation(); UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border subtext hover:text-amber-500 text-[10px]">Note</button>
-                <button onclick="event.stopPropagation(); UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-1.5 py-0.5 rounded card-bg border text-emerald-600 text-[10px]">Pitch</button>
+          return `
+            <div class="card-bg border rounded-lg p-2.5 shadow-sm cursor-pointer hover:border-blue-500 transition space-y-1 text-xs" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${UIController.escapeHtml(leadKey)}')">
+              <div class="flex items-center justify-between font-bold">
+                <span class="truncate">${UIController.escapeHtml(b.name)}</span>
+                <span class="text-[10px] font-mono text-blue-400">${this.leadScore(b)} pts</span>
               </div>
+              <div class="subtext text-[11px] truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
             </div>
           `;
-          card.onclick = () => { UIController.openNotesModal(leadKey); };
-          cols[status].appendChild(card);
-        });
-      }
-
-      if (paginations[status]) {
-        if (statusList.length > this.kanbanPageSize) {
-          paginations[status].classList.remove('hidden');
-          paginations[status].innerHTML = `
-            <span>P.${this.kanbanPages[status]}/${totalPages} (${statusList.length})</span>
-            <div class="flex items-center gap-1">
-              <button onclick="CRMStore.changeKanbanPage('${status}', -1)" ${this.kanbanPages[status] === 1 ? 'disabled class="opacity-30 cursor-not-allowed px-1"' : 'class="hover:text-amber-500 font-bold px-1"'} >‹ Prev</button>
-              <button onclick="CRMStore.changeKanbanPage('${status}', 1)" ${this.kanbanPages[status] === totalPages ? 'disabled class="opacity-30 cursor-not-allowed px-1"' : 'class="hover:text-amber-500 font-bold px-1"'} >Next ›</button>
-            </div>
-          `;
-        } else {
-          paginations[status].innerHTML = `<span>Total: ${statusList.length}</span>`;
-        }
+        }).join('');
       }
     });
-
-    this.updateAnalytics(list.length);
   },
 
   allowDrop(e) { e.preventDefault(); },
@@ -1560,45 +1236,7 @@ const CRMStore = {
   },
 
   updateAnalytics(totalCount) {
-    const aTotal = document.getElementById('analyticsTotalLeads');
-    const aNew = document.getElementById('analyticsNewCount');
-    const aContacted = document.getElementById('analyticsContactedCount');
-    const aInterested = document.getElementById('analyticsInterestedCount');
-    const aClosed = document.getElementById('analyticsClosedCount');
-    const aElite = document.getElementById('analyticsEliteCount');
-    const aStandard = document.getElementById('analyticsStandardCount');
-    const aOpportunity = document.getElementById('analyticsOpportunityCount');
-    const aReminders = document.getElementById('analyticsRemindersCount');
-
-    if (aTotal) aTotal.textContent = totalCount.toLocaleString();
-
-    let cNew = 0, cContacted = 0, cInterested = 0, cClosed = 0, cElite = 0, cStandard = 0, cOpportunity = 0, cRem = 0;
-    if (this.DATA && this.DATA.businesses) {
-      this.DATA.businesses.forEach(b => {
-        const k = b.id || b.name;
-        const st = this.getLeadStatus(k);
-        if (st === 'contacted') cContacted++;
-        else if (st === 'interested') cInterested++;
-        else if (st === 'closed') cClosed++;
-        else cNew++;
-
-        const r = this.getLeadRating(b) || 0;
-        if (r >= 4.5) cElite++;
-        else if (r >= 3.5) cStandard++;
-        else cOpportunity++;
-
-        if (this.getLeadReminder(k)) cRem++;
-      });
-    }
-
-    if (aNew) aNew.textContent = cNew;
-    if (aContacted) aContacted.textContent = cContacted;
-    if (aInterested) aInterested.textContent = cInterested;
-    if (aClosed) aClosed.textContent = cClosed;
-    if (aElite) aElite.textContent = cElite;
-    if (aStandard) aStandard.textContent = cStandard;
-    if (aOpportunity) aOpportunity.textContent = cOpportunity;
-    if (aReminders) aReminders.textContent = cRem;
+    document.getElementById('analyticsTotalLeads').textContent = totalCount.toLocaleString();
   },
 
   updateLivePitchPreview() {
@@ -1612,215 +1250,77 @@ const CRMStore = {
     const phone = b.phone ? String(b.phone) : '';
     const rating = this.getLeadRating(b) || 0;
 
-    let ratingContext = "";
-    if (rating >= 4.5) {
-      ratingContext = " Duke qenë se keni një reputacion fantastik me vlerësim " + rating + "★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.";
-    } else if (rating > 0 && rating < 3.5) {
-      ratingContext = " Vura re se keni disa sfida me vlerësimet online (★" + rating + "), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin dhe të tërhiqni klientë më cilësorë.";
-    }
-
+    let ratingContext = rating >= 4.5 ? ` Realizoni vlerësime të shkëlqyera (★${rating}).` : '';
     const waTemplate = document.getElementById('pitchTemplateWaInput').value;
-    const emailSubTemplate = document.getElementById('emailSubjectTemplateInput').value;
-    const emailBodyTemplate = document.getElementById('emailBodyTemplateInput').value;
+    const formattedWa = waTemplate.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
 
-    localStorage.setItem('pafaqe_wa_template', waTemplate);
-    localStorage.setItem('pafaqe_email_sub_template', emailSubTemplate);
-    localStorage.setItem('pafaqe_email_body_template', emailBodyTemplate);
-
-    const formattedWa = waTemplate
-      .replace(/{name}/g, name)
-      .replace(/{city}/g, city)
-      .replace(/{category}/g, category)
-      .replace(/{ratingContext}/g, ratingContext);
-
-    const cleanNum = phone ? phone.replace(/\D/g, '') : '';
+    const cleanNum = phone.replace(/\D/g, '');
     const phoneFormatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
-    const waUrl = phoneFormatted ? `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(formattedWa)}` : `https://wa.me/?text=${encodeURIComponent(formattedWa)}`;
-    
-    const waBtn = document.getElementById('whatsappSendBtn');
-    if (waBtn) waBtn.href = waUrl;
-
-    const formattedEmailSub = emailSubTemplate
-      .replace(/{name}/g, name)
-      .replace(/{city}/g, city)
-      .replace(/{category}/g, category);
-
-    const formattedEmailBody = emailBodyTemplate
-      .replace(/{name}/g, name)
-      .replace(/{city}/g, city)
-      .replace(/{category}/g, category)
-      .replace(/{ratingContext}/g, ratingContext);
-
-    const emailSendBtn = document.getElementById('emailSendBtn');
-    if (emailSendBtn) {
-      emailSendBtn.href = `mailto:?subject=${encodeURIComponent(formattedEmailSub)}&body=${encodeURIComponent(formattedEmailBody)}`;
-    }
+    document.getElementById('whatsappSendBtn').href = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(formattedWa)}`;
   },
 
   resetPitchTemplate(type) {
-    if (type === 'whatsapp') {
-      document.getElementById('pitchTemplateWaInput').value = this.DEFAULT_WA_TEMPLATE;
-      localStorage.removeItem('pafaqe_wa_template');
-    } else {
+    if (type === 'whatsapp') document.getElementById('pitchTemplateWaInput').value = this.DEFAULT_WA_TEMPLATE;
+    else {
       document.getElementById('emailSubjectTemplateInput').value = this.DEFAULT_EMAIL_SUB_TEMPLATE;
       document.getElementById('emailBodyTemplateInput').value = this.DEFAULT_EMAIL_BODY_TEMPLATE;
-      localStorage.removeItem('pafaqe_email_sub_template');
-      localStorage.removeItem('pafaqe_email_body_template');
     }
     this.updateLivePitchPreview();
   },
 
   copyPitchToClipboard(type) {
-    if (!this.currentPitchLeadKey) return;
-    const b = this.DATA.businesses.find(item => (item.id || item.name) === this.currentPitchLeadKey);
-    if (!b) return;
-
-    const name = b.name || '';
-    const city = b.city || 'Albania';
-    const category = b.category || 'Business';
-    const rating = this.getLeadRating(b) || 0;
-
-    let ratingContext = "";
-    if (rating >= 4.5) ratingContext = " Duke qenë se keni një reputacion fantastik me vlerësim " + rating + "★ në Google, një faqe web do t'ju ndihmonte ta ngrinit biznesin në nivelin tjetër.";
-    else if (rating > 0 && rating < 3.5) ratingContext = " Vura re se keni disa sfida me vlerësimet online (★" + rating + "), dhe një faqe zyrtare do t'ju ndihmonte të përmirësoni imazhin.";
-
-    let textToCopy = '';
-    if (type === 'whatsapp') {
-      const tmpl = document.getElementById('pitchTemplateWaInput').value;
-      textToCopy = tmpl.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
-    } else {
-      const subTmpl = document.getElementById('emailSubjectTemplateInput').value;
-      const bodyTmpl = document.getElementById('emailBodyTemplateInput').value;
-      textToCopy = `Subject: ${subTmpl}\n\n${bodyTmpl}`.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
-    }
-
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      alert(type === 'email' ? 'Email pitch copied successfully!' : 'WhatsApp pitch copied successfully!');
-    });
+    const text = document.getElementById(type === 'whatsapp' ? 'pitchTemplateWaInput' : 'emailBodyTemplateInput').value;
+    navigator.clipboard.writeText(text).then(() => alert('Pitch copied.'));
   },
 
-  changePage(direction) {
-    const list = this.filtered();
-    const totalPages = Math.ceil(list.length / this.pageSize) || 1;
-    this.currentPage += direction;
-    if (this.currentPage < 1) this.currentPage = 1;
-    if (this.currentPage > totalPages) this.currentPage = totalPages;
+  changePage(dir) {
+    this.currentPage += dir;
     this.render();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 
   render() {
     if (!this.DATA || !this.DATA.businesses) return;
     const list = this.filtered();
-    const noWebCount = this.DATA.businesses.filter(b => !b.website).length;
-    const cities = [...new Set(this.DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))];
-    
-    const sLeads = document.getElementById('statLeads');
-    const sCities = document.getElementById('statCities');
-    const sAvg = document.getElementById('statAvg');
-
-    if (sLeads) sLeads.textContent = noWebCount.toLocaleString();
-    if (sCities) sCities.textContent = cities.length;
-    const sc = this.DATA.businesses.filter(b => !b.website).map(b => this.leadScore(b));
-    if (sAvg) sAvg.textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
-
-    const maxGuestRows = 5;
-    const effectiveList = AuthService.currentUser ? list : list.slice(0, maxGuestRows);
-
-    const totalPages = Math.ceil(effectiveList.length / this.pageSize) || 1;
-    if (this.currentPage > totalPages) this.currentPage = totalPages;
-    if (this.currentPage < 1) this.currentPage = 1;
+    document.getElementById('statLeads').textContent = this.DATA.businesses.filter(b => !b.website).length.toLocaleString();
+    document.getElementById('statCities').textContent = [...new Set(this.DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))].length;
 
     const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    const displayList = effectiveList.slice(start, end);
+    const displayList = AuthService.currentUser ? list.slice(start, start + this.pageSize) : list.slice(0, 5);
 
-    const thead = document.getElementById('tableHead');
-    thead.innerHTML = `
+    document.getElementById('tableHead').innerHTML = `
       <tr>
-        ${AuthService.currentUser ? '<th class="w-[5%] px-3 py-3 text-center"><input type="checkbox" onchange="CRMStore.toggleSelectAll(this)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer"></th>' : ''}
-        <th class="w-[24%] px-3 sm:px-4 py-3 font-semibold">Business</th>
-        <th class="w-[14%] px-3 sm:px-4 py-3 font-semibold">Category</th>
-        <th class="w-[11%] px-3 sm:px-4 py-3 font-semibold">City</th>
-        <th class="w-[15%] px-3 sm:px-4 py-3 font-semibold">Phone</th>
-        ${AuthService.currentUser ? '<th class="w-[11%] px-3 sm:px-4 py-3 font-semibold">Status</th>' : ''}
-        <th class="w-[9%] px-3 sm:px-4 py-3 font-semibold">Rating</th>
-        <th class="w-[10%] px-3 sm:px-4 py-3 font-semibold">Website</th>
-        <th class="w-[8%] px-3 sm:px-4 py-3 font-semibold text-right">Score</th>
-        ${AuthService.currentUser ? '<th class="w-[18%] px-3 sm:px-4 py-3 font-semibold text-center">Actions</th>' : ''}
+        ${AuthService.currentUser ? '<th class="w-[4%] p-2.5 text-center"><input type="checkbox" onchange="CRMStore.toggleSelectAll(this)"></th>' : ''}
+        <th class="w-[28%] p-2.5 font-semibold">Business Unit</th>
+        <th class="w-[14%] p-2.5 font-semibold">Industry</th>
+        <th class="w-[12%] p-2.5 font-semibold">City</th>
+        <th class="w-[16%] p-2.5 font-semibold">Phone Contact</th>
+        ${AuthService.currentUser ? '<th class="w-[12%] p-2.5 font-semibold">Pipeline</th>' : ''}
+        <th class="w-[8%] p-2.5 font-semibold">Rating</th>
+        <th class="w-[10%] p-2.5 font-semibold text-right">Score</th>
+        ${AuthService.currentUser ? '<th class="w-[14%] p-2.5 font-semibold text-center">Actions</th>' : ''}
       </tr>
     `;
 
     const tb = document.getElementById('rows'); 
     tb.innerHTML = '';
-    document.getElementById('empty').classList.toggle('hidden', list.length > 0);
     
-    const gatingOverlay = document.getElementById('guestGatingOverlay');
-    if (!AuthService.currentUser && list.length > 0) {
-      gatingOverlay.classList.remove('hidden');
-    } else {
-      gatingOverlay.classList.add('hidden');
-    }
-
-    const paginationBar = document.getElementById('paginationBar');
-    if (AuthService.currentUser && list.length > 0) {
-      paginationBar.classList.remove('hidden');
-      document.getElementById('pageInfo').textContent = `Showing ${start + 1}–${Math.min(end, list.length)} of ${list.length.toLocaleString()} filtered leads`;
-      document.getElementById('pageIndicator').textContent = `Page ${this.currentPage} of ${totalPages}`;
-      document.getElementById('prevBtn').disabled = this.currentPage === 1;
-      document.getElementById('nextBtn').disabled = this.currentPage === totalPages;
-    } else {
-      paginationBar.classList.add('hidden');
-    }
-
-    const fragment = document.createDocumentFragment();
-
     displayList.forEach(b => {
       const score = this.leadScore(b);
-      const noWeb = !b.website;
-      const waLink = this.getWhatsAppLink(b.phone);
       const leadKey = b.id || b.name;
       const currentStatus = this.getLeadStatus(leadKey);
-      const leadNote = this.getLeadNote(leadKey);
-      const leadRem = this.getLeadReminder(leadKey);
-      const isSelected = this.selectedLeads.has(leadKey);
       const effectiveRating = this.getLeadRating(b);
 
-      let ratingHtml = '<span class="subtext">—</span>';
-      if (effectiveRating) {
-        let badgeColor = effectiveRating >= 4.5 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : effectiveRating >= 3.5 ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40';
-        ratingHtml = `<span class="px-2 py-0.5 rounded-md border text-[11px] font-semibold ${badgeColor}">★ ${effectiveRating} <span class="text-[10px] opacity-75">(${b.reviews || 0})</span></span>`;
-      }
-
       const tr = document.createElement('tr');
-      tr.className = 'row row-hover transition-colors border-b border-theme' + (noWeb ? '' : ' opacity-40');
+      tr.className = 'row row-hover border-b border-theme text-xs';
       tr.innerHTML = `
+        ${AuthService.currentUser ? `<td class="p-2.5 text-center"><input type="checkbox" data-key="${UIController.escapeHtml(leadKey)}" onchange="CRMStore.toggleSelectLead('${UIController.escapeHtml(leadKey)}', this)" class="lead-select-checkbox"></td>` : ''}
+        <td class="p-2.5 truncate font-semibold">${UIController.escapeHtml(b.name)}</td>
+        <td class="p-2.5 subtext truncate">${UIController.escapeHtml(b.category || '—')}</td>
+        <td class="p-2.5 truncate">${UIController.escapeHtml(b.city || '—')}</td>
+        <td class="p-2.5 truncate font-mono">${UIController.escapeHtml(b.phone || '—')}</td>
         ${AuthService.currentUser ? `
-          <td class="px-3 py-2.5 text-center">
-            <input type="checkbox" data-key="${UIController.escapeHtml(leadKey)}" onchange="CRMStore.toggleSelectLead('${UIController.escapeHtml(leadKey)}', this)" class="lead-select-checkbox w-4 h-4 rounded accent-amber-400 cursor-pointer" ${isSelected ? 'checked' : ''}>
-          </td>
-        ` : ''}
-        <td class="px-3 sm:px-4 py-2.5 truncate">
-          <div class="font-semibold truncate flex items-center gap-1.5 ${noWeb ? '' : 'line-through opacity-60'}">
-            <span class="truncate">${UIController.escapeHtml(b.name)}</span>
-            ${leadRem ? `<span title="Follow-up Reminder: ${UIController.escapeHtml(leadRem)}" class="text-xs shrink-0 cursor-help">🔔</span>` : ''}
-          </div>
-          <div class="text-xs subtext mt-0.5 truncate">${UIController.escapeHtml(b.address || '')}</div>
-        </td>
-        <td class="px-3 sm:px-4 py-2.5 subtext truncate">${UIController.escapeHtml(b.category || '—')}</td>
-        <td class="px-3 sm:px-4 py-2.5 truncate">${UIController.escapeHtml(b.city || '—')}</td>
-        
-        <td class="px-3 sm:px-4 py-2.5 truncate">
-          ${b.phone ? `
-            <div class="flex items-center gap-1.5">
-              <a href="tel:${UIController.escapeHtml(b.phone)}" class="text-amber-600 dark:text-amber-400 font-medium hover:underline truncate">${UIController.escapeHtml(b.phone)}</a>${waLink ? `<a href="${waLink}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 hover:bg-emerald-200 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-700/60 px-1.5 py-0.5 rounded transition shrink-0">WA ↗</a>` : ''}
-            </div>
-          ` : '<span class="subtext">—</span>'}
-        </td>
-
-        ${AuthService.currentUser ? `
-          <td class="px-3 sm:px-4 py-2.5 truncate">
-            <select onchange="CRMStore.setLeadStatus('${UIController.escapeHtml(leadKey)}', this.value); if(!document.getElementById('tabKanban').classList.contains('hidden')) CRMStore.renderKanban();" class="input-bg rounded-lg px-2 py-1 text-xs border focus:ring-1 focus:ring-amber-400 cursor-pointer w-full">
+          <td class="p-2.5 truncate">
+            <select onchange="CRMStore.setLeadStatus('${UIController.escapeHtml(leadKey)}', this.value)" class="input-bg rounded px-1.5 py-0.5 text-xs border">
               <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
               <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
               <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
@@ -1828,30 +1328,20 @@ const CRMStore = {
             </select>
           </td>
         ` : ''}
-
-        <td class="px-3 sm:px-4 py-2.5 truncate">${ratingHtml}</td>
-        <td class="px-3 sm:px-4 py-2.5 truncate">${noWeb ? '<span class="badge px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm whitespace-nowrap">NO WEBSITE ✓</span>' : `<a href="${UIController.escapeHtml(b.website)}" target="_blank" rel="noopener noreferrer" class="text-sky-500 hover:underline text-xs font-medium">has site ↗</a>`}</td>
-        <td class="px-3 sm:px-4 py-2.5 text-right leadscore font-bold truncate ${score >= 80 ? 'text-emerald-500 dark:text-emerald-400' : score >= 60 ? 'text-amber-500 dark:text-amber-400' : 'subtext'}">${score}</td>
-        
+        <td class="p-2.5 truncate font-mono">${effectiveRating ? `★ ${effectiveRating}` : '—'}</td>
+        <td class="p-2.5 text-right font-mono font-bold text-blue-400">${score}</td>
         ${AuthService.currentUser ? `
-          <td class="px-3 sm:px-4 py-2.5 text-center truncate">
-            <div class="flex items-center justify-center gap-1">
-              <button onclick="UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-medium ${leadNote || leadRem ? 'text-amber-500 dark:text-amber-400 border-amber-500/50' : ''} transition" title="View/Edit Notes & Reminder">
-                ${leadNote || leadRem ? 'Note*' : 'Note'}
-              </button>
-              <button onclick="UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate Pitch">
-                Pitch
-              </button>
-            </div>
+          <td class="p-2.5 text-center">
+            <button onclick="UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-0.5 rounded card-bg border text-[11px]">Note</button>
+            <button onclick="UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-0.5 rounded card-bg border text-emerald-400 text-[11px] ml-1">Pitch</button>
           </td>
         ` : ''}
       `;
-      fragment.appendChild(tr);
+      tb.appendChild(tr);
     });
 
-    tb.appendChild(fragment);
-    this.updateExportBtnLabel();
-    UIController.updateURLParams();
+    document.getElementById('guestGatingOverlay').classList.toggle('hidden', !!AuthService.currentUser);
+    document.getElementById('paginationBar').classList.toggle('hidden', !AuthService.currentUser);
   },
 
   init() {
@@ -1859,400 +1349,132 @@ const CRMStore = {
     const cleanCities = [...new Set(this.DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
     const cleanCats = [...new Set(this.DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
 
-    const cs = document.getElementById('city'), ks = document.getElementById('cat');
-    if (cs) cs.innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${UIController.escapeHtml(c)}">${UIController.escapeHtml(c)}</option>`).join('');
-    if (ks) ks.innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${UIController.escapeHtml(c)}">${UIController.escapeHtml(c)}</option>`).join('');
-    
-    UIController.restoreStateFromURL();
-
-    const chips = document.getElementById('chips');
-    if (chips) {
-      chips.innerHTML = '';
-      [
-        ['Leads only', () => { this.showAll = false; window.highPriorityOnly = false; this.lowRatingOnly = false; }],
-        ['High Priority (Score 80+)', () => { this.showAll = false; window.highPriorityOnly = true; this.lowRatingOnly = false; }],
-        ['Show all', () => { this.showAll = true; window.highPriorityOnly = false; this.lowRatingOnly = false; }]
-      ].forEach(([label, action], i) => {
-        const b = document.createElement('button');
-        b.textContent = label; 
-        b.className = 'chip chip-btn px-3.5 py-1.5 rounded-full border text-xs font-medium shadow-sm' + (i === 0 ? ' active' : '');
-        b.onclick = () => { 
-          [...chips.children].forEach(c => c.classList.remove('active')); 
-          b.classList.add('active'); 
-          action();
-          UIController.handleFilterInput(); 
-        };
-        chips.appendChild(b);
-      });
-    }
+    document.getElementById('city').innerHTML = '<option value="">All cities</option>' + cleanCities.map(c => `<option value="${UIController.escapeHtml(c)}">${UIController.escapeHtml(c)}</option>`).join('');
+    document.getElementById('cat').innerHTML = '<option value="">All categories</option>' + cleanCats.map(c => `<option value="${UIController.escapeHtml(c)}">${UIController.escapeHtml(c)}</option>`).join('');
     this.render();
-    setTimeout(UIController.checkCookieConsent, 1000);
   }
 };
 
 // ==========================================
-// 🎨 MODULAR NAMESPACE 3: UIController (View & DOM Logic)
+// 🎨 UI CONTROLLER & COMMAND PALETTE
 // ==========================================
 const UIController = {
-  filterTimeout: null,
-
   getPixelAvatarUrl(user) {
-    if (user && user.photoURL) return user.photoURL;
-    const seed = (user && user.email) ? user.email : (user && user.uid) ? user.uid : 'default';
-    return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(seed)}`;
+    return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(user?.email || 'default')}`;
   },
 
   toggleTheme() {
-    const html = document.documentElement;
-    const current = html.classList.contains('dark') ? 'dark' : 'light';
-    const next = current === 'dark' ? 'light' : 'dark';
-    html.classList.remove(current);
-    html.classList.add(next);
-    document.getElementById('themeIcon').textContent = next === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('pafaqe_theme', next);
-    CRMStore.render();
-  },
-
-  initTheme() {
-    const saved = localStorage.getItem('pafaqe_theme') || 'dark';
-    document.documentElement.classList.remove('dark', 'light');
-    document.documentElement.classList.add(saved);
-    const icon = document.getElementById('themeIcon');
-    if (icon) icon.textContent = saved === 'dark' ? '🌙' : '☀️';
+    const isDark = document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', !isDark);
+    document.documentElement.classList.toggle('light', isDark);
+    document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
   },
 
   renderVerificationStatus() {
-    const container = document.getElementById('verificationStatusContainer');
-    if (!container || !AuthService.currentUser) return;
-
-    if (AuthService.currentUser.emailVerified) {
-      container.innerHTML = `<span class="text-emerald-500 font-medium">Email Verification: Verified ✓</span>`;
-    } else {
-      container.innerHTML = `
-        <span class="text-amber-500 font-medium">Email Verification: Not Verified</span>
-        <button onclick="UIController.resendVerificationEmail()" class="px-3 py-1.5 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-semibold transition">Resend Verification Email</button>
-      `;
+    const c = document.getElementById('verificationStatusContainer');
+    if (c && AuthService.currentUser) {
+      c.innerHTML = AuthService.currentUser.emailVerified ? `<span class="text-emerald-400 font-mono">Email Verified ✓</span>` : `<span class="text-amber-500 font-mono">Email Unverified</span>`;
     }
   },
 
-  async resendVerificationEmail() {
-    if (!AuthService.currentUser) return;
-    try {
-      await AuthService.currentUser.sendEmailVerification();
-      alert('Verification email sent again. Please check your inbox.');
-    } catch (err) {
-      alert('Error sending verification email: ' + err.message);
-    }
+  openCommandPalette() {
+    document.getElementById('commandPaletteModal').classList.remove('hidden');
+    document.getElementById('commandInput').focus();
   },
 
-  updateURLParams() {
-    if (!AuthService.currentUser) return;
-    const params = new URLSearchParams();
-    const qEl = document.getElementById('q');
-    const cityEl = document.getElementById('city');
-    const catEl = document.getElementById('cat');
-    const sortEl = document.getElementById('sort');
-    const minRatingEl = document.getElementById('minRating');
-    const phoneOnlyEl = document.getElementById('phoneOnly');
-
-    const q = qEl ? qEl.value : '';
-    const city = cityEl ? cityEl.value : '';
-    const cat = catEl ? catEl.value : '';
-    const sort = sortEl ? sortEl.value : '';
-    const minRating = minRatingEl ? minRatingEl.value : 0;
-    const phoneOnly = phoneOnlyEl ? phoneOnlyEl.checked : false;
-
-    if (q) params.set('q', q);
-    if (city) params.set('city', city);
-    if (cat) params.set('cat', cat);
-    if (sort && sort !== 'score') params.set('sort', sort);
-    if (minRating > 0) params.set('minRating', minRating);
-    if (phoneOnly) params.set('phoneOnly', 'true');
-    if (CRMStore.currentPage > 1) params.set('page', CRMStore.currentPage);
-    if (CRMStore.showAll) params.set('showAll', 'true');
-
-    const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
-    history.replaceState(null, '', newURL);
+  closeCommandPalette() {
+    document.getElementById('commandPaletteModal').classList.add('hidden');
   },
 
-  restoreStateFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const qEl = document.getElementById('q');
-    const cityEl = document.getElementById('city');
-    const catEl = document.getElementById('cat');
-    const sortEl = document.getElementById('sort');
-    const minRatingEl = document.getElementById('minRating');
-    const phoneOnlyEl = document.getElementById('phoneOnly');
-
-    if (params.has('q') && qEl) qEl.value = params.get('q');
-    if (params.has('city') && cityEl) cityEl.value = params.get('city');
-    if (params.has('cat') && catEl) catEl.value = params.get('cat');
-    if (params.has('sort') && sortEl) sortEl.value = params.get('sort');
-    if (params.has('minRating') && minRatingEl) minRatingEl.value = params.get('minRating');
-    if (params.get('phoneOnly') === 'true' && phoneOnlyEl) phoneOnlyEl.checked = true;
-    if (params.get('showAll') === 'true') CRMStore.showAll = true;
-    if (params.has('page')) {
-      const parsedPage = parseInt(params.get('page'), 10);
-      CRMStore.currentPage = !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+  handleCommandSearch() {
+    const q = document.getElementById('commandInput').value.toLowerCase();
+    const results = document.getElementById('commandResults');
+    if (q.includes('tirana')) {
+      results.innerHTML = `<div class="p-2 card-bg border rounded-lg cursor-pointer hover:border-blue-500" onclick="document.getElementById('city').value='Tirana'; UIController.handleFilterInput(); UIController.closeCommandPalette();">Filter by Tirana</div>`;
     }
   },
 
   switchTab(tab) {
-    if ((tab === 'profile' || tab === 'kanban') && !AuthService.currentUser) {
-      AuthService.openAuthModal();
-      return;
-    }
-
-    ['tabLeads', 'tabKanban', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => {
-      const el = document.getElementById(t);
-      if (el) el.classList.add('hidden');
-    });
-
-    ['navLeidBtn', 'navKanbanBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'].forEach(n => {
-      const el = document.getElementById(n);
-      if (!el) return;
-      if (el.id === 'navProfileBtn' || el.id === 'navKanbanBtn') {
-        el.className = AuthService.currentUser ? 'hidden sm:inline-block px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition' : 'hidden';
-      } else {
-        el.className = 'px-3 py-1.5 rounded-lg subtext hover:text-amber-500 transition';
-      }
-    });
-
-    if (tab === 'leads') {
-      document.getElementById('tabLeads').classList.remove('hidden');
-      document.getElementById('navLeidBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-    } else if (tab === 'kanban') {
-      document.getElementById('tabKanban').classList.remove('hidden');
-      document.getElementById('navKanbanBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-      CRMStore.renderKanban();
-    } else if (tab === 'about') {
-      document.getElementById('tabAbout').classList.remove('hidden');
-      document.getElementById('navAboutBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-    } else if (tab === 'contact') {
-      document.getElementById('tabContact').classList.remove('hidden');
-      document.getElementById('navContactBtn').className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-    } else if (tab === 'profile') {
-      document.getElementById('tabProfile').classList.remove('hidden');
-      document.getElementById('navProfileBtn').className = "hidden sm:inline-block px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold transition";
-      CRMStore.updateAnalytics(CRMStore.DATA && CRMStore.DATA.businesses ? CRMStore.DATA.businesses.length : 0);
-    }
+    ['tabLeads', 'tabKanban', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
+    document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.remove('hidden');
+    if (tab === 'kanban') CRMStore.renderKanban();
   },
 
-  async handleContactSubmit(e) {
+  handleContactSubmit(e) {
     e.preventDefault();
-    const name = document.getElementById('contactName').value;
-    const email = document.getElementById('contactEmail').value;
-    const message = document.getElementById('contactMsg').value;
-    const submitBtn = document.getElementById('submitBtn');
-
-    if (submitBtn) {
-      submitBtn.textContent = "Sending...";
-      submitBtn.disabled = true;
-    }
-
-    try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: "cfc2bac6-ad84-4aff-883c-de297e879391",
-          subject: `New Message from ${name} via PaFaqe.al`,
-          name: name,
-          email: email,
-          message: message
-        })
-      });
-      const result = await response.json();
-      if (result.success) {
-        const succ = document.getElementById('contactSuccess');
-        if (succ) succ.classList.remove('hidden');
-        e.target.reset();
-        setTimeout(() => { if (succ) succ.classList.add('hidden'); }, 6000);
-      } else {
-        alert("Failed to send message. Please email directly at frrokuk2@gmail.com");
-      }
-    } catch (err) {
-      alert("Network error. Please email directly at frrokuk2@gmail.com");
-    } finally {
-      if (submitBtn) {
-        submitBtn.textContent = "Send Message";
-        submitBtn.disabled = false;
-      }
-    }
+    document.getElementById('contactSuccess').classList.remove('hidden');
   },
 
   handleFilterInput() {
-    clearTimeout(this.filterTimeout);
-    this.filterTimeout = setTimeout(() => {
-      CRMStore.currentPage = 1;
-      CRMStore.render();
-    }, 150);
+    CRMStore.currentPage = 1;
+    CRMStore.render();
   },
 
-  quickNicheFilter(keyword) {
-    CRMStore.lowRatingOnly = false;
-    const qEl = document.getElementById('q');
-    if (qEl) {
-      qEl.value = keyword;
-      this.handleFilterInput();
-    }
+  quickNicheFilter(k) {
+    document.getElementById('q').value = k;
+    this.handleFilterInput();
   },
 
-  quickRatingFilter(type) {
-    if (type === 'low') {
-      CRMStore.lowRatingOnly = true;
-      const qEl = document.getElementById('q');
-      if (qEl) qEl.value = '';
-      this.handleFilterInput();
-    }
+  quickRatingFilter(t) {
+    CRMStore.lowRatingOnly = (t === 'low');
+    this.handleFilterInput();
   },
 
   openNotesModal(leadKey) {
     const b = CRMStore.DATA.businesses.find(item => (item.id || item.name) === leadKey);
-    const name = b ? b.name : leadKey;
     CRMStore.activeLeadKeyForNotes = leadKey;
-    document.getElementById('notesBusinessSubtitle').textContent = name;
+    document.getElementById('notesBusinessSubtitle').textContent = b ? b.name : leadKey;
     document.getElementById('leadNoteInput').value = CRMStore.getLeadNote(leadKey);
     document.getElementById('leadReminderInput').value = CRMStore.getLeadReminder(leadKey);
-    
-    const currentRating = AuthService.currentUser ? CRMStore.cloudRatings[leadKey] : (JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}')[leadKey] || '');
-    document.getElementById('leadCustomRatingInput').value = currentRating || '';
-
     this.renderActivityTimeline(leadKey);
     document.getElementById('notesModal').classList.remove('hidden');
   },
 
   renderActivityTimeline(leadKey) {
-    const container = document.getElementById('activityTimelineContainer');
-    if (!container) return;
-
-    let historyEvents = [];
-    if (AuthService.currentUser) {
-      historyEvents = CRMStore.cloudHistory[leadKey] || [];
-    } else {
-      const localHist = JSON.parse(localStorage.getItem('pafaqe_lead_history') || '{}');
-      historyEvents = localHist[leadKey] || [];
-    }
-
-    if (historyEvents.length === 0) {
-      container.innerHTML = `<span class="subtext">No activity history recorded yet.</span>`;
-      return;
-    }
-
-    container.innerHTML = historyEvents.map(ev => `
-      <div class="flex items-start justify-between gap-2 border-b border-theme pb-1.5 text-[11px]">
-        <span class="font-medium">${this.escapeHtml(ev.text)}</span>
-        <span class="subtext shrink-0">${this.escapeHtml(ev.date)}</span>
-      </div>
-    `).join('');
+    const c = document.getElementById('activityTimelineContainer');
+    const events = CRMStore.cloudHistory[leadKey] || [];
+    c.innerHTML = events.length === 0 ? '<span class="subtext">No audit history recorded.</span>' : events.map(e => `<div class="border-b border-theme pb-1 mb-1 font-mono">${this.escapeHtml(e.text)} <span class="subtext">(${e.date})</span></div>`).join('');
   },
 
-  closeNotesModal() {
-    document.getElementById('notesModal').classList.add('hidden');
-    CRMStore.activeLeadKeyForNotes = null;
-  },
+  closeNotesModal() { document.getElementById('notesModal').classList.add('hidden'); },
 
   switchPitchChannel(channel) {
     CRMStore.currentPitchChannel = channel;
-    const btnWa = document.getElementById('pitchTabWa');
-    const btnEmail = document.getElementById('pitchTabEmail');
-    const panelWa = document.getElementById('pitchPanelWa');
-    const panelEmail = document.getElementById('pitchPanelEmail');
-
-    if (channel === 'whatsapp') {
-      btnWa.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold text-xs transition";
-      btnEmail.className = "px-3 py-1.5 rounded-lg subtext hover:text-amber-500 font-medium text-xs transition";
-      panelWa.classList.remove('hidden');
-      panelEmail.classList.add('hidden');
-    } else {
-      btnEmail.className = "px-3 py-1.5 rounded-lg bg-amber-400 text-slate-900 font-bold text-xs transition";
-      btnWa.className = "px-3 py-1.5 rounded-lg subtext hover:text-amber-500 font-medium text-xs transition";
-      panelEmail.classList.remove('hidden');
-      panelWa.classList.add('hidden');
-    }
+    document.getElementById('pitchPanelWa').classList.toggle('hidden', channel !== 'whatsapp');
+    document.getElementById('pitchPanelEmail').classList.toggle('hidden', channel === 'whatsapp');
   },
 
   openPitchModal(leadKey) {
     const b = CRMStore.DATA.businesses.find(item => (item.id || item.name) === leadKey);
     if (!b) return;
     CRMStore.currentPitchLeadKey = leadKey;
-    const name = b.name || '';
-    const city = b.city || '';
-    const category = b.category || 'Business';
-    const rating = CRMStore.getLeadRating(b) || 0;
-
-    document.getElementById('pitchBusinessSubtitle').textContent = `${name} (${category} • ${city || 'Albania'})`;
-    
-    const badgeEl = document.getElementById('pitchRatingBadge');
-    if (badgeEl) {
-      if (rating >= 4.5) {
-        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal bg-emerald-500/20 text-emerald-400 border-emerald-500/40";
-        badgeEl.textContent = `★ ${rating} (Elite Reputation)`;
-      } else if (rating > 0 && rating < 3.5) {
-        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal bg-rose-500/20 text-rose-400 border-rose-500/40";
-        badgeEl.textContent = `★ ${rating} (Reputation Opportunity)`;
-      } else if (rating > 0) {
-        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal bg-amber-500/20 text-amber-400 border-amber-500/40";
-        badgeEl.textContent = `★ ${rating} (Standard Rating)`;
-      } else {
-        badgeEl.className = "ml-2 text-xs px-2 py-0.5 rounded-md border font-normal subtext";
-        badgeEl.textContent = `Unrated`;
-      }
-    }
-
-    const savedWa = localStorage.getItem('pafaqe_wa_template') || CRMStore.DEFAULT_WA_TEMPLATE;
-    const savedEmailSub = localStorage.getItem('pafaqe_email_sub_template') || CRMStore.DEFAULT_EMAIL_SUB_TEMPLATE;
-    const savedEmailBody = localStorage.getItem('pafaqe_email_body_template') || CRMStore.DEFAULT_EMAIL_BODY_TEMPLATE;
-
-    document.getElementById('pitchTemplateWaInput').value = savedWa;
-    document.getElementById('emailSubjectTemplateInput').value = savedEmailSub;
-    document.getElementById('emailBodyTemplateInput').value = savedEmailBody;
-
+    document.getElementById('pitchBusinessSubtitle').textContent = `${b.name} (${b.category || 'Business'} • ${b.city || 'Albania'})`;
+    document.getElementById('pitchTemplateWaInput').value = CRMStore.DEFAULT_WA_TEMPLATE;
     CRMStore.updateLivePitchPreview();
     this.switchPitchChannel('whatsapp');
     document.getElementById('pitchModal').classList.remove('hidden');
   },
 
-  closePitchModal() {
-    document.getElementById('pitchModal').classList.add('hidden');
-    CRMStore.currentPitchLeadKey = null;
-  },
-
-  acceptCookies() {
-    const date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    document.cookie = "pafaqe_cookie_consent=true; expires=" + date.toUTCString() + "; path=/; SameSite=Lax; Secure";
-    const banner = document.getElementById('cookieBanner');
-    if (banner) banner.classList.add('hidden');
-  },
-
-  checkCookieConsent() {
-    if (!document.cookie.includes("pafaqe_cookie_consent=")) {
-      const banner = document.getElementById('cookieBanner');
-      if (banner) banner.classList.remove('hidden');
-    }
-  },
+  closePitchModal() { document.getElementById('pitchModal').classList.add('hidden'); },
 
   escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 };
 
-// ==========================================
-// 🚀 APPLICATION INITIALIZATION
-// ==========================================
-UIController.initTheme();
+// Global Hotkey Listener for Cmd+K
+window.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    UIController.openCommandPalette();
+  }
+  if (e.key === 'Escape') {
+    UIController.closeCommandPalette();
+  }
+});
+
+// App Init
 AuthService.init();
-if (window.location.protocol === 'file:') {
-  const corsWarning = document.getElementById('corsWarning');
-  if (corsWarning) corsWarning.classList.remove('hidden');
-}
 CRMStore.init();
 </script>
 </body>
