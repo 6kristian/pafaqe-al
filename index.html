@@ -74,6 +74,9 @@
           <span id="themeIcon">🌙</span>
         </button>
 
+        <!-- Data Source Indicator Badge -->
+        <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1 rounded-full card-bg border text-xs font-medium">…</span>
+
         <!-- Auth User State / Button -->
         <div id="authContainer" class="flex items-center gap-2">
           <button onclick="openAuthModal()" id="authActionBtn" class="px-3 py-1.5 rounded-xl card-bg border text-xs font-bold text-amber-500 dark:text-amber-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
@@ -167,13 +170,12 @@
         <div class="card-bg rounded-2xl p-4 border shadow-sm"><div id="statAvg" class="text-2xl sm:text-3xl font-extrabold tracking-tight">0</div><div class="text-[11px] font-medium subtext mt-1 uppercase tracking-wider">Avg. lead score</div></div>
       </div>
 
-      <!-- Data Table Section (Min-Height added to prevent CLS layout jumping) -->
+      <!-- Data Table Section -->
       <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[600px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-xs sm:text-sm text-left border-collapse table-fixed min-w-[700px]">
             <thead id="tableHead" class="table-head-bg text-xs uppercase tracking-wider border-b"></thead>
             <tbody id="rows" class="divide-y border-theme">
-              <!-- Loading skeleton state prevents layout shifts -->
               <tr><td colspan="10" class="p-16 text-center subtext">Loading verified leads...</td></tr>
             </tbody>
           </table>
@@ -207,7 +209,7 @@
       </section>
     </div>
 
-<!-- TAB 2: ABOUT US VIEW -->
+    <!-- TAB 2: ABOUT US VIEW -->
     <div id="tabAbout" class="hidden space-y-6 max-w-5xl mx-auto py-6">
       
       <!-- Main Hero Header -->
@@ -251,6 +253,7 @@
       </div>
 
     </div>
+
     <!-- TAB 3: CONTACT US VIEW -->
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm">
@@ -465,6 +468,15 @@ let cloudReminders = {};
 let activeLeadKeyForNotes = null;
 let selectedLeads = new Set();
 
+// 8-Bit Pixel Art Avatar Generator Helper
+function getPixelAvatarUrl(user) {
+  if (user && user.photoURL) {
+    return user.photoURL;
+  }
+  const seed = (user && user.email) ? user.email : (user && user.uid) ? user.uid : 'default';
+  return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(seed)}`;
+}
+
 // Theme Switcher
 function toggleTheme() {
   const html = document.documentElement;
@@ -492,13 +504,14 @@ auth.onAuthStateChanged(async (user) => {
   const hero = document.getElementById('guestHero');
   const filterSec = document.getElementById('filterSection');
   const navProfileBtn = document.getElementById('navProfileBtn');
+  const dataSourceBadge = document.getElementById('dataSource');
   
   if (user) {
     await user.reload(); // Ensure email_verified state is fresh
     
     if (user.emailVerified) {
       try {
-        // Fetch all 28 lead chunks from Firestore securely
+        if (dataSourceBadge) dataSourceBadge.textContent = "Syncing Firestore...";
         const querySnapshot = await db.collection('lead_chunks').get();
         let allBusinesses = [];
         querySnapshot.forEach((doc) => {
@@ -515,15 +528,31 @@ auth.onAuthStateChanged(async (user) => {
             count: allBusinesses.length,
             businesses: allBusinesses
           };
-	  init();
+          if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
+          init();
         }
       } catch (err) {
         console.error("Error fetching leads from Firestore:", err);
+        if (dataSourceBadge) dataSourceBadge.textContent = "Offline Cache";
       }
+    } else {
+      if (dataSourceBadge) dataSourceBadge.textContent = "Unverified Email";
     }
 
     const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
-    if (btn) btn.innerHTML = `<span onclick="switchTab('profile')" class="cursor-pointer hover:underline">${escapeHtml(displayName)}</span> <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+    const avatarUrl = getPixelAvatarUrl(user);
+    
+    if (btn) {
+      btn.innerHTML = `
+        <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
+          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-lg border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+          <span class="hover:underline">${escapeHtml(displayName)}</span>
+        </div>
+        <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
+      `;
+      btn.className = "px-2 py-1 rounded-xl card-bg border text-xs font-bold text-amber-500 dark:text-amber-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm";
+    }
+
     if (hero) hero.classList.add('hidden');
     if (filterSec) filterSec.classList.remove('hidden');
     if (navProfileBtn) navProfileBtn.classList.remove('hidden');
@@ -537,6 +566,7 @@ auth.onAuthStateChanged(async (user) => {
     await loadCloudData();
   } else {
     if (btn) btn.innerHTML = `<span>Sign In</span>`;
+    if (dataSourceBadge) dataSourceBadge.textContent = "Demo Mode";
     cloudStatuses = {};
     cloudNotes = {};
     cloudReminders = {};
@@ -728,8 +758,15 @@ async function updateProfileData() {
 
     const btn = document.getElementById('authActionBtn');
     const emailPrefix = currentUser.email ? currentUser.email.split('@')[0] : 'User';
+    const avatarUrl = getPixelAvatarUrl(currentUser);
     if (btn) {
-      btn.innerHTML = `<span onclick="switchTab('profile')" class="cursor-pointer hover:underline">${escapeHtml(newName || emailPrefix)}</span> <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>`;
+      btn.innerHTML = `
+        <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('profile')">
+          <img src="${avatarUrl}" alt="Avatar" class="w-6 h-6 rounded-lg border border-amber-500/40 bg-slate-800 object-cover shadow-sm">
+          <span class="hover:underline">${escapeHtml(newName || emailPrefix)}</span>
+        </div>
+        <span class="text-xs text-rose-500 ml-2 hover:underline cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Sign Out]</span>
+      `;
     }
 
     if (succBox) {
@@ -1441,9 +1478,6 @@ function render(){
             <button onclick="openPitchModal('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-xs font-medium transition" title="Generate WhatsApp Pitch">
               Pitch
             </button>
-            <button onclick="copyLeadInfo('${escapeHtml(leadKey)}')" class="px-2 py-1 rounded-lg card-bg border subtext hover:text-amber-500 text-xs font-medium transition" title="Copy summary">
-              Copy
-            </button>
           </div>
         </td>
       ` : ''}
@@ -1505,8 +1539,6 @@ function init(){
   render();
   setTimeout(checkCookieConsent, 1000);
 }
-
-
 </script>
 </body>
 </html>
