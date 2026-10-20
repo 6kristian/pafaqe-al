@@ -1420,7 +1420,9 @@ const CRMStore = {
   },
 
   updateAnalytics(totalCount) {
-    document.getElementById('analyticsTotalLeads').textContent = totalCount.toLocaleString();
+    const totalLeadsEl = document.getElementById('analyticsTotalLeads');
+    if (totalLeadsEl) totalLeadsEl.textContent = totalCount.toLocaleString();
+
     let cNew = 0, cCont = 0, cInt = 0, cClosed = 0, cOpp = 0;
     if (this.DATA && this.DATA.businesses) {
       this.DATA.businesses.forEach(b => {
