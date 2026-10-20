@@ -1,4 +1,4 @@
-f<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sq" class="dark">
 <head>
 <meta charset="UTF-8">
@@ -87,7 +87,7 @@ f<!DOCTYPE html>
       
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
         <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
-          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Leads</button>
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold transition cursor-pointer shadow-sm">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
           <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
@@ -299,7 +299,7 @@ f<!DOCTYPE html>
       </div>
     </div>
 
-    <!-- TAB 3: ABOUT US (Fixed spacing / gap-6) -->
+    <!-- TAB 3: ABOUT US -->
     <div id="tabAbout" class="hidden space-y-6 max-w-4xl mx-auto py-6 px-2 sm:px-0">
       <div class="card-bg border border-theme rounded-2xl p-8 shadow-sm space-y-3">
         <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura e Platformës</span>
@@ -1084,14 +1084,12 @@ const CRMStore = {
         const q = (document.getElementById('q')?.value || '').toLowerCase();
         const city = document.getElementById('city')?.value || '';
         const cat = document.getElementById('cat')?.value || '';
-        const mr = parseFloat(document.getElementById('minRating')?.value) || 0;
         const phoneOnly = document.getElementById('phoneOnly')?.checked || false;
 
         if(q && !(b.name + ' ' + (b.address || '') + ' ' + (b.category || '')).toLowerCase().includes(q)) return false;
         if(city && (b.city || '').trim() !== city) return false;
         if(cat && (b.category || '').trim() !== cat) return false;
         if(phoneOnly && !b.phone) return false;
-        if(mr > 0 && (effectiveRating || 0) < mr) return false;
       }
       return true;
     });
@@ -1099,7 +1097,7 @@ const CRMStore = {
     const s = AuthService.currentUser ? (document.getElementById('sort')?.value || 'score') : 'score';
     list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
       : s==='rating' ? ((this.getLeadRating(b) || 0) - (this.getLeadRating(a) || 0))
-      : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
+      : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
       : this.leadScore(b) - this.leadScore(a));
     return list;
   },
@@ -1169,7 +1167,6 @@ const CRMStore = {
       q: document.getElementById('q').value,
       city: document.getElementById('city').value,
       cat: document.getElementById('cat').value,
-      minRating: document.getElementById('minRating').value,
       phoneOnly: document.getElementById('phoneOnly').checked
     });
     localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
@@ -1190,7 +1187,6 @@ const CRMStore = {
     document.getElementById('q').value = p.q || '';
     document.getElementById('city').value = p.city || '';
     document.getElementById('cat').value = p.cat || '';
-    document.getElementById('minRating').value = p.minRating || '0';
     document.getElementById('phoneOnly').checked = !!p.phoneOnly;
     UIController.handleFilterInput();
   },
@@ -1502,16 +1498,32 @@ const UIController = {
     // Update active nav button styling
     ['navLeidBtn', 'navKanbanBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'].forEach(btnId => {
       const btn = document.getElementById(btnId);
-      if (btn) btn.classList.remove('bg-blue-600', 'text-white', 'font-semibold');
+      if (btn) btn.classList.remove('bg-blue-600', 'text-white', 'font-semibold', 'subtext');
     });
-    if (tab === 'leads') document.getElementById('navLeidBtn')?.classList.add('bg-blue-600', 'text-white', 'font-semibold');
+    
+    // Set inactive/active states properly for all buttons
+    const navButtons = {
+      leads: 'navLeidBtn',
+      kanban: 'navKanbanBtn',
+      about: 'navAboutBtn',
+      contact: 'navContactBtn',
+      profile: 'navProfileBtn'
+    };
+
+    Object.keys(navButtons).forEach(key => {
+      const btn = document.getElementById(navButtons[key]);
+      if (btn) {
+        if (key === tab) {
+          btn.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold transition cursor-pointer shadow-sm";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer";
+        }
+      }
+    });
+
     if (tab === 'kanban') {
-      document.getElementById('navKanbanBtn')?.classList.add('bg-blue-600', 'text-white', 'font-semibold');
       CRMStore.renderKanban();
     }
-    if (tab === 'about') document.getElementById('navAboutBtn')?.classList.add('bg-blue-600', 'text-white', 'font-semibold');
-    if (tab === 'contact') document.getElementById('navContactBtn')?.classList.add('bg-blue-600', 'text-white', 'font-semibold');
-    if (tab === 'profile') document.getElementById('navProfileBtn')?.classList.add('bg-blue-600', 'text-white', 'font-semibold');
   },
 
   handleContactSubmit(e) {
@@ -1537,14 +1549,12 @@ const UIController = {
     const cityEl = document.getElementById('city');
     const catEl = document.getElementById('cat');
     const sortEl = document.getElementById('sort');
-    const minRatingEl = document.getElementById('minRating');
     const phoneOnlyEl = document.getElementById('phoneOnly');
 
     if (qEl) qEl.value = '';
     if (cityEl) cityEl.value = '';
     if (catEl) catEl.value = '';
     if (sortEl) sortEl.value = 'score';
-    if (minRatingEl) minRatingEl.value = '0';
     if (phoneOnlyEl) phoneOnlyEl.checked = false;
     CRMStore.lowRatingOnly = false;
     CRMStore.showAll = false;
