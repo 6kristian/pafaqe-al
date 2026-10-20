@@ -151,7 +151,10 @@
           <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-xs">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
           <button onclick="UIController.switchTab('analytics')" id="navAnalyticsBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Analitika</button>
-          <button onclick="UIController.switchTab('chat')" id="navChatBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Chat Ekipi</button>
+          <button onclick="UIController.switchTab('chat')" id="navChatBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer flex items-center gap-1.5">
+            <span>Chat Ekipi</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
           <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
           <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
@@ -417,35 +420,97 @@
       </div>
     </div>
 
-    <!-- TAB 3.1: ADVANCED TEAM CHAT WORKSPACE -->
-    <div id="tabChat" class="hidden space-y-6 max-w-4xl mx-auto py-6">
-      <div class="card-bg border rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-theme pb-4">
-          <div>
-            <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
-              <span>💬 Chat Live i Ekipit</span>
-            </h2>
-            <p class="text-xs subtext mt-1">Hapësirë e sigurt komunikimi në kohë reale për organizatën tuaj.</p>
+    <!-- TAB 3.1: ENTERPRISE SLACK-STYLE CHAT WORKSPACE -->
+    <div id="tabChat" class="hidden max-w-6xl mx-auto py-4">
+      <div class="card-bg border rounded-3xl overflow-hidden shadow-xl grid grid-cols-1 md:grid-cols-12 min-h-[620px]">
+        
+        <!-- Chat Sidebar (Channels & Members) -->
+        <div class="md:col-span-4 border-r border-theme p-5 flex flex-col justify-between space-y-6 card-bg">
+          <div class="space-y-6">
+            <!-- Header Org -->
+            <div class="flex items-center justify-between border-b border-theme pb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                <span id="chatOrgTitle" class="font-bold text-sm truncate">Organizata Ekipi</span>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg card-bg border text-[10px] font-mono text-emerald-400">Live SSL</span>
+            </div>
+
+            <!-- Channels -->
+            <div class="space-y-2">
+              <span class="text-[10px] font-mono uppercase subtext tracking-wider">Kanalet e Komunikimit</span>
+              <div class="space-y-1 text-xs">
+                <button class="w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer">
+                  <span># general-chat</span>
+                  <span class="text-[10px] font-mono opacity-80">Aktive</span>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
+                  <span># lead-deals</span>
+                  <span class="text-[10px] font-mono text-amber-500">🔒</span>
+                </button>
+                <button class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
+                  <span># oferta-teknike</span>
+                  <span class="text-[10px] font-mono text-slate-500">0</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Team Members Status -->
+            <div class="space-y-3">
+              <span class="text-[10px] font-mono uppercase subtext tracking-wider">Anëtarët e Ekipit</span>
+              <div id="chatOnlineUsersContainer" class="space-y-2 text-xs">
+                <div class="flex items-center gap-2 px-2 py-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span class="font-medium">Ju (Aktiv)</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl card-bg border text-xs font-mono">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="subtext">Live (Firestore SSL)</span>
+
+          <!-- Bottom User Card -->
+          <div id="chatCurrentUserProfileCard" class="p-3.5 rounded-2xl card-bg border border-theme flex items-center gap-3">
+            <img id="chatCurrentUserAvatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=default" class="w-9 h-9 rounded-full bg-slate-800 border border-blue-500/40 object-cover">
+            <div class="truncate text-xs">
+              <div id="chatCurrentUserName" class="font-bold truncate">Kristian Frroku</div>
+              <div id="chatCurrentUserRole" class="subtext text-[10px] font-mono">Sales Owner</div>
+            </div>
           </div>
         </div>
 
-        <!-- Messages Feed -->
-        <div id="chatMessagesContainer" class="h-[460px] overflow-y-auto p-5 card-bg border rounded-2xl space-y-4 text-xs font-mono">
-          <div class="text-center subtext py-20">Duke u lidhur me serverin e chat-it...</div>
+        <!-- Chat Feed & Form -->
+        <div class="md:col-span-8 flex flex-col justify-between card-bg">
+          <!-- Feed Header -->
+          <div class="p-4 border-b border-theme flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-bold"># general-chat</span>
+              <span class="text-xs subtext font-mono">(Komunikimi i brendshëm i organizatës)</span>
+            </div>
+            <button onclick="ChatService.scrollChatToBottom()" class="px-3 py-1.5 rounded-xl card-bg border text-[11px] subtext hover:text-blue-400 transition cursor-pointer">
+              <span>Në fund ⬇</span>
+            </button>
+          </div>
+
+          <!-- Messages List -->
+          <div id="chatMessagesContainer" class="h-[480px] overflow-y-auto p-5 space-y-4 text-xs font-mono">
+            <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
+              <span class="text-3xl">📭</span>
+              <span>Duke ngarkuar bisedën e ekipit...</span>
+            </div>
+          </div>
+
+          <!-- Modern Chat Form Input -->
+          <form onsubmit="ChatService.handleSendMessage(event)" class="p-4 border-t border-theme space-y-2">
+            <div class="flex items-center gap-2 bg-slate-900/60 p-2 rounded-2xl border border-slate-700/60 focus-within:border-blue-500 transition">
+              <button type="button" onclick="ChatService.insertEmoji('👍')" class="p-2 subtext hover:text-amber-400 text-sm transition cursor-pointer" title="Shto Emoji">😊</button>
+              <input type="text" id="chatInputMessage" placeholder="Shkruani një mesazh për ekipin..." required class="bg-transparent flex-1 px-2 text-xs outline-none text-slate-100 placeholder:text-slate-500">
+              <button type="submit" class="px-6 py-2.5 rounded-xl btn-primary font-semibold text-xs shadow-sm cursor-pointer whitespace-nowrap flex items-center gap-1.5">
+                <span>Dërgo</span>
+                <span>➔</span>
+              </button>
+            </div>
+          </form>
         </div>
 
-        <!-- Chat Input Form -->
-        <form onsubmit="ChatService.handleSendMessage(event)" class="flex items-center gap-3 pt-2">
-          <input type="text" id="chatInputMessage" placeholder="Shkruani një mesazh për ekipin..." required class="input-bg flex-1 rounded-2xl px-5 py-3.5 text-xs border outline-none focus:ring-1 focus:ring-blue-600 transition">
-          <button type="submit" class="px-7 py-3.5 rounded-2xl btn-primary font-semibold text-xs shadow-sm cursor-pointer whitespace-nowrap flex items-center gap-2">
-            <span>Dërgo</span>
-            <span>➔</span>
-          </button>
-        </form>
       </div>
     </div>
 
@@ -796,7 +861,7 @@ const ToastService = {
 };
 
 // ==========================================
-// 💬 ADVANCED CHAT SERVICE & REAL-TIME LISTENER
+// 💬 ENTERPRISE CHAT SERVICE
 // ==========================================
 const ChatService = {
   unsubscribe: null,
@@ -808,16 +873,52 @@ const ChatService = {
     const container = document.getElementById('chatMessagesContainer');
     if (!container) return;
 
+    // Update UI Header Cards
+    const titleEl = document.getElementById('chatOrgTitle');
+    if (titleEl) titleEl.textContent = `Org: ${orgId.slice(0, 10)}...`;
+
+    if (AuthService.currentUser) {
+      const u = AuthService.currentUser;
+      const avatarEl = document.getElementById('chatCurrentUserAvatar');
+      const nameEl = document.getElementById('chatCurrentUserName');
+      const roleEl = document.getElementById('chatCurrentUserRole');
+      if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(u.email || 'default')}`;
+      if (nameEl) nameEl.textContent = u.displayName || u.email.split('@')[0];
+      if (roleEl) roleEl.textContent = `Roli: ${AuthService.userRole}`;
+    }
+
     this.unsubscribe = db.collection('organizations').doc(orgId).collection('chats')
       .orderBy('timestamp', 'asc')
       .onSnapshot((snapshot) => {
         let messages = [];
+        let senders = new Set();
+
         snapshot.forEach(doc => {
-          messages.push(doc.data());
+          const data = doc.data();
+          messages.push(data);
+          if (data.email) senders.add(data.email);
         });
 
+        // Update Online/Active users sidebar list
+        const onlineContainer = document.getElementById('chatOnlineUsersContainer');
+        if (onlineContainer) {
+          onlineContainer.innerHTML = Array.from(senders).map(email => {
+            const name = email.split('@')[0];
+            return `
+              <div class="flex items-center gap-2 px-2 py-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="font-medium truncate">${UIController.escapeHtml(name)}</span>
+              </div>
+            `;
+          }).join('');
+        }
+
         if (messages.length === 0) {
-          container.innerHTML = `<div class="text-center subtext py-24 flex flex-col items-center justify-center space-y-2"><span class="text-2xl">📭</span><span>Nuk ka ende mesazh. Nisni bisedën e parë me ekipin!</span></div>`;
+          container.innerHTML = `
+            <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
+              <span class="text-3xl">💬</span>
+              <span>Nuk ka ende mesazhe në kanal. Filloni bisedën me ekipin!</span>
+            </div>`;
           return;
         }
 
@@ -828,24 +929,38 @@ const ChatService = {
           const senderName = UIController.escapeHtml(m.name || m.email.split('@')[0]);
 
           return `
-            <div class="flex items-start gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'} mb-3">
-              <img src="${avatarUrl}" alt="Avatar" class="w-8 h-8 rounded-full card-bg border border-theme shrink-0 object-cover shadow-sm">
-              <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%] space-y-1">
+            <div class="flex items-start gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'} mb-4">
+              <img src="${avatarUrl}" alt="Avatar" class="w-9 h-9 rounded-full bg-slate-800 border border-theme shrink-0 object-cover shadow-sm">
+              <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[78%] space-y-1">
                 <div class="flex items-center gap-2 px-1">
                   <span class="font-bold text-[11px] text-blue-600 dark:text-blue-400">${senderName}</span>
                   <span class="subtext text-[10px]">${timeStr}</span>
                 </div>
-                <div class="p-3.5 rounded-2xl ${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'card-bg border border-theme rounded-tl-none'} text-xs leading-relaxed shadow-xs">
+                <div class="p-3.5 rounded-2xl ${isMe ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none' : 'card-bg border border-theme rounded-tl-none'} text-xs leading-relaxed shadow-sm">
                   ${UIController.escapeHtml(m.text)}
                 </div>
               </div>
             </div>
           `;
         }).join('');
-        container.scrollTop = container.scrollHeight;
+
+        this.scrollChatToBottom();
       }, (error) => {
         console.error("Error loading chat:", error);
       });
+  },
+
+  scrollChatToBottom() {
+    const container = document.getElementById('chatMessagesContainer');
+    if (container) container.scrollTop = container.scrollHeight;
+  },
+
+  insertEmoji(emoji) {
+    const input = document.getElementById('chatInputMessage');
+    if (input) {
+      input.value += emoji;
+      input.focus();
+    }
   },
 
   async handleSendMessage(e) {
@@ -1787,6 +1902,8 @@ const UIController = {
       CRMStore.renderKanban();
     } else if (tab === 'analytics') {
       CRMStore.updateAnalytics(CRMStore.DATA && CRMStore.DATA.businesses ? CRMStore.DATA.businesses.length : 0);
+    } else if (tab === 'chat') {
+      ChatService.scrollChatToBottom();
     }
   },
 
