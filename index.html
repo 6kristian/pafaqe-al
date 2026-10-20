@@ -851,14 +851,119 @@ const ToastService = {
 // ==========================================
 const ChatService = {
   unsubscribe: null,
+  currentChannel: 'general-chat',
+
+  switchChannel(channelName) {
+    this.currentChannel = channelName;
+    
+    // Përditëso stilin e butonave të kanaleve
+    document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
+      btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
+    });
+    
+    const activeBtn = event.currentTarget;
+    if (activeBtn) {
+      activeBtn.className = "w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer";
+    }
+
+    // Ndrysho titullin e header-it të chat-it
+    const headerTitle = document.querySelector('#tabChat .md\\:col-span-8 .text-lg.font-bold');
+    if (headerTitle) headerTitle.textContent = `# ${channelName}`;
+
+    // Rinis listener-in e bisedës për kanalin e ri
+    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+    this.initChatForChannel(orgId, channelName);
+  },
 
   initChat(orgId) {
+    this.initChatForChannel(orgId, this.currentChannel);
+  },
+
+  initChatForChannel(orgId, channelName) {
     if (this.unsubscribe) {
       this.unsubscribe();
     }
     const container = document.getElementById('chatMessagesContainer');
     if (!container) return;
 
+    // Përdor sub-koleksion të ndryshëm sipas kanalit (p.sh. chats_lead-deals, etj.)
+    const subCollectionName = `chats_${channelName}`;
+
+    this.unsubscribe = db.collection('organizations').doc(orgId).collection(subCollectionName)
+      .orderBy('timestamp', 'asc')
+      .onSnapshot((snapshot) => {
+        let messages = [];
+        let senders = new Set();
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          messages.push(data);
+          if (data.email) senders.add(data.email);
+        });
+
+        // ... pjesa tjetër e shfaqjes së mesazheve mbetet e njëjtë ...
+        if (messages.length === 0) {
+          container.innerHTML = `
+            <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
+              <span class="text-3xl">💬</span>
+              <span>Nuk ka ende mesazhe në kanalin #${channelName}. Filloni bisedën!</span>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = messages.map(m => {
+          const isMe = AuthService.currentUser && m.email === AuthService.currentUser.email;
+          const timeStr = m.timestamp ? new Date(m.timestamp.toDate ? m.timestamp.toDate() : m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Tani';
+          const avatarUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(m.email || 'user')}`;
+          const senderName = UIController.escapeHtml(m.name || m.email.split('@')[0]);
+
+          return `
+            <div class="flex items-start gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'} mb-4">
+              <img src="${avatarUrl}" alt="Avatar" class="w-9 h-9 rounded-full bg-slate-800 border border-theme shrink-0 object-cover shadow-sm">
+              <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[78%] space-y-1">
+                <div class="flex items-center gap-2 px-1">
+                  <span class="font-bold text-[11px] text-blue-600 dark:text-blue-400">${senderName}</span>
+                  <span class="subtext text-[10px]">${timeStr}</span>
+                </div>
+                <div class="p-3.5 rounded-2xl ${isMe ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none' : 'card-bg border border-theme rounded-tl-none'} text-xs leading-relaxed shadow-sm">
+                  ${UIController.escapeHtml(m.text)}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        this.scrollChatToBottom();
+      }, (error) => {
+        console.error("Error loading chat:", error);
+      });
+  },
+  
+  // Modifikoni gjithashtu ruajtjen e mesazhit që të përdorë kanalin aktual
+  async handleSendMessage(e) {
+    e.preventDefault();
+    if (!AuthService.currentUser) return;
+    const input = document.getElementById('chatInputMessage');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+    const user = AuthService.currentUser;
+    const subCollectionName = `chats_${this.currentChannel}`;
+
+    try {
+      await db.collection('organizations').doc(orgId).collection(subCollectionName).add({
+        text: text,
+        email: user.email,
+        name: user.displayName || user.email.split('@')[0],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      input.value = '';
+    } catch (err) {
+      alert("Gabim gjatë dërgimit të mesazhit: " + err.message);
+    }
+  }
+};
     // Update UI Header Cards
     const titleEl = document.getElementById('chatOrgTitle');
     if (titleEl) titleEl.textContent = `Org: ${orgId.slice(0, 10)}...`;
