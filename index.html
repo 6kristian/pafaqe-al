@@ -427,20 +427,19 @@
             <div class="space-y-2">
               <span class="text-[10px] font-mono uppercase subtext tracking-wider">Kanalet e Komunikimit</span>
               <div class="space-y-1 text-xs">
-                <button class="w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer">
+                <button id="channelGeneralBtn" onclick="ChatService.switchChannel('general-chat')" class="w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer">
                   <span># general-chat</span>
                   <span class="text-[10px] font-mono opacity-80">Aktive</span>
                 </button>
-                <button class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
+                <button id="channelDealsBtn" onclick="ChatService.switchChannel('lead-deals')" class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
                   <span># lead-deals</span>
                   <span class="text-[10px] font-mono text-amber-500">🔒</span>
                 </button>
-                <button class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
+                <button id="channelOffersBtn" onclick="ChatService.switchChannel('oferta-teknike')" class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
                   <span># oferta-teknike</span>
                   <span class="text-[10px] font-mono text-slate-500">0</span>
                 </button>
               </div>
-            </div>
 
             <!-- Team Members Status -->
             <div class="space-y-3">
