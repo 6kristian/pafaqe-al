@@ -442,10 +442,17 @@
               </div>
             </div>
 
-            <!-- Team Members Status -->
-            <div class="space-y-3">
-              <span class="text-[10px] font-mono uppercase subtext tracking-wider">Anëtarët e Ekipit</span>
-              <div id="chatOnlineUsersContainer" class="space-y-2 text-xs">
+            <!-- Team Members Status & Search Directory -->
+            <div class="space-y-3 pt-3 border-t border-theme">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono uppercase subtext tracking-wider">Anëtarët e Ekipit</span>
+                <span id="teamCountBadge" class="text-[10px] font-mono text-blue-600 dark:text-blue-400">0 online</span>
+              </div>
+              
+              <!-- User Search Directory Input -->
+              <input type="text" id="searchTeamInput" oninput="ChatService.filterTeamMembers(this.value)" placeholder="Kërko anëtarët..." class="input-bg w-full rounded-xl px-3 py-1.5 text-xs outline-none border">
+
+              <div id="chatOnlineUsersContainer" class="space-y-1.5 text-xs max-h-40 overflow-y-auto pr-1">
                 <div class="flex items-center gap-2 px-2 py-1">
                   <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                   <span class="font-medium">Ju (Aktiv)</span>
@@ -848,51 +855,93 @@ const ToastService = {
 };
 
 // ==========================================
-// 💬 ENTERPRISE CHAT SERVICE
+// 💬 ENTERPRISE CHAT SERVICE (Channels, DM & Search)
 // ==========================================
 const ChatService = {
   unsubscribe: null,
   currentChannel: 'general-chat',
+  currentDMUser: null,
 
   switchChannel(channelName) {
     this.currentChannel = channelName;
+    this.currentDMUser = null;
     
     // Përditëso stilin e butonave të kanaleve
     document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
       btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
     });
     
-    const activeBtn = event.currentTarget;
+    const activeBtn = event?.currentTarget;
     if (activeBtn) {
       activeBtn.className = "w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer";
     }
 
-    // Ndrysho titullin e header-it të chat-it
     const headerTitle = document.getElementById('chatHeaderChannelTitle');
     if (headerTitle) headerTitle.textContent = `# ${channelName}`;
 
-    // Rinis listener-in e bisedës për kanalin e ri
     const orgId = AuthService.currentOrgId || AuthService.currentUser?.uid;
     if (orgId) {
       this.initChatForChannel(orgId, channelName);
     }
   },
 
+  openDirectMessage(targetEmail) {
+    this.currentChannel = null;
+    this.currentDMUser = targetEmail;
+
+    // Hiq active nga butonat e kanaleve
+    document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
+      btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
+    });
+
+    const headerTitle = document.getElementById('chatHeaderChannelTitle');
+    if (headerTitle) headerTitle.textContent = `DM: @${targetEmail.split('@')[0]}`;
+
+    const orgId = AuthService.currentOrgId || AuthService.currentUser?.uid;
+    if (orgId) {
+      this.initChatForDM(orgId, targetEmail);
+    }
+  },
+
+  filterTeamMembers(query) {
+    const q = query.toLowerCase();
+    const items = document.querySelectorAll('#chatOnlineUsersContainer > div');
+    items.forEach(el => {
+      const name = el.textContent.toLowerCase();
+      el.style.display = name.includes(q) ? 'flex' : 'none';
+    });
+  },
+
   initChat(orgId) {
-    this.initChatForChannel(orgId, this.currentChannel);
+    if (this.currentDMUser) {
+      this.initChatForDM(orgId, this.currentDMUser);
+    } else {
+      this.initChatForChannel(orgId, this.currentChannel || 'general-chat');
+    }
   },
 
   initChatForChannel(orgId, channelName) {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
+    if (this.unsubscribe) this.unsubscribe();
     const container = document.getElementById('chatMessagesContainer');
     if (!container) return;
 
-    // Përdor sub-koleksion të ndryshëm sipas kanalit
     const subCollectionName = `chats_${channelName}`;
+    this.setupChatSession(orgId, subCollectionName);
+  },
 
-    // Update UI Header Cards
+  initChatForDM(orgId, targetEmail) {
+    if (this.unsubscribe) this.unsubscribe();
+    const container = document.getElementById('chatMessagesContainer');
+    if (!container) return;
+
+    const myEmail = AuthService.currentUser.email;
+    const sortedEmails = [myEmail, targetEmail].sort();
+    const dmRoomId = `dm_${btoa(sortedEmails[0] + '_' + sortedEmails[1]).replace(/=/g, '')}`;
+    this.setupChatSession(orgId, dmRoomId);
+  },
+
+  setupChatSession(orgId, collectionName) {
+    const container = document.getElementById('chatMessagesContainer');
     const titleEl = document.getElementById('chatOrgTitle');
     if (titleEl) titleEl.textContent = `Org: ${orgId.slice(0, 10)}...`;
 
@@ -906,7 +955,7 @@ const ChatService = {
       if (roleEl) roleEl.textContent = `Roli: ${AuthService.userRole}`;
     }
 
-    this.unsubscribe = db.collection('organizations').doc(orgId).collection(subCollectionName)
+    this.unsubscribe = db.collection('organizations').doc(orgId).collection(collectionName)
       .orderBy('timestamp', 'asc')
       .onSnapshot((snapshot) => {
         let messages = [];
@@ -918,15 +967,27 @@ const ChatService = {
           if (data.email) senders.add(data.email);
         });
 
-        // Update Online/Active users sidebar list
+        // Update online/team directory list with DM triggers
         const onlineContainer = document.getElementById('chatOnlineUsersContainer');
+        const teamBadge = document.getElementById('teamCountBadge');
         if (onlineContainer) {
+          if (teamBadge) teamBadge.textContent = `${senders.size} online`;
           onlineContainer.innerHTML = Array.from(senders).map(email => {
+            const isMe = AuthService.currentUser && email === AuthService.currentUser.email;
             const name = email.split('@')[0];
+            if (isMe) {
+              return `
+                <div class="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-slate-800/30">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span class="font-medium truncate">${UIController.escapeHtml(name)} (Ju)</span>
+                </div>
+              `;
+            }
             return `
-              <div class="flex items-center gap-2 px-2 py-1">
+              <div onclick="ChatService.openDirectMessage('${email}')" class="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-slate-800/50 cursor-pointer transition">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                 <span class="font-medium truncate">${UIController.escapeHtml(name)}</span>
+                <span class="ml-auto text-[10px] text-blue-400 font-mono">DM 💬</span>
               </div>
             `;
           }).join('');
@@ -936,7 +997,7 @@ const ChatService = {
           container.innerHTML = `
             <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
               <span class="text-3xl">💬</span>
-              <span>Nuk ka ende mesazhe në kanalin #${channelName}. Filloni bisedën me ekipin!</span>
+              <span>Nuk ka ende mesazhe. Filloni bisedën!</span>
             </div>`;
           return;
         }
@@ -991,10 +1052,17 @@ const ChatService = {
 
     const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
     const user = AuthService.currentUser;
-    const subCollectionName = `chats_${this.currentChannel}`;
+
+    let targetCollection = '';
+    if (this.currentDMUser) {
+      const sortedEmails = [user.email, this.currentDMUser].sort();
+      targetCollection = `dm_${btoa(sortedEmails[0] + '_' + sortedEmails[1]).replace(/=/g, '')}`;
+    } else {
+      targetCollection = `chats_${this.currentChannel || 'general-chat'}`;
+    }
 
     try {
-      await db.collection('organizations').doc(orgId).collection(subCollectionName).add({
+      await db.collection('organizations').doc(orgId).collection(targetCollection).add({
         text: text,
         email: user.email,
         name: user.displayName || user.email.split('@')[0],
@@ -1002,7 +1070,7 @@ const ChatService = {
       });
       input.value = '';
     } catch (err) {
-      alert("Gabim gjatë dërgimit të mesazhit: " + err.message);
+      alert("Gabim gjatë dërgimit: " + err.message);
     }
   }
 };
