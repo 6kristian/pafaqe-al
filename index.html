@@ -652,12 +652,14 @@
 <!-- OUTREACH PITCH GENERATOR MODAL -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-3xl max-w-lg w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-    <button onclick="UIController.closePitchModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
-    <div class="space-y-1">
+    <!-- Rregulluar butoni close me absolute positioning që të mos mbivendoset teksti -->
+    <button onclick="UIController.closePitchModal()" class="absolute top-6 right-6 subtext hover:text-blue-600 font-bold cursor-pointer text-base">✕</button>
+    <div class="space-y-1 pr-6">
       <div class="text-xl font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
       <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium"></p>
     </div>
     
+    <!-- Rregulluar ID-të dhe stilet e butonave të tab-eve WhatsApp / Email që të bëhen highlight si duhet -->
     <div class="flex items-center gap-2.5 border-b border-theme pb-4">
       <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer">WhatsApp</button>
       <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer">Email</button>
@@ -1484,6 +1486,15 @@ const CRMStore = {
     const cleanNum = phone.replace(/\D/g, '');
     const phoneFormatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
     document.getElementById('whatsappSendBtn').href = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(formattedWa)}`;
+
+    // Përditësimi i linkut të email-it gjithashtu
+    const emailSub = document.getElementById('emailSubjectTemplateInput').value;
+    const emailBody = document.getElementById('emailBodyTemplateInput').value;
+    const formattedSub = emailSub.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+    const formattedBody = emailBody.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+    
+    const emailTarget = b.email || '';
+    document.getElementById('emailSendBtn').href = `mailto:${emailTarget}?subject=${encodeURIComponent(formattedSub)}&body=${encodeURIComponent(formattedBody)}`;
   },
 
   resetPitchTemplate(type) {
@@ -1726,8 +1737,20 @@ const UIController = {
 
   switchPitchChannel(channel) {
     CRMStore.currentPitchChannel = channel;
-    document.getElementById('pitchPanelWa').classList.toggle('hidden', channel !== 'whatsapp');
-    document.getElementById('pitchPanelEmail').classList.toggle('hidden', channel === 'whatsapp');
+    const btnWa = document.getElementById('pitchTabWa');
+    const btnEmail = document.getElementById('pitchTabEmail');
+
+    if (channel === 'whatsapp') {
+      document.getElementById('pitchPanelWa').classList.remove('hidden');
+      document.getElementById('pitchPanelEmail').classList.add('hidden');
+      if (btnWa) btnWa.className = "px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer";
+      if (btnEmail) btnEmail.className = "px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer";
+    } else {
+      document.getElementById('pitchPanelWa').classList.add('hidden');
+      document.getElementById('pitchPanelEmail').classList.remove('hidden');
+      if (btnEmail) btnEmail.className = "px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer";
+      if (btnWa) btnWa.className = "px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer";
+    }
   },
 
   openPitchModal(leadKey) {
