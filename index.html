@@ -36,6 +36,8 @@
   html.dark .chip-btn { background-color: #0f172a; border-color: #1f293d; color: #94a3b8; }
   html.dark .chip-btn:hover { background-color: #1e293b; color: #f8fafc; border-color: #334155; }
   html.dark .logo-text { color: #ffffff; }
+  html.dark .btn-primary { background-color: #2563eb; color: #ffffff; }
+  html.dark .btn-primary:hover { background-color: #1d4ed8; }
 
   /* Light Mode Styles */
   html.light body { background-color: #f8fafc; color: #0f172a; }
@@ -49,6 +51,8 @@
   html.light .chip-btn { background-color: #ffffff; border-color: #cbd5e1; color: #334155; }
   html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; }
   html.light .logo-text { color: #0f172a; }
+  html.light .btn-primary { background-color: #3b82f6; color: #0f172a; font-weight: 700; }
+  html.light .btn-primary:hover { background-color: #2563eb; color: #ffffff; }
 
   .chip { cursor: pointer; transition: all 0.15s ease; }
   .chip.active { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; font-weight: 600; }
@@ -62,7 +66,7 @@
   }
 
   .kanban-col {
-    min-height: 480px;
+    min-height: 520px;
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -87,7 +91,7 @@
       
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
         <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
-          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold transition cursor-pointer shadow-sm">Leads</button>
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3.5 py-1.5 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
           <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
@@ -127,7 +131,7 @@
             Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Aksesoni të dhënat e kontaktit, pikëzimin e lead-eve dhe kanabnin e shitjeve në ekip.
           </p>
           <div class="pt-2 flex items-center gap-3">
-            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm cursor-pointer">
+            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">
               <span>Fillo Falas Tani</span>
             </button>
           </div>
@@ -175,7 +179,7 @@
       <div class="space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
+          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-lg btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
             <span id="exportBtnText">Eksporto CSV</span>
           </button>
         </div>
@@ -201,7 +205,7 @@
       <!-- Bulk Actions Toolbar -->
       <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-blue-500/50 rounded-xl p-3 shadow-xl flex flex-wrap items-center justify-between gap-3 backdrop-blur-md">
         <div class="flex items-center gap-2.5 text-xs">
-          <span class="font-bold px-2.5 py-1 rounded bg-blue-600 text-white text-xs" id="selectedCountBadge">0 të zgjedhur</span>
+          <span class="font-bold px-2.5 py-1 rounded btn-primary text-xs" id="selectedCountBadge">0 të zgjedhur</span>
           <span class="subtext">Veprim masiv:</span>
         </div>
         <div class="flex flex-wrap items-center gap-2.5 text-xs">
@@ -211,7 +215,7 @@
             <option value="interested">Statusi: Të Interesuar</option>
             <option value="closed">Statusi: Mbyllur / Fituar</option>
           </select>
-          <button onclick="CRMStore.applyBulkStatus()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition cursor-pointer shadow-sm">Ndrysho Statusin</button>
+          <button onclick="CRMStore.applyBulkStatus()" class="px-3.5 py-1.5 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm">Ndrysho Statusin</button>
           <button onclick="CRMStore.exportCSV()" class="px-3.5 py-1.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Eksporto të Zgjedhurat</button>
           <button onclick="CRMStore.clearSelection()" class="px-3 py-1.5 rounded-lg card-bg border text-rose-400 hover:text-rose-300 transition cursor-pointer">Anulo</button>
         </div>
@@ -235,7 +239,7 @@
             Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, sinkronizimin e shënimeve në kohë reale dhe veglat e avancuara të shitjeve.
           </p>
           <div class="pt-1">
-            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
+            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
               <span>Hyni në Llogari</span>
             </button>
           </div>
@@ -255,74 +259,74 @@
     </div>
 
     <!-- TAB 2: KANBAN PIPELINE -->
-    <div id="tabKanban" class="hidden space-y-5">
+    <div id="tabKanban" class="hidden space-y-6 py-6">
       <div class="card-bg border rounded-xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400">Kanban Pipeline</h2>
-          <p class="text-xs subtext mt-0.5">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave për të ndryshuar statusin në kohë reale për gjithë ekipin.</p>
+          <p class="text-xs subtext mt-1">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave për të ndryshuar statusin në kohë reale për gjithë ekipin.</p>
         </div>
-        <span class="text-xs font-mono subtext bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-theme">Drag & Drop Aktiv</span>
+        <span class="text-xs font-mono subtext card-bg px-3.5 py-1.5 rounded-lg border border-theme">Drag & Drop Aktiv</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')">
-          <div class="flex items-center justify-between border-b border-theme pb-2.5">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-5 items-start">
+        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')">
+          <div class="flex items-center justify-between border-b border-theme pb-3">
             <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Të Reja (New)</span>
-            <span id="kanbanCountNew" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountNew" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColNew" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
+          <div id="kanbanColNew" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')">
-          <div class="flex items-center justify-between border-b border-theme pb-2.5">
+        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')">
+          <div class="flex items-center justify-between border-b border-theme pb-3">
             <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Në Kontakt (Contacted)</span>
-            <span id="kanbanCountContacted" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountContacted" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColContacted" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
+          <div id="kanbanColContacted" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')">
-          <div class="flex items-center justify-between border-b border-theme pb-2.5">
+        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')">
+          <div class="flex items-center justify-between border-b border-theme pb-3">
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 font-mono">Të Interesuar (Interested)</span>
-            <span id="kanbanCountInterested" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountInterested" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColInterested" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
+          <div id="kanbanColInterested" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')">
-          <div class="flex items-center justify-between border-b border-theme pb-2.5">
+        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')">
+          <div class="flex items-center justify-between border-b border-theme pb-3">
             <span class="font-bold text-xs uppercase tracking-wider text-emerald-500 font-mono">Mbyllur / Fituar (Closed)</span>
-            <span id="kanbanCountClosed" class="px-2 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountClosed" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColClosed" class="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 flex-1"></div>
+          <div id="kanbanColClosed" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
         </div>
       </div>
     </div>
 
     <!-- TAB 3: ABOUT US -->
-    <div id="tabAbout" class="hidden space-y-6 max-w-4xl mx-auto py-6 px-2 sm:px-0">
-      <div class="card-bg border border-theme rounded-2xl p-8 shadow-sm space-y-3">
+    <div id="tabAbout" class="hidden space-y-6 max-w-4xl mx-auto py-10 px-4 sm:px-0">
+      <div class="card-bg border border-theme rounded-2xl p-8 sm:p-10 shadow-sm space-y-4">
         <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura e Platformës</span>
-        <h2 class="text-2xl font-bold">Rreth PaFaqe.al</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold">Rreth PaFaqe.al</h2>
         <p class="subtext text-xs sm:text-sm leading-relaxed">
           PaFaqe.al është krijuar posaçërisht për agjencitë e zhvillimit web, zhvilluesit dhe konsulentët që duhet të identifikojnë dhe kontaktojnë shpejt bizneset shqiptare që nuk kanë një prani dixhitale. Me sinkronizim multi-tenant në Firestore dhe menaxhim të përbashkët të ekipit.
         </p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div class="card-bg border border-theme rounded-xl p-6 space-y-2">
-          <h3 class="font-bold text-sm text-blue-600 dark:text-blue-400">Përputhshmëria & Siguria</h3>
+        <div class="card-bg border border-theme rounded-2xl p-6 sm:p-8 space-y-3 shadow-sm">
+          <h3 class="font-bold text-base text-blue-600 dark:text-blue-400">Përputhshmëria & Siguria</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">Të dhënat indeksohen nga regjistrat publikë komercialë në përputhje të plotë me standardet e privatësisë dhe sigurisë cloud të nivelit të lartë.</p>
         </div>
-        <div class="card-bg border border-theme rounded-xl p-6 space-y-2">
-          <h3 class="font-bold text-sm text-blue-600 dark:text-blue-400">Workspace i Ekipit</h3>
+        <div class="card-bg border border-theme rounded-2xl p-6 sm:p-8 space-y-3 shadow-sm">
+          <h3 class="font-bold text-base text-blue-600 dark:text-blue-400">Workspace i Ekipit</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">Përdorimi i ID-së së Organizatës i lejon menaxherëve dhe shitësve (Sales Reps) të ndajnë të njëjtin kanban pa humbur asnjë informacion.</p>
         </div>
       </div>
     </div>
 
     <!-- TAB 4: CONTACT -->
-    <div id="tabContact" class="hidden space-y-4 max-w-xl mx-auto py-4">
+    <div id="tabContact" class="hidden space-y-4 max-w-xl mx-auto py-8">
       <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
         <div>
           <h2 class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-1">Na Kontaktoni</h2>
@@ -342,7 +346,7 @@
             <label class="block font-mono uppercase subtext mb-1 text-[11px]">Mesazhi</label>
             <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600"></textarea>
           </div>
-          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm cursor-pointer">Dërgo Mesazhin</button>
+          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">Dërgo Mesazhin</button>
         </form>
         <div id="contactSuccess" class="hidden mt-3 p-3 rounded-lg bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
           Mesazhi u dërgua me sukses!
@@ -351,12 +355,12 @@
     </div>
 
     <!-- TAB 5: TEAM WORKSPACE & RBAC -->
-    <div id="tabProfile" class="hidden space-y-6 max-w-4xl mx-auto py-4">
+    <div id="tabProfile" class="hidden space-y-6 max-w-4xl mx-auto py-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-4">
           <div class="flex items-center justify-between">
             <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Organizata & Ekipi</h2>
-            <span id="userRoleBadge" class="px-2.5 py-1 rounded bg-blue-600 text-white text-[10px] font-mono font-bold tracking-wider">Roli: Owner</span>
+            <span id="userRoleBadge" class="px-2.5 py-1 rounded btn-primary text-[10px] font-mono font-bold tracking-wider">Roli: Owner</span>
           </div>
           <div class="space-y-3.5 text-xs">
             <div>
@@ -373,7 +377,7 @@
               <label class="block font-mono uppercase subtext mb-1 text-[11px]">Bashkohu në Organizatë Tjetër</label>
               <div class="flex items-center gap-2">
                 <input type="text" id="joinOrgInput" placeholder="Vendos Org ID..." class="input-bg w-full rounded-lg px-3 py-2 text-xs border font-mono outline-none">
-                <button onclick="CRMStore.joinOrganization()" class="px-3.5 py-2 rounded-lg bg-blue-600 text-white font-semibold shrink-0 cursor-pointer">Bashkohu</button>
+                <button onclick="CRMStore.joinOrganization()" class="px-3.5 py-2 rounded-lg btn-primary font-semibold shrink-0 cursor-pointer">Bashkohu</button>
               </div>
             </div>
 
@@ -388,7 +392,7 @@
                 <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-lg px-3.5 py-2 text-xs subtext cursor-not-allowed">
               </div>
               <div id="verificationStatusContainer" class="p-3 rounded-lg card-bg border border-theme flex items-center justify-between text-xs"></div>
-              <button onclick="AuthService.updateProfileData()" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs cursor-pointer">Ruaj Ndryshimet</button>
+              <button onclick="AuthService.updateProfileData()" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs cursor-pointer">Ruaj Ndryshimet</button>
               <div id="profileSuccess" class="hidden text-xs text-emerald-400 font-medium text-center">Profili u përditësua me sukses!</div>
             </div>
           </div>
@@ -482,7 +486,7 @@
 
       <div id="authError" class="hidden text-xs text-rose-400 font-medium"></div>
       
-      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm cursor-pointer">Identifikohu</button>
+      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">Identifikohu</button>
     </form>
     
     <div class="text-center text-xs subtext pt-2">
@@ -507,7 +511,7 @@
       <div id="forgotError" class="hidden text-xs text-rose-400 font-medium"></div>
       <div id="forgotSuccess" class="hidden text-xs text-emerald-400 font-medium p-3 rounded-lg card-bg border border-emerald-500/50"></div>
       
-      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm cursor-pointer">Dërgo Linkun</button>
+      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">Dërgo Linkun</button>
     </form>
   </div>
 </div>
@@ -556,7 +560,7 @@
 
       <div class="flex items-center justify-end gap-3 pt-2">
         <button onclick="UIController.closeNotesModal()" class="px-4 py-2 rounded-lg card-bg border subtext hover:text-blue-500 font-medium cursor-pointer">Anulo</button>
-        <button onclick="CRMStore.saveLeadNote()" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm cursor-pointer">Ruaj Ndryshimet</button>
+        <button onclick="CRMStore.saveLeadNote()" class="px-5 py-2 rounded-lg btn-primary font-semibold shadow-sm cursor-pointer">Ruaj Ndryshimet</button>
       </div>
     </div>
   </div>
@@ -572,7 +576,7 @@
     </div>
     
     <div class="flex items-center gap-2 border-b border-theme pb-3">
-      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold text-xs transition cursor-pointer">WhatsApp</button>
+      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-3.5 py-1.5 rounded-lg btn-primary font-semibold text-xs transition cursor-pointer">WhatsApp</button>
       <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer">Email</button>
     </div>
 
@@ -1097,7 +1101,7 @@ const CRMStore = {
     const s = AuthService.currentUser ? (document.getElementById('sort')?.value || 'score') : 'score';
     list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
       : s==='rating' ? ((this.getLeadRating(b) || 0) - (this.getLeadRating(a) || 0))
-      : s==='reviews' ? ((b.reviews || 0) - (b.reviews || 0))
+      : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
       : this.leadScore(b) - this.leadScore(a));
     return list;
   },
@@ -1265,7 +1269,7 @@ const CRMStore = {
         cols[status].innerHTML = statusList.slice(0, 30).map(b => {
           const leadKey = b.id || b.name;
           return `
-            <div class="card-bg border rounded-xl p-3 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-500 transition space-y-2 text-xs" 
+            <div class="card-bg border rounded-xl p-3.5 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-500 transition space-y-2 text-xs" 
                  draggable="true" 
                  ondragstart="CRMStore.dragLead(event, '${UIController.escapeHtml(leadKey)}')">
               <div class="flex items-start justify-between gap-2">
@@ -1273,11 +1277,11 @@ const CRMStore = {
                 <span class="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 shrink-0">${this.leadScore(b)} pts</span>
               </div>
               <div class="subtext text-[11px] truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
-              <div class="flex items-center justify-between pt-2 border-t border-theme text-[11px]">
+              <div class="flex items-center justify-between pt-2.5 border-t border-theme text-[11px]">
                 <span class="font-mono text-amber-600 dark:text-amber-400">${UIController.escapeHtml(b.phone || 'Pa tel')}</span>
-                <div class="flex items-center gap-1">
-                  <button onclick="event.stopPropagation(); UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-0.5 rounded card-bg border subtext hover:text-blue-500 cursor-pointer">Shënim</button>
-                  <button onclick="event.stopPropagation(); UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-0.5 rounded card-bg border text-emerald-600 dark:text-emerald-400 cursor-pointer">Oferta</button>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="event.stopPropagation(); UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-1 rounded card-bg border subtext hover:text-blue-500 cursor-pointer">Shënim</button>
+                  <button onclick="event.stopPropagation(); UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-1 rounded card-bg border text-emerald-600 dark:text-emerald-400 cursor-pointer">Oferta</button>
                 </div>
               </div>
             </div>
@@ -1496,12 +1500,6 @@ const UIController = {
     document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.remove('hidden');
     
     // Update active nav button styling
-    ['navLeidBtn', 'navKanbanBtn', 'navAboutBtn', 'navContactBtn', 'navProfileBtn'].forEach(btnId => {
-      const btn = document.getElementById(btnId);
-      if (btn) btn.classList.remove('bg-blue-600', 'text-white', 'font-semibold', 'subtext');
-    });
-    
-    // Set inactive/active states properly for all buttons
     const navButtons = {
       leads: 'navLeidBtn',
       kanban: 'navKanbanBtn',
@@ -1514,7 +1512,7 @@ const UIController = {
       const btn = document.getElementById(navButtons[key]);
       if (btn) {
         if (key === tab) {
-          btn.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold transition cursor-pointer shadow-sm";
+          btn.className = "px-3.5 py-1.5 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm";
         } else {
           btn.className = "px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer";
         }
