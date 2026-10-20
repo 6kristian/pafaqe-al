@@ -516,10 +516,12 @@
 <!-- AUTH MODAL WITH ROLE SELECTION -->
 <div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
-    <button onclick="AuthService.closeAuthModal()" class="absolute top-6 right-6 subtext hover:text-blue-600 font-bold cursor-pointer text-base">✕</button>
-    <div class="space-y-1 pr-6">
-      <div id="authTitle" class="text-xl font-bold">Identifikimi në Ekip</div>
-      <p id="authSubtitle" class="text-xs subtext">Hyni për të sinkronizuar statuset dhe auditet në kohë reale.</p>
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div id="authTitle" class="text-xl font-bold">Identifikimi në Ekip</div>
+        <p id="authSubtitle" class="text-xs subtext mt-1">Hyni për të sinkronizuar statuset dhe auditet në kohë reale.</p>
+      </div>
+      <button onclick="AuthService.closeAuthModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
     </div>
     
     <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-4 text-xs">
@@ -580,10 +582,12 @@
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
-    <button onclick="AuthService.closeForgotPasswordModal()" class="absolute top-6 right-6 subtext hover:text-blue-600 font-bold cursor-pointer text-base">✕</button>
-    <div class="space-y-1 pr-6">
-      <div class="text-xl font-bold">Rikuperimi i Fjalëkalimit</div>
-      <p class="text-xs subtext">Vendosni email-in e regjistruar për të marrë linkun e rivendosjes.</p>
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold">Rikuperimi i Fjalëkalimit</div>
+        <p class="text-xs subtext mt-1">Vendosni email-in e regjistruar për të marrë linkun e rivendosjes.</p>
+      </div>
+      <button onclick="AuthService.closeForgotPasswordModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
     </div>
     
     <form onsubmit="AuthService.handleForgotPasswordSubmit(event)" class="space-y-4 text-xs">
@@ -602,10 +606,12 @@
 <!-- NOTES & AUDIT LOGS MODAL -->
 <div id="notesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-3xl max-w-xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-    <button onclick="UIController.closeNotesModal()" class="absolute top-6 right-6 subtext hover:text-blue-600 font-bold cursor-pointer text-base">✕</button>
-    <div class="space-y-1 pr-6">
-      <div class="text-xl font-bold">Shënime & Audit Logs</div>
-      <p id="notesBusinessSubtitle" class="text-xs text-blue-600 dark:text-blue-400 font-mono"></p>
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold">Shënime & Audit Logs</div>
+        <p id="notesBusinessSubtitle" class="text-xs text-blue-600 dark:text-blue-400 font-mono mt-1"></p>
+      </div>
+      <button onclick="UIController.closeNotesModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
     </div>
     
     <div class="space-y-4 text-xs">
@@ -652,10 +658,12 @@
 <!-- OUTREACH PITCH GENERATOR MODAL -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-3xl max-w-lg w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
-    <button onclick="UIController.closePitchModal()" class="absolute top-6 right-6 subtext hover:text-blue-600 font-bold cursor-pointer text-base">✕</button>
-    <div class="space-y-1 pr-6">
-      <div class="text-xl font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
-      <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium"></p>
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
+        <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium mt-1"></p>
+      </div>
+      <button onclick="UIController.closePitchModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
     </div>
     
     <div class="flex items-center gap-2.5 border-b border-theme pb-4">
