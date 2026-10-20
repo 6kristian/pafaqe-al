@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace</title>
+<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace (Enterprise)</title>
 <meta name="description" content="Platformë profesionale e inteligjencës B2B për agjencitë web në Shqipëri.">
 <!-- Enterprise Font Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,144 +70,57 @@
   }
 
   /* Spacing Inspector / 8px grid fixes */
-  #q {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
+  #q { padding-top: 8px; padding-bottom: 8px; }
+  #city { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
+  #cat { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
+  #sort { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
+  button.px-3.py-1\.5 { padding-top: 8px; padding-bottom: 8px; }
+  label.flex.items-center { gap: 8px; }
+  #filterPresetsSection { gap: 8px; }
+  button.ml-auto.px-3\.5 { padding-left: 16px; padding-right: 16px; }
+  button.px-5.py-2\.5 { padding-top: 8px; padding-bottom: 8px; }
+  div.flex.flex-wrap { gap: 8px; }
+  button.chip-btn.px-3\.5 { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
+  select.input-bg.rounded-xl { padding-top: 8px; padding-bottom: 8px; padding-left: 8px; padding-right: 8px; }
+  #authActionBtn { padding-left: 16px; padding-right: 16px; }
+  nav.flex.items-center { gap: 8px; }
+  h1.text-base.sm\:text-lg { gap: 8px; }
+  #prevBtn { padding-left: 16px; padding-right: 16px; }
+  #nextBtn { padding-left: 16px; padding-right: 16px; }
+  #orgIdInput { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
+  button.px-4.py-2\.5 { padding-top: 8px; padding-bottom: 8px; }
+  #joinOrgInput { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
+  #profileName { padding-top: 8px; padding-bottom: 8px; }
+  #profileEmail { padding-top: 8px; padding-bottom: 8px; }
+  button.px-2\.5.py-1\.5 { padding-top: 8px; padding-bottom: 8px; padding-left: 8px; padding-right: 8px; }
+  div.flex.gap-1\.5 { gap: 8px; }
+  #selectedCountBadge { padding-top: 8px; padding-bottom: 8px; }
+  button.px-3\.5.py-2 { padding-left: 16px; padding-right: 16px; }
 
-  #city {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
+  /* Toast Notification Container */
+  #toastContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-
-  #cat {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
+  .toast-item {
+    background: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #334155;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+    font-size: 12px;
+    font-family: monospace;
+    animation: slideIn 0.2s ease-out forwards;
   }
-
-  #sort {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  button.px-3.py-1\.5 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  label.flex.items-center {
-    gap: 8px;
-  }
-
-  #filterPresetsSection {
-    gap: 8px;
-  }
-
-  button.ml-auto.px-3\.5 {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  button.px-5.py-2\.5 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  div.flex.flex-wrap {
-    gap: 8px;
-  }
-
-  button.chip-btn.px-3\.5 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  select.input-bg.rounded-xl {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-
-  #authActionBtn {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  nav.flex.items-center {
-    gap: 8px;
-  }
-
-  h1.text-base.sm\:text-lg {
-    gap: 8px;
-  }
-
-  #prevBtn {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  #nextBtn {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  #orgIdInput {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  button.px-4.py-2\.5 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  #joinOrgInput {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  #profileName {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  #profileEmail {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  button.px-2\.5.py-1\.5 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-
-  div.flex.gap-1\.5 {
-    gap: 8px;
-  }
-
-  #selectedCountBadge {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  button.px-3\.5.py-2 {
-    padding-left: 16px;
-    padding-right: 16px;
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -216,6 +129,9 @@
 </style>
 </head>
 <body class="min-h-screen antialiased selection:bg-blue-600 selection:text-white flex flex-col justify-between">
+
+<!-- Toast Notification Container -->
+<div id="toastContainer"></div>
 
 <div>
   <!-- Header / Nav -->
@@ -227,13 +143,14 @@
           <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
           <span class="tracking-tight font-extrabold logo-text">PaFaqe<span class="text-blue-600 dark:text-blue-400">.al</span></span>
         </h1>
-        <span class="hidden md:inline-block text-xs subtext border-l border-theme pl-3 font-medium">Inteligjencë Shitjesh B2B</span>
+        <span class="hidden md:inline-block text-xs subtext border-l border-theme pl-3 font-medium">Enterprise Intelligence CRM</span>
       </div>
       
       <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
         <nav class="flex items-center gap-2 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-xs">
           <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-xs">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
+          <button onclick="UIController.switchTab('analytics')" id="navAnalyticsBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Analitika</button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
           <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
           <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
@@ -255,21 +172,16 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-5 sm:px-8 py-8 space-y-8">
-    <!-- Localhost Notice -->
-    <div id="corsWarning" class="hidden p-4 rounded-xl bg-amber-950/80 border border-amber-600/50 text-amber-200 text-xs flex items-center justify-between shadow-md">
-      <span><b>Kujdes CORS:</b> U hap përmes <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">file://</code>. Përdor <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">python -m http.server 8000</code> në terminal dhe vizito <a href="http://localhost:8000" class="underline font-bold text-white">http://localhost:8000</a>.</span>
-    </div>
-
     <!-- TAB 1: LEADS WORKSPACE -->
     <div id="tabLeads" class="space-y-6">
       
       <!-- Welcome Hero Banner (Guest Only) -->
       <div id="guestHero" class="hidden rounded-2xl p-8 sm:p-10 card-bg border relative overflow-hidden shadow-sm space-y-4">
         <div class="max-w-3xl space-y-4 relative z-10">
-          <span class="px-3.5 py-1.5 rounded-lg card-bg text-blue-600 dark:text-blue-400 border border-theme text-xs font-semibold uppercase tracking-wider">Platformë Inteligjence B2B</span>
+          <span class="px-3.5 py-1.5 rounded-lg card-bg text-blue-600 dark:text-blue-400 border border-theme text-xs font-semibold uppercase tracking-wider">Enterprise B2B Intelligence</span>
           <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Menaxhoni Prospecting për Agjencitë Web në Shqipëri</h2>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Aksesoni të dhënat e kontaktit, pikëzimin e lead-eve dhe kanbanin e shitjeve në ekip.
+            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Qasuni në audite, sinkronizim multi-tenant dhe mjete shitjesh për ekipin.
           </p>
           <div class="pt-3 flex items-center gap-3">
             <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">
@@ -320,9 +232,17 @@
       <div class="space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div id="chips" class="flex flex-wrap gap-2.5 text-xs"></div>
-          <button onclick="CRMStore.exportCSV()" class="px-5 py-2.5 rounded-xl btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-2 cursor-pointer ml-auto">
-            <span id="exportBtnText">Eksporto CSV</span>
-          </button>
+          
+          <!-- Advanced Export Dropdown for Enterprise -->
+          <div class="flex items-center gap-2 ml-auto">
+            <select id="exportFormatSelect" class="input-bg rounded-xl px-3 py-2 text-xs border outline-none cursor-pointer">
+              <option value="csv">Format: CSV</option>
+              <option value="json">Format: JSON (Enterprise)</option>
+            </select>
+            <button onclick="CRMStore.exportDataAdvanced()" class="px-5 py-2.5 rounded-xl btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-2 cursor-pointer">
+              <span id="exportBtnText">Eksporto të Dhënat</span>
+            </button>
+          </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5 text-xs border-t border-theme pt-4">
@@ -343,11 +263,11 @@
         <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statOrgName" class="text-xl font-mono font-bold text-amber-500 truncate">Ekipi Solo</div><div class="subtext text-[11px] uppercase font-mono">Konteksti i Ekipit</div></div>
       </div>
 
-      <!-- Bulk Actions Toolbar -->
+      <!-- Bulk Actions Toolbar (Protected by RBAC) -->
       <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-blue-500/50 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 backdrop-blur-md">
         <div class="flex items-center gap-3 text-xs">
           <span class="font-bold px-3 py-1.5 rounded-xl btn-primary text-xs" id="selectedCountBadge">0 të zgjedhur</span>
-          <span class="subtext">Veprim masiv:</span>
+          <span class="subtext">Veprim masiv (Ekip):</span>
         </div>
         <div class="flex flex-wrap items-center gap-3 text-xs">
           <select id="bulkStatusSelect" class="input-bg rounded-xl px-3.5 py-2 border outline-none cursor-pointer">
@@ -357,7 +277,7 @@
             <option value="closed">Statusi: Mbyllur / Fituar</option>
           </select>
           <button onclick="CRMStore.applyBulkStatus()" class="px-4 py-2 rounded-xl btn-primary font-semibold transition cursor-pointer shadow-sm">Ndrysho Statusin</button>
-          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Eksporto të Zgjedhurat</button>
+          <button onclick="CRMStore.exportDataAdvanced()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Eksporto të Zgjedhurat</button>
           <button onclick="CRMStore.clearSelection()" class="px-3.5 py-2 rounded-xl card-bg border text-rose-400 hover:text-rose-300 transition cursor-pointer">Anulo</button>
         </div>
       </div>
@@ -377,7 +297,7 @@
           <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl card-bg border text-blue-600 dark:text-blue-400 font-bold">🔒</div>
           <h3 class="text-lg font-bold">Kërkohet Identifikimi në Ekip</h3>
           <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
-            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, sinkronizimin e shënimeve në kohë reale dhe veglat e avancuara të shitjeve.
+            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, auditet e ndryshimeve në kohë reale dhe panelin e avancuar Enterprise.
           </p>
           <div class="pt-2">
             <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
@@ -404,9 +324,9 @@
       <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="space-y-1.5">
           <h2 class="text-xl font-bold text-blue-600 dark:text-blue-400">Kanban Pipeline</h2>
-          <p class="text-xs subtext leading-relaxed">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave për të ndryshuar statusin në kohë reale për gjithë ekipin.</p>
+          <p class="text-xs subtext leading-relaxed">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave me sinkronizim të menjëhershëm për gjithë ekipin.</p>
         </div>
-        <span class="text-xs font-mono subtext card-bg px-4 py-2 rounded-xl border border-theme">Drag & Drop Aktiv</span>
+        <span class="text-xs font-mono subtext card-bg px-4 py-2 rounded-xl border border-theme">Multi-Tenant Real-Time</span>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
@@ -444,29 +364,71 @@
       </div>
     </div>
 
-    <!-- TAB 3: ABOUT US -->
-    <div id="tabAbout" class="hidden space-y-8 max-w-4xl mx-auto py-12 px-4 sm:px-0">
-      <div class="card-bg border border-theme rounded-3xl p-8 sm:p-12 shadow-sm space-y-5">
-        <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura e Platformës</span>
-        <h2 class="text-3xl font-bold tracking-tight">Rreth PaFaqe.al</h2>
-        <p class="subtext text-sm sm:text-base leading-relaxed">
-          PaFaqe.al është krijuar posaçërisht për agjencitë e zhvillimit web, zhvilluesit dhe konsulentët që duhet të identifikojnë dhe kontaktojnë shpejt bizneset shqiptare që nuk kanë një prani dixhitale. Me sinkronizim multi-tenant në Firestore dhe menaxhim të përbashkët të ekipit.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-        <div class="card-bg border border-theme rounded-3xl p-8 space-y-4 shadow-sm">
-          <h3 class="font-bold text-base text-blue-600 dark:text-blue-400">Përputhshmëria & Siguria</h3>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">Të dhënat indeksohen nga regjistrat publikë komercialë në përputhje të plotë me standardet e privatësisë dhe sigurisë cloud të nivelit të lartë.</p>
+    <!-- TAB 3: ENTERPRISE ANALYTICS & FORECASTING -->
+    <div id="tabAnalytics" class="hidden space-y-8 max-w-5xl mx-auto py-10">
+      <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-theme pb-6">
+          <div>
+            <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Raportim & Parashikim</span>
+            <h2 class="text-2xl font-bold tracking-tight">Enterprise Sales Analytics</h2>
+          </div>
+          <span class="px-4 py-2 rounded-xl card-bg border text-xs font-mono subtext">Përditësuar në kohë reale</span>
         </div>
-        <div class="card-bg border border-theme rounded-3xl p-8 space-y-4 shadow-sm">
-          <h3 class="font-bold text-base text-blue-600 dark:text-blue-400">Workspace i Ekipit</h3>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">Përdorimi i ID-së së Organizatës i lejon menaxherëve dhe shitësve (Sales Reps) të ndajnë të njëjtin kanban pa humbur asnjë informacion.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs font-mono">
+          <div class="p-5 rounded-2xl card-bg border space-y-2">
+            <span class="subtext uppercase text-[10px]">Shkalla e Konvertimit (Win Rate)</span>
+            <div id="analytWinRate" class="text-2xl font-bold text-emerald-400">0%</div>
+            <p class="subtext text-[11px]">Në raport me totalin e lead-eve të trajtuara.</p>
+          </div>
+          <div class="p-5 rounded-2xl card-bg border space-y-2">
+            <span class="subtext uppercase text-[10px]">P pipeline Aktiv</span>
+            <div id="analytActivePipeline" class="text-2xl font-bold text-blue-600 dark:text-blue-400">0 biznese</div>
+            <p class="subtext text-[11px]">Biznese në faza kontakti ose interesi.</p>
+          </div>
+          <div class="p-5 rounded-2xl card-bg border space-y-2">
+            <span class="subtext uppercase text-[10px]">Potenciali i Riskit (<3.5★)</span>
+            <div id="analytRiskCount" class="text-2xl font-bold text-rose-400">0 biznese</div>
+            <p class="subtext text-[11px]">Mundësi shërbimi për menaxhim reputacioni.</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-theme">
+          <h3 class="font-bold text-sm">Shpërndarja e Statusit në Ekip</h3>
+          <div class="space-y-3 text-xs font-mono">
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Të Reja (New)</span><span id="barNewPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillNew" class="bg-blue-600 h-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Në Kontakt (Contacted)</span><span id="barContPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillCont" class="bg-indigo-500 h-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Të Interesuar (Interested)</span><span id="barIntPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillInt" class="bg-amber-500 h-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Mbyllur / Fituar (Closed)</span><span id="barClosedPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillClosed" class="bg-emerald-500 h-full transition-all" style="width:0%"></div></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: CONTACT -->
+    <!-- TAB 4: ABOUT US -->
+    <div id="tabAbout" class="hidden space-y-8 max-w-4xl mx-auto py-12 px-4 sm:px-0">
+      <div class="card-bg border border-theme rounded-3xl p-8 sm:p-12 shadow-sm space-y-5">
+        <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura Enterprise</span>
+        <h2 class="text-3xl font-bold tracking-tight">Rreth PaFaqe.al</h2>
+        <p class="subtext text-sm sm:text-base leading-relaxed">
+          PaFaqe.al ofron zgjidhje të integruara të inteligjencës B2B për agjencitë dhe korporatat që kërkojnë shkallëzim të shpejtë të shitjeve, sinkronizim të auditimeve dhe mbrojtje të të dhënave në nivel cloud.
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 5: CONTACT -->
     <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto py-10">
       <div class="card-bg border rounded-3xl p-8 sm:p-10 shadow-sm space-y-6">
         <div class="space-y-1.5">
@@ -495,22 +457,22 @@
       </div>
     </div>
 
-    <!-- TAB 5: TEAM WORKSPACE & RBAC -->
+    <!-- TAB 6: TEAM WORKSPACE & GRANULAR RBAC -->
     <div id="tabProfile" class="hidden space-y-8 max-w-4xl mx-auto py-10">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-5">
           <div class="flex items-center justify-between">
-            <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Organizata & Ekipi</h2>
+            <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Organizata & RBAC</h2>
             <span id="userRoleBadge" class="px-3 py-1 rounded-xl btn-primary text-[10px] font-mono font-bold tracking-wider">Roli: Owner</span>
           </div>
           <div class="space-y-4 text-xs">
             <div class="space-y-1.5">
-              <label class="block font-mono uppercase subtext text-[11px]">ID e Organizatës (Për Ekipin)</label>
+              <label class="block font-mono uppercase subtext text-[11px]">ID e Organizatës (Enterprise Key)</label>
               <div class="flex items-center gap-2">
                 <input type="text" id="orgIdInput" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border font-mono outline-none" readonly>
                 <button onclick="CRMStore.copyOrgId()" class="px-4 py-2.5 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-semibold shrink-0 cursor-pointer">Kopjo</button>
               </div>
-              <p class="text-[11px] subtext mt-1.5">Shpërndaj këtë ID me anëtarët e ekipit për të ndarë të njëjtin Kanban.</p>
+              <p class="text-[11px] subtext mt-1.5">Lejon anëtarët e ekipit të ndajnë të njëjtin pipeline dhe shënime në kohë reale.</p>
               <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-2" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
             </div>
 
@@ -540,32 +502,13 @@
         </div>
 
         <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-5">
-          <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Analitika e Kanban</h2>
-          <div class="space-y-3 text-xs font-mono">
-            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
-              <span class="subtext">Totali i Bizneseve:</span>
-              <span id="analyticsTotalLeads" class="font-bold text-blue-600 dark:text-blue-400 text-sm">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
-              <span class="subtext">Statusi New:</span>
-              <span id="analyticsNewCount" class="font-bold">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
-              <span class="subtext">Statusi Contacted:</span>
-              <span id="analyticsContactedCount" class="font-bold">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
-              <span class="subtext">Statusi Interested:</span>
-              <span id="analyticsInterestedCount" class="font-bold text-amber-500">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
-              <span class="subtext">Statusi Closed / Won:</span>
-              <span id="analyticsClosedCount" class="font-bold text-emerald-400">0</span>
-            </div>
-            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
-              <span class="subtext">Rrezik Reputacioni (&lt;3.5★):</span>
-              <span id="analyticsOpportunityCount" class="font-bold text-rose-400">0</span>
-            </div>
+          <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Siguria & Lejet (RBAC)</h2>
+          <p class="subtext text-xs leading-relaxed">
+            Sistemi dallon automatikisht ndërmjet <b class="text-blue-600 dark:text-blue-400">Owner</b> (administrim i plotë, fshirje dhe eksportim masiv) dhe <b class="text-amber-500">Sales Rep</b> (agjent shitjesh me akses operativ në status dhe shënime).
+          </p>
+          <div class="p-4 rounded-2xl card-bg border border-theme space-y-2 text-xs font-mono">
+            <div class="flex justify-between"><span class="subtext">Statusi i Llogarisë:</span> <span class="text-emerald-400">Aktiv / Secure</span></div>
+            <div class="flex justify-between"><span class="subtext">Protokolli i Sinkronizimit:</span> <span>Firestore SSL</span></div>
           </div>
         </div>
       </div>
@@ -579,7 +522,7 @@
     <button onclick="AuthService.closeAuthModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
     <div class="space-y-1">
       <div id="authTitle" class="text-xl font-bold">Identifikimi në Ekip</div>
-      <p id="authSubtitle" class="text-xs subtext">Hyni për të sinkronizuar statuset dhe shënimet në kohë reale.</p>
+      <p id="authSubtitle" class="text-xs subtext">Hyni për të sinkronizuar statuset dhe auditet në kohë reale.</p>
     </div>
     
     <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-4 text-xs">
@@ -594,7 +537,7 @@
           <label class="block font-mono uppercase subtext text-[10px] tracking-wider">Zgjidh Rolin Tuaj në Ekip:</label>
           <div class="flex items-center gap-5">
             <label class="flex items-center gap-2 cursor-pointer font-medium">
-              <input type="radio" name="userRole" value="Owner" checked class="accent-blue-600 cursor-pointer"> Owner (Administrator)
+              <input type="radio" name="userRole" value="Owner" checked class="accent-blue-600 cursor-pointer"> Owner (Admin)
             </label>
             <label class="flex items-center gap-2 cursor-pointer font-medium">
               <input type="radio" name="userRole" value="Sales Rep" class="accent-blue-600 cursor-pointer"> Sales Rep (Agjent)
@@ -659,12 +602,12 @@
   </div>
 </div>
 
-<!-- NOTES & RATING MODAL -->
+<!-- NOTES & AUDIT LOGS MODAL -->
 <div id="notesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
   <div class="card-bg border rounded-3xl max-w-xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
     <button onclick="UIController.closeNotesModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
     <div class="space-y-1">
-      <div class="text-xl font-bold">Shënime & Historiku i Ekipit</div>
+      <div class="text-xl font-bold">Shënime & Audit Logs</div>
       <p id="notesBusinessSubtitle" class="text-xs text-blue-600 dark:text-blue-400 font-mono"></p>
     </div>
     
@@ -695,7 +638,7 @@
       </div>
 
       <div class="border-t border-theme pt-4 space-y-2">
-        <label class="block font-mono uppercase subtext text-[11px]">Historiku i Veprimeve (Audit Logs)</label>
+        <label class="block font-mono uppercase subtext text-[11px]">Historiku i Veprimeve / Audit Logs</label>
         <div id="activityTimelineContainer" class="space-y-2.5 max-h-44 overflow-y-auto text-[11px] card-bg border rounded-2xl p-4 font-mono">
           <span class="subtext">Nuk ka histori të regjistruar.</span>
         </div>
@@ -765,7 +708,7 @@
 <!-- Footer -->
 <footer class="max-w-7xl w-full mx-auto px-5 sm:px-8 py-8 text-xs subtext border-t border-theme mt-16 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
-    <p class="font-semibold logo-text">PaFaqe.al — B2B Lead Intelligence CRM</p>
+    <p class="font-semibold logo-text">PaFaqe.al — Enterprise B2B Lead Intelligence CRM</p>
     <p class="text-[11px] subtext mt-1">© 2026 Zhvilluar nga Kristian Frroku</p>
   </div>
   <div class="flex items-center gap-5 font-mono text-xs">
@@ -797,7 +740,25 @@ const db = firebase.firestore();
 const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business Enterprise", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
 
 // ==========================================
-// 🛡️ AUTH SERVICE & TEAM WORKSPACE
+// 🔔 TOAST NOTIFICATION SERVICE
+// ==========================================
+const ToastService = {
+  show(msg) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const item = document.createElement('div');
+    item.className = 'toast-item';
+    item.textContent = msg;
+    container.appendChild(item);
+    setTimeout(() => {
+      item.style.opacity = '0';
+      setTimeout(() => item.remove(), 200);
+    }, 3500);
+  }
+};
+
+// ==========================================
+// 🛡️ AUTH SERVICE & GRANULAR RBAC
 // ==========================================
 const AuthService = {
   currentUser: null,
@@ -814,6 +775,7 @@ const AuthService = {
       const filterPresetsSec = document.getElementById('filterPresetsSection');
       const navProfileBtn = document.getElementById('navProfileBtn');
       const navKanbanBtn = document.getElementById('navKanbanBtn');
+      const navAnalyticsBtn = document.getElementById('navAnalyticsBtn');
       const dataSourceBadge = document.getElementById('dataSource');
       
       if (user) {
@@ -897,6 +859,7 @@ const AuthService = {
         if (filterPresetsSec) filterPresetsSec.classList.remove('hidden');
         if (navProfileBtn) navProfileBtn.classList.remove('hidden');
         if (navKanbanBtn) navKanbanBtn.classList.remove('hidden');
+        if (navAnalyticsBtn) navAnalyticsBtn.classList.remove('hidden');
         
         const pName = document.getElementById('profileName');
         const pEmail = document.getElementById('profileEmail');
@@ -920,10 +883,10 @@ const AuthService = {
         if (filterPresetsSec) filterPresetsSec.classList.add('hidden');
         if (navProfileBtn) navProfileBtn.classList.add('hidden');
         if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
+        if (navAnalyticsBtn) navAnalyticsBtn.classList.add('hidden');
         
-        const profileTab = document.getElementById('tabProfile');
-        const kanbanTab = document.getElementById('tabKanban');
-        if ((profileTab && !profileTab.classList.contains('hidden')) || (kanbanTab && !kanbanTab.classList.contains('hidden'))) {
+        const activeTab = document.querySelector('main > div:not(.hidden)');
+        if (activeTab && activeTab.id !== 'tabLeads' && activeTab.id !== 'tabAbout' && activeTab.id !== 'tabContact') {
           UIController.switchTab('leads');
         }
         CRMStore.render();
@@ -979,6 +942,7 @@ const AuthService = {
       const succ = document.getElementById('profileSuccess');
       succ.classList.remove('hidden');
       setTimeout(() => succ.classList.add('hidden'), 4000);
+      ToastService.show('Profili u përditësua me sukses.');
     } catch (err) {
       alert(err.message);
     }
@@ -1015,7 +979,7 @@ const AuthService = {
 };
 
 // ==========================================
-// 📊 CRM STORE & SHARED ORGANIZATION SYNC
+// 📊 CRM STORE & ENTERPRISE SYNC
 // ==========================================
 const CRMStore = {
   DATA: DEMO,
@@ -1028,8 +992,6 @@ const CRMStore = {
   selectedLeads: new Set(),
   currentPitchChannel: 'whatsapp',
   currentPitchLeadKey: null,
-  kanbanPages: { new: 1, contacted: 1, interested: 1, closed: 1 },
-  kanbanPageSize: 25,
   showAll: false,
   currentPage: 1,
   pageSize: 50,
@@ -1046,7 +1008,6 @@ const CRMStore = {
       const countLabel = document.getElementById('teamMemberCountLabel');
       if (countLabel) countLabel.textContent = `Anëtarë në ekip: ${count}`;
     } catch (e) {
-      console.error("Error fetching team member count:", e);
       const countLabel = document.getElementById('teamMemberCountLabel');
       if (countLabel) countLabel.textContent = `Anëtarë në ekip: 1`;
     }
@@ -1094,7 +1055,7 @@ const CRMStore = {
     const input = document.getElementById('orgIdInput');
     if (input) {
       await navigator.clipboard.writeText(input.value);
-      alert('ID e Organizatës u kopjua.');
+      ToastService.show('ID e Organizatës u kopjua në clipboard.');
     }
   },
 
@@ -1108,7 +1069,7 @@ const CRMStore = {
       }, { merge: true });
       AuthService.currentOrgId = targetOrg;
       AuthService.userRole = 'Sales Rep';
-      alert(`U bashkuat me sukses tek Organizata ${targetOrg}. Po rifreskohet...`);
+      ToastService.show(`U bashkuat me sukses tek Organizata ${targetOrg}.`);
       await this.fetchTeamMemberCount(targetOrg);
       await this.loadCloudData();
     } catch (e) {
@@ -1120,7 +1081,7 @@ const CRMStore = {
     const timestamp = new Date().toLocaleString();
     const userObj = AuthService.currentUser;
     const fullName = userObj ? (userObj.displayName || userObj.email || 'Përdorues') : 'Përdorues';
-    const formattedEvent = `Last modified by ${fullName}: ${eventText}`;
+    const formattedEvent = `Ndryshuar nga ${fullName}: ${eventText}`;
     const newEvent = { date: timestamp, text: formattedEvent };
     
     if (!this.cloudHistory[leadKey]) this.cloudHistory[leadKey] = [];
@@ -1161,6 +1122,7 @@ const CRMStore = {
     }
 
     await this.recordLeadHistoryEvent(id, `Statusi ndryshua nga "${oldStatus}" në "${status}"`);
+    ToastService.show(`Statusi u përditësua në: ${status}`);
     this.render();
     if (!document.getElementById('tabKanban').classList.contains('hidden')) {
       this.renderKanban();
@@ -1205,8 +1167,9 @@ const CRMStore = {
       }
     }
 
-    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Përditësoi shënimet / vlerësimin CRM`);
+    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Përditësoi shënimet dhe auditin CRM`);
     UIController.closeNotesModal();
+    ToastService.show('Shënimet u ruajtën me sukses.');
     this.render();
   },
 
@@ -1249,14 +1212,6 @@ const CRMStore = {
     return list;
   },
 
-  getWhatsAppLink(phone) {
-    if (!phone) return null;
-    const cleanNum = String(phone).replace(/\D/g, '');
-    if (!cleanNum) return null;
-    const formatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
-    return `https://wa.me/${formatted}`;
-  },
-
   toggleSelectAll(cb) {
     const isChecked = cb.checked;
     document.querySelectorAll('.lead-select-checkbox').forEach(c => {
@@ -1296,7 +1251,7 @@ const CRMStore = {
     for (const leadKey of this.selectedLeads) {
       await this.setLeadStatus(leadKey, targetStatus);
     }
-    alert(`Statusi u përditësua në masë për ${this.selectedLeads.size} biznese.`);
+    ToastService.show(`Statusi u përditësua në masë për ${this.selectedLeads.size} biznese.`);
     this.clearSelection();
     this.render();
   },
@@ -1318,6 +1273,7 @@ const CRMStore = {
     });
     localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
     this.renderFilterPresets();
+    ToastService.show('Filtri u ruajt me sukses.');
   },
 
   deletePreset(idx, e) {
@@ -1352,32 +1308,44 @@ const CRMStore = {
 
   updateExportBtnLabel() {
     const btnText = document.getElementById('exportBtnText');
-    if (btnText) btnText.textContent = this.selectedLeads.size > 0 ? `Eksporto Të Zgjedhurat (${this.selectedLeads.size})` : `Eksporto CSV`;
+    if (btnText) btnText.textContent = this.selectedLeads.size > 0 ? `Eksporto Të Zgjedhurat (${this.selectedLeads.size})` : `Eksporto të Dhënat`;
   },
 
-  exportCSV() {
+  exportDataAdvanced() {
     if (!AuthService.currentUser) { AuthService.openAuthModal(); return; }
+    const format = document.getElementById('exportFormatSelect')?.value || 'csv';
     let list = this.filtered();
     if (this.selectedLeads.size > 0) list = list.filter(b => this.selectedLeads.has(b.id || b.name));
 
-    const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
-    const body = list.map(b => [
-      `"${(b.name || '').replace(/"/g, '""')}"`,
-      `"${(b.category || '').replace(/"/g, '""')}"`,
-      `"${(b.city || '').replace(/"/g, '""')}"`,
-      `"${(b.address || '').replace(/"/g, '""')}"`,
-      `="${b.phone || ''}"`,
-      this.getLeadRating(b) || '',
-      b.reviews || '',
-      `"${(b.website || '').replace(/"/g, '""')}"`,
-      this.leadScore(b)
-    ].join(',')).join('\n');
-    
-    const blob = new Blob(['\ufeff' + head + body], {type: 'text/csv;charset=utf-8;'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'albania-leads-export.csv'; 
-    a.click();
+    if (format === 'json') {
+      const jsonStr = JSON.stringify(list, null, 2);
+      const blob = new Blob([jsonStr], {type: 'application/json;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'enterprise-leads-export.json';
+      a.click();
+      ToastService.show('Eksportimi JSON u realizua me sukses.');
+    } else {
+      const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
+      const body = list.map(b => [
+        `"${(b.name || '').replace(/"/g, '""')}"`,
+        `"${(b.category || '').replace(/"/g, '""')}"`,
+        `"${(b.city || '').replace(/"/g, '""')}"`,
+        `"${(b.address || '').replace(/"/g, '""')}"`,
+        `="${b.phone || ''}"`,
+        this.getLeadRating(b) || '',
+        b.reviews || '',
+        `"${(b.website || '').replace(/"/g, '""')}"`,
+        this.leadScore(b)
+      ].join(',')).join('\n');
+      
+      const blob = new Blob(['\ufeff' + head + body], {type: 'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'enterprise-leads-export.csv'; 
+      a.click();
+      ToastService.show('Eksportimi CSV u realizua me sukses.');
+    }
   },
 
   renderKanban() {
@@ -1469,11 +1437,34 @@ const CRMStore = {
         if (r > 0 && r < 3.5) cOpp++;
       });
     }
-    document.getElementById('analyticsNewCount').textContent = cNew;
-    document.getElementById('analyticsContactedCount').textContent = cCont;
-    document.getElementById('analyticsInterestedCount').textContent = cInt;
-    document.getElementById('analyticsClosedCount').textContent = cClosed;
-    document.getElementById('analyticsOpportunityCount').textContent = cOpp;
+
+    const totalProcessed = cNew + cCont + cInt + cClosed;
+    const winRate = totalProcessed > 0 ? Math.round((cClosed / totalProcessed) * 100) : 0;
+    const activePipelineCount = cCont + cInt;
+
+    const winRateEl = document.getElementById('analytWinRate');
+    if (winRateEl) winRateEl.textContent = `${winRate}%`;
+    const activePipeEl = document.getElementById('analytActivePipeline');
+    if (activePipeEl) activePipeEl.textContent = `${activePipelineCount.toLocaleString()} biznese`;
+    const riskEl = document.getElementById('analytRiskCount');
+    if (riskEl) riskEl.textContent = `${cOpp.toLocaleString()} biznese`;
+
+    // Progress bar analytics
+    const pNew = totalProcessed ? Math.round((cNew / totalProcessed) * 100) : 0;
+    const pCont = totalProcessed ? Math.round((cCont / totalProcessed) * 100) : 0;
+    const pInt = totalProcessed ? Math.round((cInt / totalProcessed) * 100) : 0;
+    const pClosed = totalProcessed ? Math.round((cClosed / totalProcessed) * 100) : 0;
+
+    if (document.getElementById('barNewPct')) {
+      document.getElementById('barNewPct').textContent = `${pNew}%`;
+      document.getElementById('fillNew').style.width = `${pNew}%`;
+      document.getElementById('barContPct').textContent = `${pCont}%`;
+      document.getElementById('fillCont').style.width = `${pCont}%`;
+      document.getElementById('barIntPct').textContent = `${pInt}%`;
+      document.getElementById('fillInt').style.width = `${pInt}%`;
+      document.getElementById('barClosedPct').textContent = `${pClosed}%`;
+      document.getElementById('fillClosed').style.width = `${pClosed}%`;
+    }
   },
 
   updateLivePitchPreview() {
@@ -1507,7 +1498,7 @@ const CRMStore = {
 
   copyPitchToClipboard(type) {
     const text = document.getElementById(type === 'whatsapp' ? 'pitchTemplateWaInput' : 'emailBodyTemplateInput').value;
-    navigator.clipboard.writeText(text).then(() => alert('Teksti u kopjua.'));
+    navigator.clipboard.writeText(text).then(() => ToastService.show('Teksti u kopjua.'));
   },
 
   changePage(dir) {
@@ -1593,7 +1584,6 @@ const CRMStore = {
     document.getElementById('guestGatingOverlay').classList.toggle('hidden', !!AuthService.currentUser);
     document.getElementById('paginationBar').classList.toggle('hidden', !AuthService.currentUser);
 
-    // Update Pagination Info
     const pageInfo = document.getElementById('pageInfo');
     const pageIndicator = document.getElementById('pageIndicator');
     const prevBtn = document.getElementById('prevBtn');
@@ -1639,13 +1629,13 @@ const UIController = {
   },
 
   switchTab(tab) {
-    ['tabLeads', 'tabKanban', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
+    ['tabLeads', 'tabKanban', 'tabAnalytics', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
     document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.remove('hidden');
     
-    // Update active nav button styling
     const navButtons = {
       leads: 'navLeidBtn',
       kanban: 'navKanbanBtn',
+      analytics: 'navAnalyticsBtn',
       about: 'navAboutBtn',
       contact: 'navContactBtn',
       profile: 'navProfileBtn'
@@ -1664,12 +1654,15 @@ const UIController = {
 
     if (tab === 'kanban') {
       CRMStore.renderKanban();
+    } else if (tab === 'analytics') {
+      CRMStore.updateAnalytics(CRMStore.DATA && CRMStore.DATA.businesses ? CRMStore.DATA.businesses.length : 0);
     }
   },
 
   handleContactSubmit(e) {
     e.preventDefault();
     document.getElementById('contactSuccess').classList.remove('hidden');
+    ToastService.show('Mesazhi u dërgua me sukses.');
   },
 
   handleFilterInput() {
