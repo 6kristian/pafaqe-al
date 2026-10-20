@@ -41,18 +41,18 @@
 
   /* Light Mode Styles */
   html.light body { background-color: #f8fafc; color: #0f172a; }
-  html.light .card-bg { background-color: #ffffff; border-color: #e2e8f0; color: #0f172a; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03); }
-  html.light .header-bg { background-color: rgba(255, 255, 255, 0.96); border-color: #e2e8f0; }
-  html.light .input-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; }
-  html.light .table-head-bg { background-color: #f1f5f9; border-color: #e2e8f0; color: #475569; }
-  html.light .row-hover:hover { background-color: #f8fafc; }
-  html.light .subtext { color: #64748b; }
-  html.light .border-theme { border-color: #e2e8f0; }
-  html.light .chip-btn { background-color: #ffffff; border-color: #cbd5e1; color: #334155; }
-  html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; }
+  html.light .card-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04); }
+  html.light .header-bg { background-color: rgba(255, 255, 255, 0.96); border-color: #cbd5e1; }
+  html.light .input-bg { background-color: #ffffff; border-color: #94a3b8; color: #0f172a; }
+  html.light .table-head-bg { background-color: #e2e8f0; border-color: #cbd5e1; color: #334155; }
+  html.light .row-hover:hover { background-color: #f1f5f9; }
+  html.light .subtext { color: #475569; }
+  html.light .border-theme { border-color: #cbd5e1; }
+  html.light .chip-btn { background-color: #ffffff; border-color: #94a3b8; color: #1e293b; }
+  html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; border-color: #64748b; }
   html.light .logo-text { color: #0f172a; }
-  html.light .btn-primary { background-color: #3b82f6; color: #0f172a; font-weight: 700; }
-  html.light .btn-primary:hover { background-color: #2563eb; color: #ffffff; }
+  html.light .btn-primary { background-color: #1e40af; color: #ffffff; font-weight: 600; }
+  html.light .btn-primary:hover { background-color: #1e3a8a; }
 
   .chip { cursor: pointer; transition: all 0.15s ease; }
   .chip.active { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; font-weight: 600; }
@@ -78,34 +78,34 @@
 
 <div>
   <!-- Header / Nav -->
-  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <!-- Logo -->
-        <h1 class="text-lg font-bold tracking-tight cursor-pointer flex items-center gap-2 group" onclick="UIController.switchTab('leads')">
+        <h1 class="text-base sm:text-lg font-bold tracking-tight cursor-pointer flex items-center gap-2.5 group" onclick="UIController.switchTab('leads')">
           <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
           <span class="tracking-tight font-extrabold logo-text">PaFaqe<span class="text-blue-600 dark:text-blue-400">.al</span></span>
         </h1>
         <span class="hidden md:inline-block text-xs subtext border-l border-theme pl-3 font-medium">Inteligjencë Shitjesh B2B</span>
       </div>
       
-      <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-        <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
-          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3.5 py-1.5 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm">Leads</button>
-          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
-          <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
-          <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
-          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <nav class="flex items-center gap-1.5 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-xs">
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-xs">Leads</button>
+          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
+          <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
+          <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
+          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
         </nav>
 
-        <button onclick="UIController.toggleTheme()" class="p-2 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition text-xs shadow-sm cursor-pointer" title="Ndrysho Pamjen">
+        <button onclick="UIController.toggleTheme()" class="p-2.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition text-xs shadow-xs cursor-pointer" title="Ndrysho Pamjen">
           <span id="themeIcon">🌙</span>
         </button>
 
-        <span id="dataSource" class="hidden sm:inline-block px-2.5 py-1.5 rounded-md card-bg border text-[11px] font-mono subtext">…</span>
+        <span id="dataSource" class="hidden sm:inline-block px-3 py-2 rounded-lg card-bg border text-[11px] font-mono subtext">…</span>
 
         <div id="authContainer" class="flex items-center gap-2">
-          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-3.5 py-1.5 rounded-lg card-bg border text-xs font-semibold text-blue-600 dark:text-blue-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-4 py-2 rounded-lg card-bg border text-xs font-semibold text-blue-600 dark:text-blue-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-xs">
             <span>Identifikohu</span>
           </button>
         </div>
@@ -113,25 +113,25 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+  <main class="max-w-7xl mx-auto px-5 sm:px-8 py-8 space-y-8">
     <!-- Localhost Notice -->
     <div id="corsWarning" class="hidden p-4 rounded-xl bg-amber-950/80 border border-amber-600/50 text-amber-200 text-xs flex items-center justify-between shadow-md">
       <span><b>Kujdes CORS:</b> U hap përmes <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">file://</code>. Përdor <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">python -m http.server 8000</code> në terminal dhe vizito <a href="http://localhost:8000" class="underline font-bold text-white">http://localhost:8000</a>.</span>
     </div>
 
     <!-- TAB 1: LEADS WORKSPACE -->
-    <div id="tabLeads" class="space-y-5">
+    <div id="tabLeads" class="space-y-6">
       
       <!-- Welcome Hero Banner (Guest Only) -->
-      <div id="guestHero" class="hidden rounded-2xl p-6 sm:p-8 card-bg border relative overflow-hidden shadow-sm">
-        <div class="max-w-3xl space-y-3 relative z-10">
-          <span class="px-3 py-1 rounded card-bg text-blue-600 dark:text-blue-400 border border-theme text-xs font-semibold uppercase tracking-wider">Platformë Inteligjence B2B</span>
+      <div id="guestHero" class="hidden rounded-2xl p-8 sm:p-10 card-bg border relative overflow-hidden shadow-sm space-y-4">
+        <div class="max-w-3xl space-y-4 relative z-10">
+          <span class="px-3.5 py-1.5 rounded-lg card-bg text-blue-600 dark:text-blue-400 border border-theme text-xs font-semibold uppercase tracking-wider">Platformë Inteligjence B2B</span>
           <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Menaxhoni Prospecting për Agjencitë Web në Shqipëri</h2>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Aksesoni të dhënat e kontaktit, pikëzimin e lead-eve dhe kanabnin e shitjeve në ekip.
+            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Aksesoni të dhënat e kontaktit, pikëzimin e lead-eve dhe kanbanin e shitjeve në ekip.
           </p>
-          <div class="pt-2 flex items-center gap-3">
-            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">
+          <div class="pt-3 flex items-center gap-3">
+            <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">
               <span>Fillo Falas Tani</span>
             </button>
           </div>
@@ -139,90 +139,90 @@
       </div>
 
       <!-- Filters Toolbar -->
-      <section id="filterSection" class="hidden card-bg rounded-xl p-4 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 shadow-sm">
+      <section id="filterSection" class="hidden card-bg rounded-2xl p-5 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 shadow-sm">
         <div class="md:col-span-3 relative">
-          <input id="q" oninput="UIController.handleFilterInput()" placeholder="Kërko sipas emrit, adresës..." class="input-bg w-full rounded-lg px-3.5 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition">
-          <button onclick="UIController.clearSearchInput()" class="absolute right-2.5 top-2.5 text-xs subtext hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer" title="Pastro kërkimin">×</button>
+          <input id="q" oninput="UIController.handleFilterInput()" placeholder="Kërko sipas emrit, adresës..." class="input-bg w-full rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition">
+          <button onclick="UIController.clearSearchInput()" class="absolute right-3 top-3 text-xs subtext hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer" title="Pastro kërkimin">×</button>
         </div>
         <div class="md:col-span-2">
-          <select id="city" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-lg px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer"></select>
+          <select id="city" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer"></select>
         </div>
         <div class="md:col-span-2">
-          <select id="cat" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-lg px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer"></select>
+          <select id="cat" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer"></select>
         </div>
         <div class="md:col-span-2">
-          <select id="sort" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-lg px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer">
+          <select id="sort" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer">
             <option value="score">Rendit: Pikët e Lead-it</option>
             <option value="rating">Rendit: Vlerësimi (Lart→Ulët)</option>
             <option value="reviews">Rendit: Numri i Recensioneve</option>
             <option value="name">Rendit: Emri A→Z</option>
           </select>
         </div>
-        <div class="md:col-span-3 flex items-center justify-between gap-3 text-xs">
-          <label class="flex items-center gap-2 cursor-pointer select-none subtext">
+        <div class="md:col-span-3 flex items-center justify-between gap-3 text-xs px-1">
+          <label class="flex items-center gap-2.5 cursor-pointer select-none subtext">
             <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Vetëm me Telefon
           </label>
-          <button onclick="UIController.resetAllFilters()" class="px-2.5 py-1 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer text-[11px]">Pastro Filtrat ↺</button>
+          <button onclick="UIController.resetAllFilters()" class="px-3 py-1.5 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer text-[11px]">Pastro Filtrat ↺</button>
         </div>
       </section>
 
       <!-- Saved Filter Presets -->
-      <div id="filterPresetsSection" class="hidden flex flex-wrap items-center gap-2 text-xs card-bg border rounded-xl p-3 shadow-sm">
+      <div id="filterPresetsSection" class="hidden flex flex-wrap items-center gap-2.5 text-xs card-bg border rounded-2xl p-4 shadow-sm">
         <span class="subtext font-mono uppercase text-[10px] tracking-wider mr-1">Filtrat e Ruajtur:</span>
         <div id="presetChipsContainer" class="flex flex-wrap items-center gap-2"></div>
-        <button onclick="CRMStore.saveCurrentPresetPrompt()" class="ml-auto px-3 py-1.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-medium text-xs transition cursor-pointer">
+        <button onclick="CRMStore.saveCurrentPresetPrompt()" class="ml-auto px-3.5 py-2 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-medium text-xs transition cursor-pointer">
           <span>+ Ruaj Filtrin Aktual</span>
         </button>
       </div>
 
       <!-- Quick Action Chips & Niches -->
-      <div class="space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div id="chips" class="flex flex-wrap gap-2 text-xs"></div>
-          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-lg btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer ml-auto">
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div id="chips" class="flex flex-wrap gap-2.5 text-xs"></div>
+          <button onclick="CRMStore.exportCSV()" class="px-5 py-2.5 rounded-xl btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-2 cursor-pointer ml-auto">
             <span id="exportBtnText">Eksporto CSV</span>
           </button>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 text-xs border-t border-theme pt-3">
+        <div class="flex flex-wrap items-center gap-2.5 text-xs border-t border-theme pt-4">
           <span class="subtext text-[11px] font-mono uppercase tracking-wider mr-1">Industritë Kryesore:</span>
-          <button onclick="UIController.quickNicheFilter('Hotel')" class="chip-btn px-3 py-1 rounded-lg border text-xs transition font-medium cursor-pointer">Hotels & Turizëm</button>
-          <button onclick="UIController.quickNicheFilter('Dental')" class="chip-btn px-3 py-1 rounded-lg border text-xs transition font-medium cursor-pointer">Dentistë & Klinika</button>
-          <button onclick="UIController.quickNicheFilter('Auto')" class="chip-btn px-3 py-1 rounded-lg border text-xs transition font-medium cursor-pointer">Auto & Qira</button>
-          <button onclick="UIController.quickNicheFilter('Restaurant')" class="chip-btn px-3 py-1 rounded-lg border text-xs transition font-medium cursor-pointer">Restorante & Kafe</button>
-          <button onclick="UIController.quickRatingFilter('low')" class="chip-btn px-3 py-1 rounded-lg border text-xs transition font-medium text-rose-400 cursor-pointer">Rrezik Reputacioni (&lt;3.5★)</button>
+          <button onclick="UIController.quickNicheFilter('Hotel')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Hotels & Turizëm</button>
+          <button onclick="UIController.quickNicheFilter('Dental')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Dentistë & Klinika</button>
+          <button onclick="UIController.quickNicheFilter('Auto')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Auto & Qira</button>
+          <button onclick="UIController.quickNicheFilter('Restaurant')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Restorante & Kafe</button>
+          <button onclick="UIController.quickRatingFilter('low')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium text-rose-400 cursor-pointer">Rrezik Reputacioni (&lt;3.5★)</button>
         </div>
       </div>
 
       <!-- Metrics Bar -->
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center text-xs">
-        <div class="card-bg rounded-xl p-4 border shadow-sm"><div id="statLeads" class="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400">0</div><div class="subtext text-[11px] uppercase font-mono mt-1">Biznese Pa Faqe</div></div>
-        <div class="card-bg rounded-xl p-4 border shadow-sm"><div id="statCities" class="text-2xl font-mono font-bold">0</div><div class="subtext text-[11px] uppercase font-mono mt-1">Qytete Mbuluar</div></div>
-        <div class="card-bg rounded-xl p-4 border shadow-sm"><div id="statAvg" class="text-2xl font-mono font-bold">0</div><div class="subtext text-[11px] uppercase font-mono mt-1">Mesatarja e Pikëve</div></div>
-        <div class="card-bg rounded-xl p-4 border shadow-sm"><div id="statOrgName" class="text-xl font-mono font-bold text-amber-500 truncate">Ekipi Solo</div><div class="subtext text-[11px] uppercase font-mono mt-1">Konteksti i Ekipit</div></div>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 text-center text-xs">
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statLeads" class="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400">0</div><div class="subtext text-[11px] uppercase font-mono">Biznese Pa Faqe</div></div>
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statCities" class="text-2xl font-mono font-bold">0</div><div class="subtext text-[11px] uppercase font-mono">Qytete Mbuluar</div></div>
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statAvg" class="text-2xl font-mono font-bold">0</div><div class="subtext text-[11px] uppercase font-mono">Mesatarja e Pikëve</div></div>
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statOrgName" class="text-xl font-mono font-bold text-amber-500 truncate">Ekipi Solo</div><div class="subtext text-[11px] uppercase font-mono">Konteksti i Ekipit</div></div>
       </div>
 
       <!-- Bulk Actions Toolbar -->
-      <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-blue-500/50 rounded-xl p-3 shadow-xl flex flex-wrap items-center justify-between gap-3 backdrop-blur-md">
-        <div class="flex items-center gap-2.5 text-xs">
-          <span class="font-bold px-2.5 py-1 rounded btn-primary text-xs" id="selectedCountBadge">0 të zgjedhur</span>
+      <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-blue-500/50 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 backdrop-blur-md">
+        <div class="flex items-center gap-3 text-xs">
+          <span class="font-bold px-3 py-1.5 rounded-xl btn-primary text-xs" id="selectedCountBadge">0 të zgjedhur</span>
           <span class="subtext">Veprim masiv:</span>
         </div>
-        <div class="flex flex-wrap items-center gap-2.5 text-xs">
-          <select id="bulkStatusSelect" class="input-bg rounded-lg px-3 py-1.5 border outline-none cursor-pointer">
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <select id="bulkStatusSelect" class="input-bg rounded-xl px-3.5 py-2 border outline-none cursor-pointer">
             <option value="new">Statusi: Të Reja</option>
             <option value="contacted">Statusi: Në Kontakt</option>
             <option value="interested">Statusi: Të Interesuar</option>
             <option value="closed">Statusi: Mbyllur / Fituar</option>
           </select>
-          <button onclick="CRMStore.applyBulkStatus()" class="px-3.5 py-1.5 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm">Ndrysho Statusin</button>
-          <button onclick="CRMStore.exportCSV()" class="px-3.5 py-1.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Eksporto të Zgjedhurat</button>
-          <button onclick="CRMStore.clearSelection()" class="px-3 py-1.5 rounded-lg card-bg border text-rose-400 hover:text-rose-300 transition cursor-pointer">Anulo</button>
+          <button onclick="CRMStore.applyBulkStatus()" class="px-4 py-2 rounded-xl btn-primary font-semibold transition cursor-pointer shadow-sm">Ndrysho Statusin</button>
+          <button onclick="CRMStore.exportCSV()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Eksporto të Zgjedhurat</button>
+          <button onclick="CRMStore.clearSelection()" class="px-3.5 py-2 rounded-xl card-bg border text-rose-400 hover:text-rose-300 transition cursor-pointer">Anulo</button>
         </div>
       </div>
 
       <!-- Main Data Table -->
-      <section class="card-bg rounded-xl border overflow-hidden shadow-sm min-h-[580px] flex flex-col justify-between relative">
+      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[580px] flex flex-col justify-between relative">
         <div class="overflow-x-auto">
           <table class="w-full text-xs text-left border-collapse table-fixed min-w-[780px]">
             <thead id="tableHead" class="table-head-bg text-xs font-mono uppercase tracking-wider border-b"></thead>
@@ -232,14 +232,14 @@
           </table>
         </div>
 
-        <div id="guestGatingOverlay" class="hidden p-10 text-center card-bg border-t border-theme space-y-3">
-          <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl card-bg border text-blue-600 dark:text-blue-400 font-bold">🔒</div>
+        <div id="guestGatingOverlay" class="hidden p-12 text-center card-bg border-t border-theme space-y-4">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl card-bg border text-blue-600 dark:text-blue-400 font-bold">🔒</div>
           <h3 class="text-lg font-bold">Kërkohet Identifikimi në Ekip</h3>
           <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
             Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, sinkronizimin e shënimeve në kohë reale dhe veglat e avancuara të shitjeve.
           </p>
-          <div class="pt-1">
-            <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
+          <div class="pt-2">
+            <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
               <span>Hyni në Llogari</span>
             </button>
           </div>
@@ -247,78 +247,78 @@
 
         <div id="empty" class="hidden p-16 text-center subtext text-xs">Nuk u gjet asnjë biznes që përputhet me filtrat.</div>
         
-        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3.5 border-t border-theme text-xs subtext mt-auto">
+        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-theme text-xs subtext mt-auto">
           <div id="pageInfo" class="font-mono text-xs">Duke shfaqur 0-0 nga 0 rreshta</div>
-          <div class="flex items-center gap-2">
-            <button id="prevBtn" onclick="CRMStore.changePage(-1)" class="px-3 py-1.5 rounded-lg card-bg border border-theme hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">← Para</button>
+          <div class="flex items-center gap-3">
+            <button id="prevBtn" onclick="CRMStore.changePage(-1)" class="px-3.5 py-2 rounded-xl card-bg border border-theme hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">← Para</button>
             <span id="pageIndicator" class="px-2 font-mono text-blue-600 dark:text-blue-400 font-semibold">Faqja 1 nga 1</span>
-            <button id="nextBtn" onclick="CRMStore.changePage(1)" class="px-3 py-1.5 rounded-lg card-bg border border-theme hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">Pas →</button>
+            <button id="nextBtn" onclick="CRMStore.changePage(1)" class="px-3.5 py-2 rounded-xl card-bg border border-theme hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">Pas →</button>
           </div>
         </div>
       </section>
     </div>
 
     <!-- TAB 2: KANBAN PIPELINE -->
-    <div id="tabKanban" class="hidden space-y-6 py-6">
-      <div class="card-bg border rounded-xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400">Kanban Pipeline</h2>
-          <p class="text-xs subtext mt-1">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave për të ndryshuar statusin në kohë reale për gjithë ekipin.</p>
+    <div id="tabKanban" class="hidden space-y-8 py-4">
+      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1.5">
+          <h2 class="text-xl font-bold text-blue-600 dark:text-blue-400">Kanban Pipeline</h2>
+          <p class="text-xs subtext leading-relaxed">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave për të ndryshuar statusin në kohë reale për gjithë ekipin.</p>
         </div>
-        <span class="text-xs font-mono subtext card-bg px-3.5 py-1.5 rounded-lg border border-theme">Drag & Drop Aktiv</span>
+        <span class="text-xs font-mono subtext card-bg px-4 py-2 rounded-xl border border-theme">Drag & Drop Aktiv</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-5 items-start">
-        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')">
-          <div class="flex items-center justify-between border-b border-theme pb-3">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
             <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Të Reja (New)</span>
-            <span id="kanbanCountNew" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountNew" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColNew" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
+          <div id="kanbanColNew" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')">
-          <div class="flex items-center justify-between border-b border-theme pb-3">
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
             <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Në Kontakt (Contacted)</span>
-            <span id="kanbanCountContacted" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountContacted" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColContacted" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
+          <div id="kanbanColContacted" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')">
-          <div class="flex items-center justify-between border-b border-theme pb-3">
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
             <span class="font-bold text-xs uppercase tracking-wider text-amber-500 font-mono">Të Interesuar (Interested)</span>
-            <span id="kanbanCountInterested" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountInterested" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColInterested" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
+          <div id="kanbanColInterested" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
         </div>
 
-        <div class="card-bg border rounded-xl p-4 space-y-3.5 flex flex-col kanban-col" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')">
-          <div class="flex items-center justify-between border-b border-theme pb-3">
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
             <span class="font-bold text-xs uppercase tracking-wider text-emerald-500 font-mono">Mbyllur / Fituar (Closed)</span>
-            <span id="kanbanCountClosed" class="px-2.5 py-0.5 rounded card-bg border text-xs font-mono font-semibold">0</span>
+            <span id="kanbanCountClosed" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
           </div>
-          <div id="kanbanColClosed" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1"></div>
+          <div id="kanbanColClosed" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
         </div>
       </div>
     </div>
 
     <!-- TAB 3: ABOUT US -->
-    <div id="tabAbout" class="hidden space-y-6 max-w-4xl mx-auto py-10 px-4 sm:px-0">
-      <div class="card-bg border border-theme rounded-2xl p-8 sm:p-10 shadow-sm space-y-4">
+    <div id="tabAbout" class="hidden space-y-8 max-w-4xl mx-auto py-12 px-4 sm:px-0">
+      <div class="card-bg border border-theme rounded-3xl p-8 sm:p-12 shadow-sm space-y-5">
         <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura e Platformës</span>
-        <h2 class="text-2xl sm:text-3xl font-bold">Rreth PaFaqe.al</h2>
-        <p class="subtext text-xs sm:text-sm leading-relaxed">
+        <h2 class="text-3xl font-bold tracking-tight">Rreth PaFaqe.al</h2>
+        <p class="subtext text-sm sm:text-base leading-relaxed">
           PaFaqe.al është krijuar posaçërisht për agjencitë e zhvillimit web, zhvilluesit dhe konsulentët që duhet të identifikojnë dhe kontaktojnë shpejt bizneset shqiptare që nuk kanë një prani dixhitale. Me sinkronizim multi-tenant në Firestore dhe menaxhim të përbashkët të ekipit.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div class="card-bg border border-theme rounded-2xl p-6 sm:p-8 space-y-3 shadow-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div class="card-bg border border-theme rounded-3xl p-8 space-y-4 shadow-sm">
           <h3 class="font-bold text-base text-blue-600 dark:text-blue-400">Përputhshmëria & Siguria</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">Të dhënat indeksohen nga regjistrat publikë komercialë në përputhje të plotë me standardet e privatësisë dhe sigurisë cloud të nivelit të lartë.</p>
         </div>
-        <div class="card-bg border border-theme rounded-2xl p-6 sm:p-8 space-y-3 shadow-sm">
+        <div class="card-bg border border-theme rounded-3xl p-8 space-y-4 shadow-sm">
           <h3 class="font-bold text-base text-blue-600 dark:text-blue-400">Workspace i Ekipit</h3>
           <p class="subtext text-xs sm:text-sm leading-relaxed">Përdorimi i ID-së së Organizatës i lejon menaxherëve dhe shitësve (Sales Reps) të ndajnë të njëjtin kanban pa humbur asnjë informacion.</p>
         </div>
@@ -326,102 +326,102 @@
     </div>
 
     <!-- TAB 4: CONTACT -->
-    <div id="tabContact" class="hidden space-y-4 max-w-xl mx-auto py-8">
-      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
-        <div>
-          <h2 class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-1">Na Kontaktoni</h2>
+    <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto py-10">
+      <div class="card-bg border rounded-3xl p-8 sm:p-10 shadow-sm space-y-6">
+        <div class="space-y-1.5">
+          <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Na Kontaktoni</h2>
           <p class="text-xs subtext">Dërgoni një mesazh direkt te zhvilluesi <b class="text-blue-600 dark:text-blue-400">frrokuk2@gmail.com</b>.</p>
         </div>
         
-        <form onsubmit="UIController.handleContactSubmit(event)" class="space-y-3.5 text-xs">
-          <div>
-            <label class="block font-mono uppercase subtext mb-1 text-[11px]">Emri Juaj</label>
-            <input type="text" id="contactName" required class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
+        <form onsubmit="UIController.handleContactSubmit(event)" class="space-y-4 text-xs">
+          <div class="space-y-1.5">
+            <label class="block font-mono uppercase subtext text-[11px]">Emri Juaj</label>
+            <input type="text" id="contactName" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
           </div>
-          <div>
-            <label class="block font-mono uppercase subtext mb-1 text-[11px]">Email i Biznesit</label>
-            <input type="email" id="contactEmail" required class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
+          <div class="space-y-1.5">
+            <label class="block font-mono uppercase subtext text-[11px]">Email i Biznesit</label>
+            <input type="email" id="contactEmail" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
           </div>
-          <div>
-            <label class="block font-mono uppercase subtext mb-1 text-[11px]">Mesazhi</label>
-            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600"></textarea>
+          <div class="space-y-1.5">
+            <label class="block font-mono uppercase subtext text-[11px]">Mesazhi</label>
+            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600"></textarea>
           </div>
-          <button type="submit" id="submitBtn" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">Dërgo Mesazhin</button>
+          <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer mt-2">Dërgo Mesazhin</button>
         </form>
-        <div id="contactSuccess" class="hidden mt-3 p-3 rounded-lg bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
+        <div id="contactSuccess" class="hidden mt-4 p-4 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
           Mesazhi u dërgua me sukses!
         </div>
       </div>
     </div>
 
     <!-- TAB 5: TEAM WORKSPACE & RBAC -->
-    <div id="tabProfile" class="hidden space-y-6 max-w-4xl mx-auto py-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-4">
+    <div id="tabProfile" class="hidden space-y-8 max-w-4xl mx-auto py-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-5">
           <div class="flex items-center justify-between">
             <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Organizata & Ekipi</h2>
-            <span id="userRoleBadge" class="px-2.5 py-1 rounded btn-primary text-[10px] font-mono font-bold tracking-wider">Roli: Owner</span>
+            <span id="userRoleBadge" class="px-3 py-1 rounded-xl btn-primary text-[10px] font-mono font-bold tracking-wider">Roli: Owner</span>
           </div>
-          <div class="space-y-3.5 text-xs">
-            <div>
-              <label class="block font-mono uppercase subtext mb-1 text-[11px]">ID e Organizatës (Për Ekipin)</label>
+          <div class="space-y-4 text-xs">
+            <div class="space-y-1.5">
+              <label class="block font-mono uppercase subtext text-[11px]">ID e Organizatës (Për Ekipin)</label>
               <div class="flex items-center gap-2">
-                <input type="text" id="orgIdInput" class="input-bg w-full rounded-lg px-3 py-2 text-xs border font-mono outline-none" readonly>
-                <button onclick="CRMStore.copyOrgId()" class="px-3.5 py-2 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-semibold shrink-0 cursor-pointer">Kopjo</button>
+                <input type="text" id="orgIdInput" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border font-mono outline-none" readonly>
+                <button onclick="CRMStore.copyOrgId()" class="px-4 py-2.5 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-semibold shrink-0 cursor-pointer">Kopjo</button>
               </div>
-              <p class="text-[11px] subtext mt-1">Shpërndaj këtë ID me anëtarët e ekipit për të ndarë të njëjtin Kanban.</p>
-              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-1.5" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
+              <p class="text-[11px] subtext mt-1.5">Shpërndaj këtë ID me anëtarët e ekipit për të ndarë të njëjtin Kanban.</p>
+              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-2" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
             </div>
 
-            <div>
-              <label class="block font-mono uppercase subtext mb-1 text-[11px]">Bashkohu në Organizatë Tjetër</label>
+            <div class="space-y-1.5">
+              <label class="block font-mono uppercase subtext text-[11px]">Bashkohu në Organizatë Tjetër</label>
               <div class="flex items-center gap-2">
-                <input type="text" id="joinOrgInput" placeholder="Vendos Org ID..." class="input-bg w-full rounded-lg px-3 py-2 text-xs border font-mono outline-none">
-                <button onclick="CRMStore.joinOrganization()" class="px-3.5 py-2 rounded-lg btn-primary font-semibold shrink-0 cursor-pointer">Bashkohu</button>
+                <input type="text" id="joinOrgInput" placeholder="Vendos Org ID..." class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border font-mono outline-none">
+                <button onclick="CRMStore.joinOrganization()" class="px-4 py-2.5 rounded-xl btn-primary font-semibold shrink-0 cursor-pointer">Bashkohu</button>
               </div>
             </div>
 
-            <div class="border-t border-theme pt-4 space-y-3">
+            <div class="border-t border-theme pt-5 space-y-4">
               <label class="block font-mono uppercase subtext text-[11px]">Profili i Përdoruesit</label>
-              <div>
-                <label class="block subtext mb-1 text-[11px]">Emri dhe Mbiemri</label>
-                <input type="text" id="profileName" class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none">
+              <div class="space-y-1.5">
+                <label class="block subtext text-[11px]">Emri dhe Mbiemri</label>
+                <input type="text" id="profileName" class="input-bg w-full rounded-xl px-4 py-2.5 text-xs border outline-none">
               </div>
-              <div>
-                <label class="block subtext mb-1 text-[11px]">Email</label>
-                <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-lg px-3.5 py-2 text-xs subtext cursor-not-allowed">
+              <div class="space-y-1.5">
+                <label class="block subtext text-[11px]">Email</label>
+                <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-xl px-4 py-2.5 text-xs subtext cursor-not-allowed">
               </div>
-              <div id="verificationStatusContainer" class="p-3 rounded-lg card-bg border border-theme flex items-center justify-between text-xs"></div>
-              <button onclick="AuthService.updateProfileData()" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs cursor-pointer">Ruaj Ndryshimet</button>
+              <div id="verificationStatusContainer" class="p-3.5 rounded-xl card-bg border border-theme flex items-center justify-between text-xs"></div>
+              <button onclick="AuthService.updateProfileData()" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs cursor-pointer">Ruaj Ndryshimet</button>
               <div id="profileSuccess" class="hidden text-xs text-emerald-400 font-medium text-center">Profili u përditësua me sukses!</div>
             </div>
           </div>
         </div>
 
-        <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-5">
           <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Analitika e Kanban</h2>
-          <div class="space-y-2.5 text-xs font-mono">
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+          <div class="space-y-3 text-xs font-mono">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
               <span class="subtext">Totali i Bizneseve:</span>
               <span id="analyticsTotalLeads" class="font-bold text-blue-600 dark:text-blue-400 text-sm">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
               <span class="subtext">Statusi New:</span>
               <span id="analyticsNewCount" class="font-bold">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
               <span class="subtext">Statusi Contacted:</span>
               <span id="analyticsContactedCount" class="font-bold">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
               <span class="subtext">Statusi Interested:</span>
               <span id="analyticsInterestedCount" class="font-bold text-amber-500">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
               <span class="subtext">Statusi Closed / Won:</span>
               <span id="analyticsClosedCount" class="font-bold text-emerald-400">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl card-bg border border-theme">
               <span class="subtext">Rrezik Reputacioni (&lt;3.5★):</span>
               <span id="analyticsOpportunityCount" class="font-bold text-rose-400">0</span>
             </div>
@@ -434,24 +434,24 @@
 
 <!-- AUTH MODAL WITH ROLE SELECTION -->
 <div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-4">
-    <button onclick="AuthService.closeAuthModal()" class="absolute top-4 right-4 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
-    <div>
-      <div id="authTitle" class="text-lg font-bold">Identifikimi në Ekip</div>
-      <p id="authSubtitle" class="text-xs subtext mt-0.5">Hyni për të sinkronizuar statuset dhe shënimet në kohë reale.</p>
+  <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
+    <button onclick="AuthService.closeAuthModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
+    <div class="space-y-1">
+      <div id="authTitle" class="text-xl font-bold">Identifikimi në Ekip</div>
+      <p id="authSubtitle" class="text-xs subtext">Hyni për të sinkronizuar statuset dhe shënimet në kohë reale.</p>
     </div>
     
-    <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-3.5 text-xs">
-      <div id="nameFieldContainer" class="hidden space-y-3">
-        <div>
-          <label class="block font-mono uppercase subtext mb-1 text-[11px]">Emri dhe Mbiemri</label>
-          <input type="text" id="authName" class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="Kristian Frroku">
+    <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-4 text-xs">
+      <div id="nameFieldContainer" class="hidden space-y-4">
+        <div class="space-y-1.5">
+          <label class="block font-mono uppercase subtext text-[11px]">Emri dhe Mbiemri</label>
+          <input type="text" id="authName" class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="Kristian Frroku">
         </div>
         
         <!-- Role Selection Radio Buttons -->
-        <div class="p-3 card-bg border rounded-xl space-y-2">
+        <div class="p-4 card-bg border rounded-2xl space-y-2.5">
           <label class="block font-mono uppercase subtext text-[10px] tracking-wider">Zgjidh Rolin Tuaj në Ekip:</label>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-5">
             <label class="flex items-center gap-2 cursor-pointer font-medium">
               <input type="radio" name="userRole" value="Owner" checked class="accent-blue-600 cursor-pointer"> Owner (Administrator)
             </label>
@@ -462,20 +462,20 @@
         </div>
       </div>
 
-      <div>
-        <label class="block font-mono uppercase subtext mb-1 text-[11px]">Email</label>
-        <input type="email" id="authEmail" required class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="you@example.com">
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Email</label>
+        <input type="email" id="authEmail" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="you@example.com">
       </div>
 
-      <div>
+      <div class="space-y-1.5">
         <div class="flex items-center justify-between mb-1">
           <label class="block font-mono uppercase subtext text-[11px]">Fjalëkalimi</label>
           <button type="button" id="forgotPasswordLink" onclick="AuthService.openForgotPasswordModal()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Harrove fjalëkalimin?</button>
         </div>
-        <input type="password" id="authPassword" required minlength="6" oninput="AuthService.checkPasswordStrength(this.value)" class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="••••••••">
+        <input type="password" id="authPassword" required minlength="6" oninput="AuthService.checkPasswordStrength(this.value)" class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="••••••••">
         
-        <div id="passwordStrengthContainer" class="hidden mt-2 space-y-1">
-          <div class="flex gap-1 h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+        <div id="passwordStrengthContainer" class="hidden mt-2.5 space-y-1.5">
+          <div class="flex gap-1.5 h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
             <div id="strengthBar1" class="w-1/3 h-full bg-slate-400 transition-all"></div>
             <div id="strengthBar2" class="w-1/3 h-full bg-slate-400 transition-all"></div>
             <div id="strengthBar3" class="w-1/3 h-full bg-slate-400 transition-all"></div>
@@ -486,7 +486,7 @@
 
       <div id="authError" class="hidden text-xs text-rose-400 font-medium"></div>
       
-      <button type="submit" id="authSubmitBtn" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">Identifikohu</button>
+      <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer mt-2">Identifikohu</button>
     </form>
     
     <div class="text-center text-xs subtext pt-2">
@@ -498,38 +498,40 @@
 
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-4">
-    <button onclick="AuthService.closeForgotPasswordModal()" class="absolute top-4 right-4 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
-    <div class="text-lg font-bold">Rikuperimi i Fjalëkalimit</div>
-    <p class="text-xs subtext">Vendosni email-in e regjistruar për të marrë linkun e rivendosjes.</p>
+  <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
+    <button onclick="AuthService.closeForgotPasswordModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
+    <div class="space-y-1">
+      <div class="text-xl font-bold">Rikuperimi i Fjalëkalimit</div>
+      <p class="text-xs subtext">Vendosni email-in e regjistruar për të marrë linkun e rivendosjes.</p>
+    </div>
     
-    <form onsubmit="AuthService.handleForgotPasswordSubmit(event)" class="space-y-3.5 text-xs">
-      <div>
-        <label class="block font-mono uppercase subtext mb-1 text-[11px]">Adresa Email</label>
-        <input type="email" id="forgotEmail" required class="input-bg w-full rounded-lg px-3.5 py-2 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
+    <form onsubmit="AuthService.handleForgotPasswordSubmit(event)" class="space-y-4 text-xs">
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Adresa Email</label>
+        <input type="email" id="forgotEmail" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
       </div>
       <div id="forgotError" class="hidden text-xs text-rose-400 font-medium"></div>
-      <div id="forgotSuccess" class="hidden text-xs text-emerald-400 font-medium p-3 rounded-lg card-bg border border-emerald-500/50"></div>
+      <div id="forgotSuccess" class="hidden text-xs text-emerald-400 font-medium p-3.5 rounded-xl card-bg border border-emerald-500/50"></div>
       
-      <button type="submit" id="forgotSubmitBtn" class="w-full py-2.5 rounded-lg btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">Dërgo Linkun</button>
+      <button type="submit" id="forgotSubmitBtn" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer mt-2">Dërgo Linkun</button>
     </form>
   </div>
 </div>
 
 <!-- NOTES & RATING MODAL -->
 <div id="notesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
-    <button onclick="UIController.closeNotesModal()" class="absolute top-4 right-4 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
-    <div>
-      <div class="text-lg font-bold">Shënime & Historiku i Ekipit</div>
-      <p id="notesBusinessSubtitle" class="text-xs text-blue-600 dark:text-blue-400 font-mono mt-0.5"></p>
+  <div class="card-bg border rounded-3xl max-w-xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
+    <button onclick="UIController.closeNotesModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
+    <div class="space-y-1">
+      <div class="text-xl font-bold">Shënime & Historiku i Ekipit</div>
+      <p id="notesBusinessSubtitle" class="text-xs text-blue-600 dark:text-blue-400 font-mono"></p>
     </div>
     
-    <div class="space-y-3.5 text-xs">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div>
-          <label class="block font-mono uppercase subtext mb-1 text-[11px]">Vlerësimi Manual (★)</label>
-          <select id="leadCustomRatingInput" class="input-bg w-full rounded-lg p-2.5 text-xs border outline-none cursor-pointer">
+    <div class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="block font-mono uppercase subtext text-[11px]">Vlerësimi Manual (★)</label>
+          <select id="leadCustomRatingInput" class="input-bg w-full rounded-xl p-3 text-xs border outline-none cursor-pointer">
             <option value="">(Sipas Databazës)</option>
             <option value="5.0">5.0 ★ (Elite)</option>
             <option value="4.5">4.5 ★ (Shumë mirë)</option>
@@ -540,27 +542,27 @@
             <option value="1.0">1.0 ★ (Kritike)</option>
           </select>
         </div>
-        <div>
-          <label class="block font-mono uppercase subtext mb-1 text-[11px]">Data e Kujtesës (Reminder)</label>
-          <input type="date" id="leadReminderInput" class="input-bg w-full rounded-lg p-2.5 text-xs border outline-none">
+        <div class="space-y-1.5">
+          <label class="block font-mono uppercase subtext text-[11px]">Data e Kujtesës (Reminder)</label>
+          <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-3 text-xs border outline-none">
         </div>
       </div>
 
-      <div>
-        <label class="block font-mono uppercase subtext mb-1 text-[11px]">Shënimet e Përbashkëta të Ekipit</label>
-        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-lg p-3 text-xs border outline-none" placeholder="Shtoni shënime (p.sh. U kontaktua në telefon, kërkoi ofertë...)"></textarea>
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Shënimet e Përbashkëta të Ekipit</label>
+        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-xl p-3.5 text-xs border outline-none" placeholder="Shtoni shënime (p.sh. U kontaktua në telefon, kërkoi ofertë...)"></textarea>
       </div>
 
-      <div class="border-t border-theme pt-3.5">
-        <label class="block font-mono uppercase subtext mb-2 text-[11px]">Historiku i Veprimeve (Audit Logs)</label>
-        <div id="activityTimelineContainer" class="space-y-2 max-h-40 overflow-y-auto text-[11px] card-bg border rounded-xl p-3 font-mono">
+      <div class="border-t border-theme pt-4 space-y-2">
+        <label class="block font-mono uppercase subtext text-[11px]">Historiku i Veprimeve (Audit Logs)</label>
+        <div id="activityTimelineContainer" class="space-y-2.5 max-h-44 overflow-y-auto text-[11px] card-bg border rounded-2xl p-4 font-mono">
           <span class="subtext">Nuk ka histori të regjistruar.</span>
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-3 pt-2">
-        <button onclick="UIController.closeNotesModal()" class="px-4 py-2 rounded-lg card-bg border subtext hover:text-blue-500 font-medium cursor-pointer">Anulo</button>
-        <button onclick="CRMStore.saveLeadNote()" class="px-5 py-2 rounded-lg btn-primary font-semibold shadow-sm cursor-pointer">Ruaj Ndryshimet</button>
+      <div class="flex items-center justify-end gap-3 pt-3">
+        <button onclick="UIController.closeNotesModal()" class="px-5 py-2.5 rounded-xl card-bg border subtext hover:text-blue-500 font-medium cursor-pointer">Anulo</button>
+        <button onclick="CRMStore.saveLeadNote()" class="px-6 py-2.5 rounded-xl btn-primary font-semibold shadow-sm cursor-pointer">Ruaj Ndryshimet</button>
       </div>
     </div>
   </div>
@@ -568,50 +570,50 @@
 
 <!-- OUTREACH PITCH GENERATOR MODAL -->
 <div id="pitchModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-  <div class="card-bg border rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
-    <button onclick="UIController.closePitchModal()" class="absolute top-4 right-4 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
-    <div>
-      <div class="text-lg font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
-      <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium mt-0.5"></p>
+  <div class="card-bg border rounded-3xl max-w-lg w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
+    <button onclick="UIController.closePitchModal()" class="absolute top-5 right-5 subtext hover:text-blue-600 font-bold cursor-pointer">✕</button>
+    <div class="space-y-1">
+      <div class="text-xl font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
+      <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium"></p>
     </div>
     
-    <div class="flex items-center gap-2 border-b border-theme pb-3">
-      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-3.5 py-1.5 rounded-lg btn-primary font-semibold text-xs transition cursor-pointer">WhatsApp</button>
-      <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer">Email</button>
+    <div class="flex items-center gap-2.5 border-b border-theme pb-4">
+      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer">WhatsApp</button>
+      <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer">Email</button>
     </div>
 
-    <div id="pitchPanelWa" class="space-y-3.5 text-xs">
-      <div>
+    <div id="pitchPanelWa" class="space-y-4 text-xs">
+      <div class="space-y-1.5">
         <div class="flex items-center justify-between mb-1">
           <label class="block font-mono uppercase subtext text-[11px]">Template WhatsApp</label>
           <button onclick="CRMStore.resetPitchTemplate('whatsapp')" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Rivendos</button>
         </div>
-        <textarea id="pitchTemplateWaInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-lg p-3 text-xs font-mono border outline-none"></textarea>
+        <textarea id="pitchTemplateWaInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3.5 text-xs font-mono border outline-none"></textarea>
       </div>
 
-      <div class="flex items-center justify-between gap-3 pt-1">
-        <button onclick="CRMStore.copyPitchToClipboard('whatsapp')" class="px-4 py-2 rounded-lg card-bg border text-xs font-semibold cursor-pointer">Kopjo Tekstin</button>
-        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition text-center shadow-sm cursor-pointer">
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button onclick="CRMStore.copyPitchToClipboard('whatsapp')" class="px-4.5 py-2.5 rounded-xl card-bg border text-xs font-semibold cursor-pointer">Kopjo Tekstin</button>
+        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition text-center shadow-sm cursor-pointer">
           <span>Dërgo në WhatsApp ↗</span>
         </a>
       </div>
     </div>
 
-    <div id="pitchPanelEmail" class="hidden space-y-3.5 text-xs">
-      <div>
-        <label class="block font-mono uppercase subtext mb-1 text-[11px]">Subjekti i Email-it</label>
-        <input type="text" id="emailSubjectTemplateInput" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-lg p-2.5 text-xs font-mono border outline-none">
+    <div id="pitchPanelEmail" class="hidden space-y-4 text-xs">
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Subjekti i Email-it</label>
+        <input type="text" id="emailSubjectTemplateInput" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl px-3.5 py-3 text-xs font-mono border outline-none">
       </div>
-      <div>
+      <div class="space-y-1.5">
         <div class="flex items-center justify-between mb-1">
           <label class="block font-mono uppercase subtext text-[11px]">Trupi i Email-it</label>
           <button onclick="CRMStore.resetPitchTemplate('email')" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Rivendos</button>
         </div>
-        <textarea id="emailBodyTemplateInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-lg p-3 text-xs font-mono border outline-none"></textarea>
+        <textarea id="emailBodyTemplateInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3.5 text-xs font-mono border outline-none"></textarea>
       </div>
-      <div class="flex items-center justify-between gap-3 pt-1">
-        <button onclick="CRMStore.copyPitchToClipboard('email')" class="px-4 py-2 rounded-lg card-bg border text-xs font-semibold cursor-pointer">Kopjo Tekstin</button>
-        <a id="emailSendBtn" href="#" class="px-5 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition text-center shadow-sm cursor-pointer">
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button onclick="CRMStore.copyPitchToClipboard('email')" class="px-4.5 py-2.5 rounded-xl card-bg border text-xs font-semibold cursor-pointer">Kopjo Tekstin</button>
+        <a id="emailSendBtn" href="#" class="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition text-center shadow-sm cursor-pointer">
           <span>Hape Klientin e Email ↗</span>
         </a>
       </div>
@@ -620,12 +622,12 @@
 </div>
 
 <!-- Footer -->
-<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 text-xs subtext border-t border-theme mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+<footer class="max-w-7xl w-full mx-auto px-5 sm:px-8 py-8 text-xs subtext border-t border-theme mt-16 flex flex-col sm:flex-row items-center justify-between gap-4">
   <div>
     <p class="font-semibold logo-text">PaFaqe.al — B2B Lead Intelligence CRM</p>
-    <p class="text-[11px] subtext mt-0.5">© 2026 Zhvilluar nga Kristian Frroku</p>
+    <p class="text-[11px] subtext mt-1">© 2026 Zhvilluar nga Kristian Frroku</p>
   </div>
-  <div class="flex items-center gap-4 font-mono text-xs">
+  <div class="flex items-center gap-5 font-mono text-xs">
     <span>📞 <a href="tel:0684073212" class="text-blue-600 dark:text-blue-400 hover:underline">0684073212</a></span>
     <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-blue-600 dark:text-blue-400 hover:underline">frrokuk2@gmail.com</a></span>
   </div>
@@ -741,13 +743,13 @@ const AuthService = {
         
         if (btn) {
           btn.innerHTML = `
-            <div class="flex items-center gap-1.5 cursor-pointer" onclick="UIController.switchTab('profile')">
-              <img src="${avatarUrl}" alt="Avatar" style="width: 18px; height: 18px;" class="rounded-full border border-blue-600/40 bg-slate-800 object-cover shadow-sm">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="UIController.switchTab('profile')">
+              <img src="${avatarUrl}" alt="Avatar" style="width: 20px; height: 20px;" class="rounded-full border border-blue-600/40 bg-slate-800 object-cover shadow-sm">
               <span class="hover:underline font-semibold text-xs whitespace-nowrap text-slate-800 dark:text-slate-100">${UIController.escapeHtml(displayName)}</span>
             </div>
-            <span class="text-xs text-rose-500 hover:text-rose-400 ml-1 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Dil]</span>
+            <span class="text-xs text-rose-500 hover:text-rose-400 ml-1.5 font-medium cursor-pointer" onclick="event.stopPropagation(); auth.signOut()">[Dil]</span>
           `;
-          btn.className = "px-3 py-1.5 rounded-lg card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
+          btn.className = "px-3.5 py-2 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
         }
         if (hero) hero.classList.add('hidden');
         if (filterSec) filterSec.classList.remove('hidden');
@@ -1200,7 +1202,7 @@ const CRMStore = {
     if (!container) return;
     const presets = this.getSavedPresets();
     container.innerHTML = presets.map((p, idx) => `
-      <span class="chip chip-btn px-2.5 py-1 rounded border text-xs font-medium flex items-center gap-1.5 cursor-pointer">
+      <span class="chip chip-btn px-3 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-2 cursor-pointer">
         <span onclick="CRMStore.applyPreset(${idx})">${UIController.escapeHtml(p.name)}</span>
         <button onclick="CRMStore.deletePreset(${idx}, event)" class="text-rose-500 hover:text-rose-400 font-bold text-xs" title="Fshij filtrin">×</button>
       </span>
@@ -1269,7 +1271,7 @@ const CRMStore = {
         cols[status].innerHTML = statusList.slice(0, 30).map(b => {
           const leadKey = b.id || b.name;
           return `
-            <div class="card-bg border rounded-xl p-3.5 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-500 transition space-y-2 text-xs" 
+            <div class="card-bg border rounded-2xl p-4 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-500 transition space-y-2.5 text-xs" 
                  draggable="true" 
                  ondragstart="CRMStore.dragLead(event, '${UIController.escapeHtml(leadKey)}')">
               <div class="flex items-start justify-between gap-2">
@@ -1277,11 +1279,11 @@ const CRMStore = {
                 <span class="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 shrink-0">${this.leadScore(b)} pts</span>
               </div>
               <div class="subtext text-[11px] truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
-              <div class="flex items-center justify-between pt-2.5 border-t border-theme text-[11px]">
+              <div class="flex items-center justify-between pt-3 border-t border-theme text-[11px]">
                 <span class="font-mono text-amber-600 dark:text-amber-400">${UIController.escapeHtml(b.phone || 'Pa tel')}</span>
-                <div class="flex items-center gap-1.5">
-                  <button onclick="event.stopPropagation(); UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-1 rounded card-bg border subtext hover:text-blue-500 cursor-pointer">Shënim</button>
-                  <button onclick="event.stopPropagation(); UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2 py-1 rounded card-bg border text-emerald-600 dark:text-emerald-400 cursor-pointer">Oferta</button>
+                <div class="flex items-center gap-2">
+                  <button onclick="event.stopPropagation(); UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2.5 py-1.5 rounded-xl card-bg border subtext hover:text-blue-500 cursor-pointer">Shënim</button>
+                  <button onclick="event.stopPropagation(); UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2.5 py-1.5 rounded-xl card-bg border text-emerald-600 dark:text-emerald-400 cursor-pointer">Oferta</button>
                 </div>
               </div>
             </div>
@@ -1393,15 +1395,15 @@ const CRMStore = {
 
     document.getElementById('tableHead').innerHTML = `
       <tr>
-        ${AuthService.currentUser ? '<th class="w-[4%] p-3 text-center"><input type="checkbox" onchange="CRMStore.toggleSelectAll(this)" class="accent-blue-600 cursor-pointer"></th>' : ''}
-        <th class="w-[26%] p-3 font-semibold">Biznesi</th>
-        <th class="w-[14%] p-3 font-semibold">Kategoria</th>
-        <th class="w-[12%] p-3 font-semibold">Qyteti</th>
-        <th class="w-[16%] p-3 font-semibold">Telefoni</th>
-        ${AuthService.currentUser ? '<th class="w-[12%] p-3 font-semibold">Statusi</th>' : ''}
-        <th class="w-[8%] p-3 font-semibold">Rating</th>
-        <th class="w-[8%] p-3 font-semibold text-right">Score</th>
-        ${AuthService.currentUser ? '<th class="w-[14%] p-3 font-semibold text-center">Veprime</th>' : ''}
+        ${AuthService.currentUser ? '<th class="w-[4%] p-3.5 text-center"><input type="checkbox" onchange="CRMStore.toggleSelectAll(this)" class="accent-blue-600 cursor-pointer"></th>' : ''}
+        <th class="w-[26%] p-3.5 font-semibold">Biznesi</th>
+        <th class="w-[14%] p-3.5 font-semibold">Kategoria</th>
+        <th class="w-[12%] p-3.5 font-semibold">Qyteti</th>
+        <th class="w-[16%] p-3.5 font-semibold">Telefoni</th>
+        ${AuthService.currentUser ? '<th class="w-[12%] p-3.5 font-semibold">Statusi</th>' : ''}
+        <th class="w-[8%] p-3.5 font-semibold">Rating</th>
+        <th class="w-[8%] p-3.5 font-semibold text-right">Score</th>
+        ${AuthService.currentUser ? '<th class="w-[14%] p-3.5 font-semibold text-center">Veprime</th>' : ''}
       </tr>
     `;
 
@@ -1418,16 +1420,16 @@ const CRMStore = {
       const tr = document.createElement('tr');
       tr.className = 'row row-hover border-b border-theme text-xs';
       tr.innerHTML = `
-        ${AuthService.currentUser ? `<td class="p-3 text-center"><input type="checkbox" data-key="${UIController.escapeHtml(leadKey)}" onchange="CRMStore.toggleSelectLead('${UIController.escapeHtml(leadKey)}', this)" class="lead-select-checkbox accent-blue-600 cursor-pointer" ${isSelected ? 'checked' : ''}></td>` : ''}
-        <td class="p-3 truncate font-semibold">${UIController.escapeHtml(b.name)}</td>
-        <td class="p-3 subtext truncate">${UIController.escapeHtml(b.category || '—')}</td>
-        <td class="p-3 truncate">${UIController.escapeHtml(b.city || '—')}</td>
-        <td class="p-3 truncate font-mono">
+        ${AuthService.currentUser ? `<td class="p-3.5 text-center"><input type="checkbox" data-key="${UIController.escapeHtml(leadKey)}" onchange="CRMStore.toggleSelectLead('${UIController.escapeHtml(leadKey)}', this)" class="lead-select-checkbox accent-blue-600 cursor-pointer" ${isSelected ? 'checked' : ''}></td>` : ''}
+        <td class="p-3.5 truncate font-semibold">${UIController.escapeHtml(b.name)}</td>
+        <td class="p-3.5 subtext truncate">${UIController.escapeHtml(b.category || '—')}</td>
+        <td class="p-3.5 truncate">${UIController.escapeHtml(b.city || '—')}</td>
+        <td class="p-3.5 truncate font-mono">
           ${b.phone ? `<a href="tel:${UIController.escapeHtml(b.phone)}" class="text-blue-600 dark:text-blue-400 hover:underline">${UIController.escapeHtml(b.phone)}</a>` : '—'}
         </td>
         ${AuthService.currentUser ? `
-          <td class="p-3 truncate">
-            <select onchange="CRMStore.setLeadStatus('${UIController.escapeHtml(leadKey)}', this.value)" class="input-bg rounded-lg px-2 py-1 text-xs border outline-none cursor-pointer">
+          <td class="p-3.5 truncate">
+            <select onchange="CRMStore.setLeadStatus('${UIController.escapeHtml(leadKey)}', this.value)" class="input-bg rounded-xl px-2.5 py-1.5 text-xs border outline-none cursor-pointer">
               <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
               <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
               <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
@@ -1435,12 +1437,12 @@ const CRMStore = {
             </select>
           </td>
         ` : ''}
-        <td class="p-3 truncate font-mono">${effectiveRating ? `★ ${effectiveRating}` : '—'}</td>
-        <td class="p-3 text-right font-mono font-bold text-blue-600 dark:text-blue-400">${score}</td>
+        <td class="p-3.5 truncate font-mono">${effectiveRating ? `★ ${effectiveRating}` : '—'}</td>
+        <td class="p-3.5 text-right font-mono font-bold text-blue-600 dark:text-blue-400">${score}</td>
         ${AuthService.currentUser ? `
-          <td class="p-3 text-center">
-            <button onclick="UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2.5 py-1 rounded-md card-bg border subtext hover:text-blue-500 font-medium cursor-pointer">Shënim</button>
-            <button onclick="UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2.5 py-1 rounded-md card-bg border text-emerald-600 dark:text-emerald-400 font-medium ml-1 cursor-pointer">Oferta</button>
+          <td class="p-3.5 text-center space-x-1">
+            <button onclick="UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-3 py-1.5 rounded-xl card-bg border subtext hover:text-blue-500 font-medium cursor-pointer">Shënim</button>
+            <button onclick="UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-3 py-1.5 rounded-xl card-bg border text-emerald-600 dark:text-emerald-400 font-medium cursor-pointer">Oferta</button>
           </td>
         ` : ''}
       `;
@@ -1512,9 +1514,9 @@ const UIController = {
       const btn = document.getElementById(navButtons[key]);
       if (btn) {
         if (key === tab) {
-          btn.className = "px-3.5 py-1.5 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm";
+          btn.className = "px-4 py-2 rounded-xl btn-primary font-semibold transition cursor-pointer shadow-sm";
         } else {
-          btn.className = "px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer";
+          btn.className = "px-4 py-2 rounded-xl subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer";
         }
       }
     });
@@ -1584,7 +1586,7 @@ const UIController = {
   renderActivityTimeline(leadKey) {
     const c = document.getElementById('activityTimelineContainer');
     const events = CRMStore.cloudHistory[leadKey] || [];
-    c.innerHTML = events.length === 0 ? '<span class="subtext">Nuk ka histori të regjistruar.</span>' : events.map(e => `<div class="border-b border-theme pb-1.5 mb-1.5 font-mono">${this.escapeHtml(e.text)} <span class="subtext">(${e.date})</span></div>`).join('');
+    c.innerHTML = events.length === 0 ? '<span class="subtext">Nuk ka histori të regjistruar.</span>' : events.map(e => `<div class="border-b border-theme pb-2 mb-2 font-mono">${this.escapeHtml(e.text)} <span class="subtext">(${e.date})</span></div>`).join('');
   },
 
   closeNotesModal() { document.getElementById('notesModal').classList.add('hidden'); },
