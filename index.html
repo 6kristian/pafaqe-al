@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+f<!DOCTYPE html>
 <html lang="sq" class="dark">
 <head>
 <meta charset="UTF-8">
@@ -87,8 +87,8 @@
       
       <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
         <nav class="flex items-center gap-1 card-bg p-1 rounded-xl border text-xs font-medium">
-          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-semibold transition cursor-pointer shadow-sm">Leads</button>
-          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Tubacioni</button>
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Leads</button>
+          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
           <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
           <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-3.5 py-1.5 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
@@ -124,7 +124,7 @@
           <span class="px-3 py-1 rounded card-bg text-blue-600 dark:text-blue-400 border border-theme text-xs font-semibold uppercase tracking-wider">Platformë Inteligjence B2B</span>
           <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Menaxhoni Prospecting për Agjencitë Web në Shqipëri</h2>
           <p class="subtext text-xs sm:text-sm leading-relaxed">
-            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Aksesoni të dhënat e kontaktit, pikëzimin e lead-eve dhe tubacionin e shitjeve në ekip.
+            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Aksesoni të dhënat e kontaktit, pikëzimin e lead-eve dhe kanabnin e shitjeve në ekip.
           </p>
           <div class="pt-2 flex items-center gap-3">
             <button onclick="AuthService.openAuthModal()" class="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs shadow-sm cursor-pointer">
@@ -258,7 +258,7 @@
     <div id="tabKanban" class="hidden space-y-5">
       <div class="card-bg border rounded-xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400">Tubacioni i Shitjeve (Kanban Pipeline)</h2>
+          <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400">Kanban Pipeline</h2>
           <p class="text-xs subtext mt-0.5">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave për të ndryshuar statusin në kohë reale për gjithë ekipin.</p>
         </div>
         <span class="text-xs font-mono subtext bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg border border-theme">Drag & Drop Aktiv</span>
@@ -316,7 +316,7 @@
         </div>
         <div class="card-bg border border-theme rounded-xl p-6 space-y-2">
           <h3 class="font-bold text-sm text-blue-600 dark:text-blue-400">Workspace i Ekipit</h3>
-          <p class="subtext text-xs sm:text-sm leading-relaxed">Përdorimi i ID-së së Organizatës i lejon menaxherëve dhe shitësve (Sales Reps) të ndajnë të njëjtin tubacion pa humbur asnjë informacion.</p>
+          <p class="subtext text-xs sm:text-sm leading-relaxed">Përdorimi i ID-së së Organizatës i lejon menaxherëve dhe shitësve (Sales Reps) të ndajnë të njëjtin kanban pa humbur asnjë informacion.</p>
         </div>
       </div>
     </div>
@@ -365,7 +365,7 @@
                 <input type="text" id="orgIdInput" class="input-bg w-full rounded-lg px-3 py-2 text-xs border font-mono outline-none" readonly>
                 <button onclick="CRMStore.copyOrgId()" class="px-3.5 py-2 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-semibold shrink-0 cursor-pointer">Kopjo</button>
               </div>
-              <p class="text-[11px] subtext mt-1">Shpërndaj këtë ID me anëtarët e ekipit për të ndarë të njëjtin tubacion.</p>
+              <p class="text-[11px] subtext mt-1">Shpërndaj këtë ID me anëtarët e ekipit për të ndarë të njëjtin Kanban.</p>
               <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-1.5" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
             </div>
 
@@ -395,7 +395,7 @@
         </div>
 
         <div class="card-bg border rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Analitika e Tubacionit</h2>
+          <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Analitika e Kanban</h2>
           <div class="space-y-2.5 text-xs font-mono">
             <div class="flex items-center justify-between p-3 rounded-xl card-bg border border-theme">
               <span class="subtext">Totali i Bizneseve:</span>
