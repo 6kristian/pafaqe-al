@@ -5,11 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace (Enterprise)</title>
 <meta name="description" content="Platformë profesionale e inteligjencës B2B për agjencitë web në Shqipëri.">
+
 <!-- Enterprise Font Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="output.css">
+
+<!-- Tailwind CSS CDN (zgjidh të gjitha problemet e ngarkimit të CSS) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
 
 <!-- Firebase Compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -69,34 +84,6 @@
     min-height: 520px;
   }
 
-  /* Spacing Inspector / 8px grid fixes */
-  #q { padding-top: 8px; padding-bottom: 8px; }
-  #city { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
-  #cat { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
-  #sort { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
-  button.px-3.py-1\.5 { padding-top: 8px; padding-bottom: 8px; }
-  label.flex.items-center { gap: 8px; }
-  #filterPresetsSection { gap: 8px; }
-  button.ml-auto.px-3\.5 { padding-left: 16px; padding-right: 16px; }
-  button.px-5.py-2\.5 { padding-top: 8px; padding-bottom: 8px; }
-  div.flex.flex-wrap { gap: 8px; }
-  button.chip-btn.px-3\.5 { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
-  select.input-bg.rounded-xl { padding-top: 8px; padding-bottom: 8px; padding-left: 8px; padding-right: 8px; }
-  #authActionBtn { padding-left: 16px; padding-right: 16px; }
-  nav.flex.items-center { gap: 8px; }
-  h1.text-base.sm\:text-lg { gap: 8px; }
-  #prevBtn { padding-left: 16px; padding-right: 16px; }
-  #nextBtn { padding-left: 16px; padding-right: 16px; }
-  #orgIdInput { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
-  button.px-4.py-2\.5 { padding-top: 8px; padding-bottom: 8px; }
-  #joinOrgInput { padding-top: 8px; padding-bottom: 8px; padding-left: 16px; padding-right: 16px; }
-  #profileName { padding-top: 8px; padding-bottom: 8px; }
-  #profileEmail { padding-top: 8px; padding-bottom: 8px; }
-  button.px-2\.5.py-1\.5 { padding-top: 8px; padding-bottom: 8px; padding-left: 8px; padding-right: 8px; }
-  div.flex.gap-1\.5 { gap: 8px; }
-  #selectedCountBadge { padding-top: 8px; padding-bottom: 8px; }
-  button.px-3\.5.py-2 { padding-left: 16px; padding-right: 16px; }
-
   /* Toast Notification Container */
   #toastContainer {
     position: fixed;
@@ -135,7 +122,7 @@
 
 <div>
   <!-- Header / Nav -->
-  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-xs">
+  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <!-- Logo -->
@@ -147,8 +134,8 @@
       </div>
       
       <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-        <nav class="flex items-center gap-2 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-xs">
-          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-xs">Leads</button>
+        <nav class="flex items-center gap-2 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-sm">
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
           <button onclick="UIController.switchTab('analytics')" id="navAnalyticsBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Analitika</button>
           <button onclick="UIController.switchTab('chat')" id="navChatBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer flex items-center gap-1.5">
@@ -160,14 +147,14 @@
           <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
         </nav>
 
-        <button onclick="UIController.toggleTheme()" class="p-2.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition text-xs shadow-xs cursor-pointer" title="Ndrysho Pamjen">
+        <button onclick="UIController.toggleTheme()" class="p-2.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition text-xs shadow-sm cursor-pointer" title="Ndrysho Pamjen">
           <span id="themeIcon">🌙</span>
         </button>
 
         <span id="dataSource" class="hidden sm:inline-block px-3 py-2 rounded-lg card-bg border text-[11px] font-mono subtext">…</span>
 
         <div id="authContainer" class="flex items-center gap-2">
-          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-4 py-2 rounded-lg card-bg border text-xs font-semibold text-blue-600 dark:text-blue-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-4 py-2 rounded-lg card-bg border text-xs font-semibold text-blue-600 dark:text-blue-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
             <span>Identifikohu</span>
           </button>
         </div>
@@ -493,7 +480,7 @@
           <!-- Messages List -->
           <div id="chatMessagesContainer" class="h-[480px] overflow-y-auto p-5 space-y-4 text-xs font-mono">
             <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
-              <span class="text-3xl">📭</span>
+              <span class="text-3xl">💬</span>
               <span>Duke ngarkuar bisedën e ekipit...</span>
             </div>
           </div>
@@ -520,7 +507,7 @@
         <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura Enterprise</span>
         <h2 class="text-3xl font-bold tracking-tight">Rreth PaFaqe.al</h2>
         <p class="subtext text-sm sm:text-base leading-relaxed">
-          PaFaqe.al është platforma e parë e inteligjencës B2B në Shqipëri, e dizajnuar posaçërisht për agjencitë e zhvillimit web, profesionistët e shitjeve dhe konsulentët që kërkojnë të identifikojnë dhe kontaktojnë me efikasitet bizneset lokale që operojnë ende pa një faqe interneti zyrtare. Duke kombinuar një hapësirë pune (workspace) të sinkronizuar në kohë reale, mjete të avancuara të gjurmimit të lead-eve (Kanban) dhe analiza të tregut me standarde korporative, PaFaqe.al shndërron procesin e shitjeve dixhitale në një eksperiencë të shpejtë, të organizuar dhe plotësisht të orientuar drejt suksesit të ekipit tuaj.
+          PaFaqe.al është platforma e parë e inteligjencës B2B në Shqipëri, e dizajnuar posaçërisht për agjencitë e zhvillimit web, profesionistët e shitjeve dhe konsulentët që kërkojnë të identifikojnë dhe kontaktojnë me efikasitet bizneset lokale që operojnë ende pa një faqe interneti zyrtare.
         </p>
       </div>
     </div>
