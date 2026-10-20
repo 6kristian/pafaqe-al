@@ -69,6 +69,97 @@
     min-height: 520px;
   }
 
+  /* Spacing Inspector: 6kristian.github.io fixes (4px grid) */
+  #q {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  #city {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  #cat {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  #sort {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  button.px-3.py-1\.5 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  label.flex.items-center {
+    gap: 8px;
+  }
+
+  #filterPresetsSection {
+    gap: 8px;
+  }
+
+  button.ml-auto.px-3\.5 {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  button.px-5.py-2\.5 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  div.flex.flex-wrap {
+    gap: 8px;
+  }
+
+  button.chip-btn.px-3\.5 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  select.input-bg.rounded-xl {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  #authActionBtn {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  nav.flex.items-center {
+    gap: 8px;
+  }
+
+  h1.text-base.sm\:text-lg {
+    gap: 8px;
+  }
+
+  #prevBtn {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  #nextBtn {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -90,7 +181,7 @@
       </div>
       
       <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-        <nav class="flex items-center gap-1.5 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-xs">
+        <nav class="flex items-center gap-2 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-xs">
           <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-xs">Leads</button>
           <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
