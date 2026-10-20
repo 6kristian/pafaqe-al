@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Tailwind CSS CDN (zgjidh të gjitha problemet e ngarkimit të CSS) -->
+<!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -440,6 +440,7 @@
                   <span class="text-[10px] font-mono text-slate-500">0</span>
                 </button>
               </div>
+            </div>
 
             <!-- Team Members Status -->
             <div class="space-y-3">
@@ -468,7 +469,7 @@
           <!-- Feed Header -->
           <div class="p-4 border-b border-theme flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-lg font-bold"># general-chat</span>
+              <span class="text-lg font-bold" id="chatHeaderChannelTitle"># general-chat</span>
               <span class="text-xs subtext font-mono">(Komunikimi i brendshëm i organizatës)</span>
             </div>
             <button onclick="ChatService.scrollChatToBottom()" class="px-3 py-1.5 rounded-xl card-bg border text-[11px] subtext hover:text-blue-400 transition cursor-pointer">
@@ -867,12 +868,14 @@ const ChatService = {
     }
 
     // Ndrysho titullin e header-it të chat-it
-    const headerTitle = document.querySelector('#tabChat .md\\:col-span-8 .text-lg.font-bold');
+    const headerTitle = document.getElementById('chatHeaderChannelTitle');
     if (headerTitle) headerTitle.textContent = `# ${channelName}`;
 
     // Rinis listener-in e bisedës për kanalin e ri
-    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
-    this.initChatForChannel(orgId, channelName);
+    const orgId = AuthService.currentOrgId || AuthService.currentUser?.uid;
+    if (orgId) {
+      this.initChatForChannel(orgId, channelName);
+    }
   },
 
   initChat(orgId) {
@@ -886,84 +889,9 @@ const ChatService = {
     const container = document.getElementById('chatMessagesContainer');
     if (!container) return;
 
-    // Përdor sub-koleksion të ndryshëm sipas kanalit (p.sh. chats_lead-deals, etj.)
+    // Përdor sub-koleksion të ndryshëm sipas kanalit
     const subCollectionName = `chats_${channelName}`;
 
-    this.unsubscribe = db.collection('organizations').doc(orgId).collection(subCollectionName)
-      .orderBy('timestamp', 'asc')
-      .onSnapshot((snapshot) => {
-        let messages = [];
-        let senders = new Set();
-
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          messages.push(data);
-          if (data.email) senders.add(data.email);
-        });
-
-        // ... pjesa tjetër e shfaqjes së mesazheve mbetet e njëjtë ...
-        if (messages.length === 0) {
-          container.innerHTML = `
-            <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
-              <span class="text-3xl">💬</span>
-              <span>Nuk ka ende mesazhe në kanalin #${channelName}. Filloni bisedën!</span>
-            </div>`;
-          return;
-        }
-
-        container.innerHTML = messages.map(m => {
-          const isMe = AuthService.currentUser && m.email === AuthService.currentUser.email;
-          const timeStr = m.timestamp ? new Date(m.timestamp.toDate ? m.timestamp.toDate() : m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Tani';
-          const avatarUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(m.email || 'user')}`;
-          const senderName = UIController.escapeHtml(m.name || m.email.split('@')[0]);
-
-          return `
-            <div class="flex items-start gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'} mb-4">
-              <img src="${avatarUrl}" alt="Avatar" class="w-9 h-9 rounded-full bg-slate-800 border border-theme shrink-0 object-cover shadow-sm">
-              <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[78%] space-y-1">
-                <div class="flex items-center gap-2 px-1">
-                  <span class="font-bold text-[11px] text-blue-600 dark:text-blue-400">${senderName}</span>
-                  <span class="subtext text-[10px]">${timeStr}</span>
-                </div>
-                <div class="p-3.5 rounded-2xl ${isMe ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none' : 'card-bg border border-theme rounded-tl-none'} text-xs leading-relaxed shadow-sm">
-                  ${UIController.escapeHtml(m.text)}
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        this.scrollChatToBottom();
-      }, (error) => {
-        console.error("Error loading chat:", error);
-      });
-  },
-  
-  // Modifikoni gjithashtu ruajtjen e mesazhit që të përdorë kanalin aktual
-  async handleSendMessage(e) {
-    e.preventDefault();
-    if (!AuthService.currentUser) return;
-    const input = document.getElementById('chatInputMessage');
-    const text = input.value.trim();
-    if (!text) return;
-
-    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
-    const user = AuthService.currentUser;
-    const subCollectionName = `chats_${this.currentChannel}`;
-
-    try {
-      await db.collection('organizations').doc(orgId).collection(subCollectionName).add({
-        text: text,
-        email: user.email,
-        name: user.displayName || user.email.split('@')[0],
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      input.value = '';
-    } catch (err) {
-      alert("Gabim gjatë dërgimit të mesazhit: " + err.message);
-    }
-  }
-};
     // Update UI Header Cards
     const titleEl = document.getElementById('chatOrgTitle');
     if (titleEl) titleEl.textContent = `Org: ${orgId.slice(0, 10)}...`;
@@ -978,7 +906,7 @@ const ChatService = {
       if (roleEl) roleEl.textContent = `Roli: ${AuthService.userRole}`;
     }
 
-    this.unsubscribe = db.collection('organizations').doc(orgId).collection('chats')
+    this.unsubscribe = db.collection('organizations').doc(orgId).collection(subCollectionName)
       .orderBy('timestamp', 'asc')
       .onSnapshot((snapshot) => {
         let messages = [];
@@ -1008,7 +936,7 @@ const ChatService = {
           container.innerHTML = `
             <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
               <span class="text-3xl">💬</span>
-              <span>Nuk ka ende mesazhe në kanal. Filloni bisedën me ekipin!</span>
+              <span>Nuk ka ende mesazhe në kanalin #${channelName}. Filloni bisedën me ekipin!</span>
             </div>`;
           return;
         }
@@ -1063,9 +991,10 @@ const ChatService = {
 
     const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
     const user = AuthService.currentUser;
+    const subCollectionName = `chats_${this.currentChannel}`;
 
     try {
-      await db.collection('organizations').doc(orgId).collection('chats').add({
+      await db.collection('organizations').doc(orgId).collection(subCollectionName).add({
         text: text,
         email: user.email,
         name: user.displayName || user.email.split('@')[0],
@@ -1777,7 +1706,6 @@ const CRMStore = {
     const riskEl = document.getElementById('analytRiskCount');
     if (riskEl) riskEl.textContent = `${cOpp.toLocaleString()} biznese`;
 
-    // Progress bar analytics
     const pNew = totalProcessed ? Math.round((cNew / totalProcessed) * 100) : 0;
     const pCont = totalProcessed ? Math.round((cCont / totalProcessed) * 100) : 0;
     const pInt = totalProcessed ? Math.round((cInt / totalProcessed) * 100) : 0;
