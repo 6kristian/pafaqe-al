@@ -423,21 +423,20 @@
               <span class="px-2.5 py-1 rounded-lg card-bg border text-[10px] font-mono text-emerald-400">Live SSL</span>
             </div>
 
-            <!-- Channels -->
+            <!-- Channels & Custom Groups -->
             <div class="space-y-2">
-              <span class="text-[10px] font-mono uppercase subtext tracking-wider">Kanalet e Komunikimit</span>
-              <div class="space-y-1 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono uppercase subtext tracking-wider">Kanalet & Grupet</span>
+                <button onclick="ChatService.promptCreateCustomGroup()" class="text-[10px] font-mono text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-semibold">+ Krijo Grup</button>
+              </div>
+              <div id="customChannelsContainer" class="space-y-1 text-xs">
                 <button id="channelGeneralBtn" onclick="ChatService.switchChannel('general-chat')" class="w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer">
                   <span># general-chat</span>
                   <span class="text-[10px] font-mono opacity-80">Aktive</span>
                 </button>
-                <button id="channelDealsBtn" onclick="ChatService.switchChannel('lead-deals')" class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
+                <button onclick="ChatService.switchChannel('lead-deals')" class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
                   <span># lead-deals</span>
                   <span class="text-[10px] font-mono text-amber-500">🔒</span>
-                </button>
-                <button id="channelOffersBtn" onclick="ChatService.switchChannel('oferta-teknike')" class="w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer">
-                  <span># oferta-teknike</span>
-                  <span class="text-[10px] font-mono text-slate-500">0</span>
                 </button>
               </div>
             </div>
@@ -855,25 +854,60 @@ const ToastService = {
 };
 
 // ==========================================
-// 💬 ENTERPRISE CHAT SERVICE (Channels, DM & Search)
+// 💬 ENTERPRISE CHAT SERVICE (Channels, DM, Groups & Search)
 // ==========================================
 const ChatService = {
   unsubscribe: null,
   currentChannel: 'general-chat',
   currentDMUser: null,
+  customGroups: ['projekti-tirana', 'oferta-speciale'],
+
+  promptCreateCustomGroup() {
+    const groupName = prompt("Vendosni emrin e grupit të ri (p.sh. 'marketing-ekipi'):");
+    if (!groupName) return;
+    
+    const cleanId = groupName.toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-');
+    if (!cleanId) return;
+
+    if (!this.customGroups.includes(cleanId)) {
+      this.customGroups.push(cleanId);
+      this.renderCustomGroups();
+      ToastService.show(`Grupi #${cleanId} u krijua me sukses!`);
+      this.switchChannel(cleanId);
+    } else {
+      this.switchChannel(cleanId);
+    }
+  },
+
+  renderCustomGroups() {
+    const container = document.getElementById('customChannelsContainer');
+    if (!container) return;
+
+    const baseChannels = `
+      <button onclick="ChatService.switchChannel('general-chat')" class="w-full text-left px-3 py-2 rounded-xl ${this.currentChannel === 'general-chat' ? 'btn-primary font-semibold' : 'subtext hover:bg-slate-800/50'} flex items-center justify-between cursor-pointer">
+        <span># general-chat</span>
+        <span class="text-[10px] font-mono opacity-80">Aktive</span>
+      </button>
+      <button onclick="ChatService.switchChannel('lead-deals')" class="w-full text-left px-3 py-2 rounded-xl ${this.currentChannel === 'lead-deals' ? 'btn-primary font-semibold' : 'subtext hover:bg-slate-800/50'} flex items-center justify-between cursor-pointer">
+        <span># lead-deals</span>
+        <span class="text-[10px] font-mono text-amber-500">🔒</span>
+      </button>
+    `;
+
+    const customHtml = this.customGroups.map(g => `
+      <button onclick="ChatService.switchChannel('${g}')" class="w-full text-left px-3 py-2 rounded-xl ${this.currentChannel === g ? 'btn-primary font-semibold' : 'subtext hover:bg-slate-800/50'} flex items-center justify-between cursor-pointer transition">
+        <span># ${UIController.escapeHtml(g)}</span>
+        <span class="text-[10px] font-mono text-emerald-400">Grup</span>
+      </button>
+    `).join('');
+
+    container.innerHTML = baseChannels + customHtml;
+  },
 
   switchChannel(channelName) {
     this.currentChannel = channelName;
     this.currentDMUser = null;
-    
-    document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
-      btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
-    });
-    
-    const activeBtn = event?.currentTarget;
-    if (activeBtn) {
-      activeBtn.className = "w-full text-left px-3 py-2 rounded-xl btn-primary font-semibold flex items-center justify-between cursor-pointer";
-    }
+    this.renderCustomGroups();
 
     const headerTitle = document.getElementById('chatHeaderChannelTitle');
     if (headerTitle) headerTitle.textContent = `# ${channelName}`;
@@ -887,10 +921,7 @@ const ChatService = {
   openDirectMessage(targetEmail) {
     this.currentChannel = null;
     this.currentDMUser = targetEmail;
-
-    document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
-      btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
-    });
+    this.renderCustomGroups();
 
     const headerTitle = document.getElementById('chatHeaderChannelTitle');
     if (headerTitle) headerTitle.textContent = `DM: @${targetEmail.split('@')[0]}`;
@@ -911,6 +942,7 @@ const ChatService = {
   },
 
   initChat(orgId) {
+    this.renderCustomGroups();
     if (this.currentDMUser) {
       this.initChatForDM(orgId, this.currentDMUser);
     } else {
@@ -994,7 +1026,7 @@ const ChatService = {
           container.innerHTML = `
             <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
               <span class="text-3xl">💬</span>
-              <span>Nuk ka ende mesazhe. Filloni bisedën!</span>
+              <span>Nuk ka ende mesazhe në këtë hapësirë. Filloni bisedën!</span>
             </div>`;
           return;
         }
