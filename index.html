@@ -1319,7 +1319,6 @@ const AuthService = {
         if (filterSec) filterSec.classList.remove('hidden');
         if (filterPresetsSec) filterPresetsSec.classList.remove('hidden');
         
-        // SHFAQ TAB-ET E EKIPIT KUR ËSHTË I IDENTIFIKUAR
         if (navProfileBtn) navProfileBtn.classList.remove('hidden');
         if (navKanbanBtn) navKanbanBtn.classList.remove('hidden');
         if (navAnalyticsBtn) navAnalyticsBtn.classList.remove('hidden');
@@ -1346,16 +1345,12 @@ const AuthService = {
         if (filterSec) filterSec.classList.add('hidden');
         if (filterPresetsSec) filterPresetsSec.classList.add('hidden');
         
-        // FSHIH TAB-ET E EKIPIT KUR ËSHTË I SHKËPUTUR (SIGNED OUT)
         if (navProfileBtn) navProfileBtn.classList.add('hidden');
         if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
         if (navAnalyticsBtn) navAnalyticsBtn.classList.add('hidden');
         if (navChatBtn) navChatBtn.classList.add('hidden');
         
-        const activeTab = document.querySelector('main > div:not(.hidden)');
-        if (activeTab && activeTab.id !== 'tabLeads' && activeTab.id !== 'tabAbout' && activeTab.id !== 'tabContact') {
-          UIController.switchTab('leads');
-        }
+        UIController.switchTab('leads');
         CRMStore.render();
       }
     });
@@ -2115,6 +2110,13 @@ const UIController = {
   },
 
   switchTab(tab) {
+    // KONTROLLI MBROJTËS: Nëse përdoruesi nuk është i identifikuar, lejo vetëm tab-et publike (leads, about, contact)
+    const protectedTabs = ['kanban', 'analytics', 'chat', 'profile'];
+    if (!AuthService.currentUser && protectedTabs.includes(tab)) {
+      AuthService.openAuthModal();
+      return;
+    }
+
     ['tabLeads', 'tabKanban', 'tabAnalytics', 'tabChat', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
     document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.remove('hidden');
     
