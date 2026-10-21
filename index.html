@@ -1746,46 +1746,54 @@ const CRMStore = {
   },
 
   updateAnalytics(totalCount) {
+    // Përdor totalin e bizneseve aktive në databazë ose filtrin aktual
+    const allBusinesses = this.DATA && this.DATA.businesses ? this.DATA.businesses : [];
     const totalLeadsEl = document.getElementById('analyticsTotalLeads');
-    if (totalLeadsEl) totalLeadsEl.textContent = totalCount.toLocaleString();
+    if (totalLeadsEl) totalLeadsEl.textContent = allBusinesses.length.toLocaleString();
 
-    let cNew = 0, cCont = 0, cInt = 0, cClosed = 0, cOpp = 0;
-    if (this.DATA && this.DATA.businesses) {
-      this.DATA.businesses.forEach(b => {
-        const st = this.getLeadStatus(b.id || b.name);
-        if (st === 'contacted') cCont++;
-        else if (st === 'interested') cInt++;
-        else if (st === 'closed') cClosed++;
-        else cNew++;
+    let cNew = 0, cCont = 0, cInt = 0, cClosed = 0, cRisk = 0;
 
-        const r = this.getLeadRating(b) || 0;
-        if (r > 0 && r < 3.5) cOpp++;
-      });
-    }
+    allBusinesses.forEach(b => {
+      const st = this.getLeadStatus(b.id || b.name);
+      if (st === 'contacted') cCont++;
+      else if (st === 'interested') cInt++;
+      else if (st === 'closed') cClosed++;
+      else cNew++;
+
+      const r = this.getLeadRating(b) || 0;
+      if (r > 0 && r < 3.5) cRisk++;
+    });
 
     const totalProcessed = cNew + cCont + cInt + cClosed;
     const winRate = totalProcessed > 0 ? Math.round((cClosed / totalProcessed) * 100) : 0;
     const activePipelineCount = cCont + cInt;
 
+    // Përditëso kutitë e shifrave në tab-in e analitikës
     const winRateEl = document.getElementById('analytWinRate');
     if (winRateEl) winRateEl.textContent = `${winRate}%`;
+    
     const activePipeEl = document.getElementById('analytActivePipeline');
     if (activePipeEl) activePipeEl.textContent = `${activePipelineCount.toLocaleString()} biznese`;
+    
     const riskEl = document.getElementById('analytRiskCount');
-    if (riskEl) riskEl.textContent = `${cOpp.toLocaleString()} biznese`;
+    if (riskEl) riskEl.textContent = `${cRisk.toLocaleString()} biznese`;
 
-    const pNew = totalProcessed ? Math.round((cNew / totalProcessed) * 100) : 0;
-    const pCont = totalProcessed ? Math.round((cCont / totalProcessed) * 100) : 0;
-    const pInt = totalProcessed ? Math.round((cInt / totalProcessed) * 100) : 0;
-    const pClosed = totalProcessed ? Math.round((cClosed / totalProcessed) * 100) : 0;
+    // Llogarit përqindjet për shiritat e progresit (Progress Bars)
+    const pNew = totalProcessed > 0 ? Math.round((cNew / totalProcessed) * 100) : 0;
+    const pCont = totalProcessed > 0 ? Math.round((cCont / totalProcessed) * 100) : 0;
+    const pInt = totalProcessed > 0 ? Math.round((cInt / totalProcessed) * 100) : 0;
+    const pClosed = totalProcessed > 0 ? Math.round((cClosed / totalProcessed) * 100) : 0;
 
     if (document.getElementById('barNewPct')) {
       document.getElementById('barNewPct').textContent = `${pNew}%`;
       document.getElementById('fillNew').style.width = `${pNew}%`;
+      
       document.getElementById('barContPct').textContent = `${pCont}%`;
       document.getElementById('fillCont').style.width = `${pCont}%`;
+      
       document.getElementById('barIntPct').textContent = `${pInt}%`;
       document.getElementById('fillInt').style.width = `${pInt}%`;
+      
       document.getElementById('barClosedPct').textContent = `${pClosed}%`;
       document.getElementById('fillClosed').style.width = `${pClosed}%`;
     }
