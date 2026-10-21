@@ -23,6 +23,44 @@
         }
       }
     }
+  };
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.emailjs) {
+      emailjs.init("WMwsAouaeRvtJDhKa");
+    }
+  });
+</script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
+    authDomain: "pafaqeal.firebaseapp.com",
+    projectId: "pafaqeal",
+    storageBucket: "pafaqeal.firebasestorage.app",
+    messagingSenderId: "292435292597",
+    appId: "1:292435292597:web:c266bf46c4e0869be869fc",
+    measurementId: "G-5QD3YLQPQP"
+  };
+
+  let auth = null;
+  let db = null;
+
+  if (window.firebase && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+  } else if (window.firebase && firebase.apps.length) {
+    auth = firebase.auth();
+    db = firebase.firestore();
+  } else {
+    console.warn("Firebase SDK did not load. Running in demo-only mode.");
+  }
+
+  if (!auth || !db) {
+    window.__PAFAQE_DEMO_MODE__ = true;
   }
 </script>
 
@@ -32,11 +70,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <!-- EmailJS SDK -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script type="text/javascript">
-  (function() {
-    emailjs.init("WMwsAouaeRvtJDhKa"); 
-  })();
-</script>
+
 
 <!-- jsPDF për Eksportin PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -852,11 +886,7 @@ const firebaseConfig = {
   measurementId: "G-5QD3YLQPQP"
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const auth = firebase.auth();
-const db = firebase.firestore();
+
 
 const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business Enterprise", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
 
