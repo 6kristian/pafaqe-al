@@ -1390,15 +1390,19 @@ const AuthService = {
       return;
     }
     const email = document.getElementById('inviteEmailInput').value.trim();
-    if (!email) return;
+    if (!email) {
+      alert("Ju lutem vendosni një adresë email.");
+      return;
+    }
+
+    const inviteText = `Përshëndetje! Jeni ftuar të bashkoheni në hapësirën tonë të shitjeve në PaFaqe.al.\n\nPërdorni këtë ID të Organizatës kur të regjistroheni: ${this.currentOrgId}`;
+
     try {
-      const inviteSubject = encodeURIComponent("Ftesë për t'u bashkuar në PaFaqe.al Enterprise");
-      const inviteBody = encodeURIComponent(`Përshëndetje,\n\nJeni ftuar të bashkoheni në hapësirën tonë të shitjeve në PaFaqe.al.\n\nPërdorni këtë ID të Organizatës kur të regjistroheni: ${this.currentOrgId}\n\nMe respekt,\nEkipi`);
-      window.open(`mailto:${email}?subject=${inviteSubject}&body=${inviteBody}`);
-      ToastService.show("Klienti i email-it u hap për dërgimin e ftesës.");
+      await navigator.clipboard.writeText(inviteText);
+      ToastService.show(`Ftesa për ${email} u kopjua në clipboard! Mund t'ia dërgoni.`);
       document.getElementById('inviteEmailInput').value = '';
     } catch (e) {
-      alert("Gabim gjatë dërgimit: " + e.message);
+      alert("Gabim gjatë kopjimit: " + e.message);
     }
   },
 
