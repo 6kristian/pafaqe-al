@@ -30,6 +30,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function() {
+    emailjs.init("WMwsAouaeRvtJDhKa"); 
+  })();
+</script>
 
 <!-- jsPDF për Eksportin PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1400,7 +1407,8 @@ const AuthService = {
     });
   },
 
-  async sendTeamInvite() {
+  
+async sendTeamInvite() {
     if (this.userRole !== 'Owner') {
       alert("Vetëm administratori (Owner) mund të dërgojë ftesa ekipi.");
       return;
@@ -1412,7 +1420,7 @@ const AuthService = {
     }
 
     try {
-      // Regjistro ftesën në Firestore për t'u lidhur automatikisht kur përdoruesi të futet
+      // 1. Regjistro ftesën në Firestore (për auto-lidhjen kur të regjistrohet)
       await db.collection('invitations').add({
         email: email,
         orgId: this.currentOrgId,
@@ -1421,11 +1429,22 @@ const AuthService = {
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      ToastService.show(`Ftesa Enterprise u regjistrua në databazë për: ${email}`);
+      // 2. Dërgo email-in fizik përmes EmailJS
+      const templateParams = {
+        to_email: email,
+        org_id: this.currentOrgId,
+        invited_by: this.currentUser.email
+      };
+
+      // Zëvendësoni 'service_kggnvcu' dhe 'YOUR_TEMPLATE_ID' me vlerat tuaja nga EmailJS
+      await emailjs.send('service_kggnvcu', '__ejs-test-mail-service__
+', templateParams);
+
+      ToastService.show(`Email-i i ftesës u dërgua me sukses te: ${email}`);
       document.getElementById('inviteEmailInput').value = '';
       await CRMStore.fetchTeamMemberCount(this.currentOrgId);
     } catch (e) {
-      alert("Gabim gjatë ruajtjes së ftesës: " + e.message);
+      alert("Gabim gjatë dërgimit të ftesës: " + e.message);
     }
   },
 
