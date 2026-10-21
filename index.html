@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace</title>
+<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace (Enterprise)</title>
 <meta name="description" content="Platformë profesionale e inteligjencës B2B për agjencitë web në Shqipëri.">
 
 <!-- Enterprise Font Inter -->
@@ -230,7 +230,7 @@
           <div class="flex items-center gap-2 ml-auto">
             <select id="exportFormatSelect" class="input-bg rounded-xl px-3 py-2 text-xs border outline-none cursor-pointer">
               <option value="csv">Format: CSV</option>
-              <option value="json">Format: JSON</option>
+              <option value="json">Format: JSON (Enterprise)</option>
               <option value="pdf">Format: PDF Raport</option>
             </select>
             <button onclick="CRMStore.exportDataAdvanced()" class="px-5 py-2.5 rounded-xl btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-2 cursor-pointer">
@@ -288,7 +288,7 @@
           <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl card-bg border text-blue-600 dark:text-blue-400 font-bold">🔒</div>
           <h3 class="text-lg font-bold">Kërkohet Identifikimi në Ekip</h3>
           <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
-            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, auditet e ndryshimeve në kohë reale dhe panelin e avancuar.
+            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, auditet e ndryshimeve në kohë reale dhe panelin e avancuar Enterprise.
           </p>
           <div class="pt-2">
             <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
@@ -558,11 +558,12 @@
 
             <!-- Fto Anëtar të Ri -->
             <div id="inviteMemberSection" class="space-y-1.5 border-t border-theme pt-4">
-              <label class="block font-mono uppercase subtext text-[11px]">Fto Anëtar në Ekip (Email)</label>
+              <label class="block font-mono uppercase subtext text-[11px]">Fto Anëtar në Ekip (Database Invite)</label>
               <div class="flex items-center gap-2">
                 <input type="email" id="inviteEmailInput" placeholder="kolegu@example.com" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border outline-none">
                 <button onclick="AuthService.sendTeamInvite()" class="px-4 py-2.5 rounded-xl btn-primary font-semibold shrink-0 cursor-pointer">Fto</button>
               </div>
+              <p class="text-[10px] subtext mt-1">Kolegu do të lidhet automatikisht me organizatën tuaj sapo të futet me këtë email.</p>
             </div>
 
             <div class="space-y-1.5">
@@ -1270,13 +1271,28 @@ const AuthService = {
             this.currentOrgId = uData.orgId || user.uid;
             this.userRole = uData.role || 'Owner';
           } else {
-            this.currentOrgId = user.uid;
-            this.userRole = 'Owner';
+            // Kontrollo nëse ky email është i ftuar nga ndonjë organizatë (Enterprise Invite Flow)
+            let assignedOrgId = user.uid;
+            let assignedRole = 'Owner';
+
+            const inviteSnap = await db.collection('invitations').where('email', '==', user.email).where('status', '==', 'pending').get();
+            if (!inviteSnap.empty) {
+              const inviteData = inviteSnap.docs[0].data();
+              assignedOrgId = inviteData.orgId;
+              assignedRole = 'Sales Rep';
+              // Përditëso ftesën si të pranuar
+              await inviteSnap.docs[0].ref.update({ status: 'accepted' });
+              ToastService.show(`U lidhët automatikisht me organizatën e ftuar (${assignedOrgId.slice(0,8)}...)!`);
+            }
+
+            this.currentOrgId = assignedOrgId;
+            this.userRole = assignedRole;
+
             await db.collection('users').doc(user.uid).set({
               email: user.email,
               name: user.displayName || '',
-              orgId: user.uid,
-              role: 'Owner',
+              orgId: assignedOrgId,
+              role: assignedRole,
               online: true
             }, { merge: true });
           }
@@ -1389,20 +1405,27 @@ const AuthService = {
       alert("Vetëm administratori (Owner) mund të dërgojë ftesa ekipi.");
       return;
     }
-    const email = document.getElementById('inviteEmailInput').value.trim();
+    const email = document.getElementById('inviteEmailInput').value.trim().toLowerCase();
     if (!email) {
       alert("Ju lutem vendosni një adresë email.");
       return;
     }
 
-    const inviteText = `Përshëndetje! Jeni ftuar të bashkoheni në hapësirën tonë të shitjeve në PaFaqe.al.\n\nPërdorni këtë ID të Organizatës kur të regjistroheni: ${this.currentOrgId}`;
-
     try {
-      await navigator.clipboard.writeText(inviteText);
-      ToastService.show(`Ftesa për ${email} u kopjua në clipboard! Mund t'ia dërgoni.`);
+      // Regjistro ftesën në Firestore për t'u lidhur automatikisht kur përdoruesi të futet
+      await db.collection('invitations').add({
+        email: email,
+        orgId: this.currentOrgId,
+        invitedBy: this.currentUser.email,
+        status: 'pending',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      ToastService.show(`Ftesa Enterprise u regjistrua në databazë për: ${email}`);
       document.getElementById('inviteEmailInput').value = '';
+      await CRMStore.fetchTeamMemberCount(this.currentOrgId);
     } catch (e) {
-      alert("Gabim gjatë kopjimit: " + e.message);
+      alert("Gabim gjatë ruajtjes së ftesës: " + e.message);
     }
   },
 
@@ -1474,13 +1497,27 @@ const AuthService = {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
         await cred.user.updateProfile({ displayName: name });
         await cred.user.sendEmailVerification();
+        
+        let assignedOrgId = cred.user.uid;
+        let assignedRole = selectedRole;
+
+        // Kontrollo nëse ka ndonjë ftesë aktive për këtë email
+        const inviteSnap = await db.collection('invitations').where('email', '==', email.toLowerCase()).where('status', '==', 'pending').get();
+        if (!inviteSnap.empty) {
+          const inviteData = inviteSnap.docs[0].data();
+          assignedOrgId = inviteData.orgId;
+          assignedRole = 'Sales Rep';
+          await inviteSnap.docs[0].ref.update({ status: 'accepted' });
+        }
+
         await db.collection('users').doc(cred.user.uid).set({
           email: email,
           name: name,
-          orgId: cred.user.uid,
-          role: selectedRole,
+          orgId: assignedOrgId,
+          role: assignedRole,
           online: true
         }, { merge: true });
+
         alert('Llogaria u krijua me sukses! Ju lutem verifikoni email-in tuaj.');
       } else {
         await auth.signInWithEmailAndPassword(email, password);
