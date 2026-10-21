@@ -866,7 +866,6 @@ const ChatService = {
     this.currentChannel = channelName;
     this.currentDMUser = null;
     
-    // Përditëso stilin e butonave të kanaleve
     document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
       btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
     });
@@ -889,7 +888,6 @@ const ChatService = {
     this.currentChannel = null;
     this.currentDMUser = targetEmail;
 
-    // Hiq active nga butonat e kanaleve
     document.querySelectorAll('#tabChat .space-y-1.text-xs button').forEach(btn => {
       btn.className = "w-full text-left px-3 py-2 rounded-xl subtext hover:bg-slate-800/50 transition flex items-center justify-between cursor-pointer";
     });
@@ -967,7 +965,6 @@ const ChatService = {
           if (data.email) senders.add(data.email);
         });
 
-        // Update online/team directory list with DM triggers
         const onlineContainer = document.getElementById('chatOnlineUsersContainer');
         const teamBadge = document.getElementById('teamCountBadge');
         if (onlineContainer) {
@@ -1746,7 +1743,6 @@ const CRMStore = {
   },
 
   updateAnalytics(totalCount) {
-    // Përdor totalin e bizneseve aktive në databazë ose filtrin aktual
     const allBusinesses = this.DATA && this.DATA.businesses ? this.DATA.businesses : [];
     const totalLeadsEl = document.getElementById('analyticsTotalLeads');
     if (totalLeadsEl) totalLeadsEl.textContent = allBusinesses.length.toLocaleString();
@@ -1768,7 +1764,6 @@ const CRMStore = {
     const winRate = totalProcessed > 0 ? Math.round((cClosed / totalProcessed) * 100) : 0;
     const activePipelineCount = cCont + cInt;
 
-    // Përditëso kutitë e shifrave në tab-in e analitikës
     const winRateEl = document.getElementById('analytWinRate');
     if (winRateEl) winRateEl.textContent = `${winRate}%`;
     
@@ -1778,7 +1773,6 @@ const CRMStore = {
     const riskEl = document.getElementById('analytRiskCount');
     if (riskEl) riskEl.textContent = `${cRisk.toLocaleString()} biznese`;
 
-    // Llogarit përqindjet për shiritat e progresit (Progress Bars)
     const pNew = totalProcessed > 0 ? Math.round((cNew / totalProcessed) * 100) : 0;
     const pCont = totalProcessed > 0 ? Math.round((cCont / totalProcessed) * 100) : 0;
     const pInt = totalProcessed > 0 ? Math.round((cInt / totalProcessed) * 100) : 0;
