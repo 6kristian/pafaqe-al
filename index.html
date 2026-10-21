@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace (Enterprise)</title>
+<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace</title>
 <meta name="description" content="Platformë profesionale e inteligjencës B2B për agjencitë web në Shqipëri.">
 
 <!-- Enterprise Font Inter -->
@@ -30,6 +30,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<!-- jsPDF për Eksportin PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
   body { 
@@ -143,7 +146,10 @@
           </button>
           <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
           <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
-          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Ekipi</button>
+          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer flex items-center gap-1.5">
+            <span>Ekipi</span>
+            <span id="navLiveActivityBadge" class="hidden w-2 h-2 rounded-full bg-amber-500" title="Aktivitet i ri"></span>
+          </button>
         </nav>
 
         <button onclick="UIController.toggleTheme()" class="p-2.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition text-xs shadow-sm cursor-pointer" title="Ndrysho Pamjen">
@@ -198,11 +204,14 @@
             <option value="name">Rendit: Emri A→Z</option>
           </select>
         </div>
-        <div class="md:col-span-3 flex items-center justify-between gap-3 text-xs px-1">
-          <label class="flex items-center gap-2.5 cursor-pointer select-none subtext">
-            <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Vetëm me Telefon
+        <div class="md:col-span-3 flex items-center justify-between gap-2 text-xs px-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none subtext">
+            <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Vetëm Tel
           </label>
-          <button onclick="UIController.resetAllFilters()" class="px-3 py-1.5 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-medium transition cursor-pointer text-[11px]">Pastro Filtrat ↺</button>
+          <label class="flex items-center gap-2 cursor-pointer select-none subtext">
+            <input id="includeWebsite" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Me Web (Redesign)
+          </label>
+          <button onclick="UIController.resetAllFilters()" class="px-2.5 py-1.5 rounded-xl card-bg border subtext hover:text-blue-600 font-medium transition cursor-pointer text-[10px]">Pastro ↺</button>
         </div>
       </section>
 
@@ -221,7 +230,8 @@
           <div class="flex items-center gap-2 ml-auto">
             <select id="exportFormatSelect" class="input-bg rounded-xl px-3 py-2 text-xs border outline-none cursor-pointer">
               <option value="csv">Format: CSV</option>
-              <option value="json">Format: JSON (Enterprise)</option>
+              <option value="json">Format: JSON</option>
+              <option value="pdf">Format: PDF Raport</option>
             </select>
             <button onclick="CRMStore.exportDataAdvanced()" class="px-5 py-2.5 rounded-xl btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-2 cursor-pointer">
               <span id="exportBtnText">Eksporto të Dhënat</span>
@@ -278,7 +288,7 @@
           <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl card-bg border text-blue-600 dark:text-blue-400 font-bold">🔒</div>
           <h3 class="text-lg font-bold">Kërkohet Identifikimi në Ekip</h3>
           <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
-            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, auditet e ndryshimeve në kohë reale dhe panelin e avancuar Enterprise.
+            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, auditet e ndryshimeve në kohë reale dhe panelin e avancuar.
           </p>
           <div class="pt-2">
             <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
@@ -546,6 +556,15 @@
               <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-2" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
             </div>
 
+            <!-- Fto Anëtar të Ri -->
+            <div id="inviteMemberSection" class="space-y-1.5 border-t border-theme pt-4">
+              <label class="block font-mono uppercase subtext text-[11px]">Fto Anëtar në Ekip (Email)</label>
+              <div class="flex items-center gap-2">
+                <input type="email" id="inviteEmailInput" placeholder="kolegu@example.com" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border outline-none">
+                <button onclick="AuthService.sendTeamInvite()" class="px-4 py-2.5 rounded-xl btn-primary font-semibold shrink-0 cursor-pointer">Fto</button>
+              </div>
+            </div>
+
             <div class="space-y-1.5">
               <label class="block font-mono uppercase subtext text-[11px]">Bashkohu në Organizatë Tjetër</label>
               <div class="flex items-center gap-2">
@@ -577,6 +596,7 @@
           <div class="p-4 rounded-2xl card-bg border border-theme space-y-2 text-xs font-mono">
             <div class="flex justify-between"><span class="subtext">Statusi i Llogarisë:</span> <span class="text-emerald-400">Aktiv / Secure</span></div>
             <div class="flex justify-between"><span class="subtext">Protokolli i Sinkronizimit:</span> <span>Firestore SSL</span></div>
+            <div class="flex justify-between"><span class="subtext">Niveli i Qasjes:</span> <span id="rbacLevelText" class="text-blue-400">Full Access (Owner)</span></div>
           </div>
         </div>
       </div>
@@ -715,8 +735,11 @@
           </select>
         </div>
         <div class="space-y-1.5">
-          <label class="block font-mono uppercase subtext text-[11px]">Data e Kujtesës (Reminder)</label>
-          <input type="date" id="leadReminderInput" class="input-bg w-full rounded-xl p-3 text-xs border outline-none">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-mono uppercase subtext text-[11px]">Data e Kujtesës (Reminder)</label>
+            <a id="googleCalendarLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-[11px] text-blue-600 dark:text-blue-400 hover:underline">Shto në G-Calendar ↗</a>
+          </div>
+          <input type="date" id="leadReminderInput" onchange="UIController.updateGoogleCalendarUrl()" class="input-bg w-full rounded-xl p-3 text-xs border outline-none">
         </div>
       </div>
 
@@ -1266,6 +1289,11 @@ const AuthService = {
         if (orgInput) orgInput.value = this.currentOrgId;
         const roleBadge = document.getElementById('userRoleBadge');
         if (roleBadge) roleBadge.textContent = `Roli: ${this.userRole}`;
+        const rbacText = document.getElementById('rbacLevelText');
+        if (rbacText) rbacText.textContent = this.userRole === 'Owner' ? 'Full Access (Owner)' : 'Restricted (Sales Rep)';
+        const inviteSec = document.getElementById('inviteMemberSection');
+        if (inviteSec) inviteSec.classList.toggle('hidden', this.userRole !== 'Owner');
+
         const orgStat = document.getElementById('statOrgName');
         if (orgStat) orgStat.textContent = this.currentOrgId.slice(0, 10) + '...';
 
@@ -1354,6 +1382,24 @@ const AuthService = {
         CRMStore.render();
       }
     });
+  },
+
+  async sendTeamInvite() {
+    if (this.userRole !== 'Owner') {
+      alert("Vetëm administratori (Owner) mund të dërgojë ftesa ekipi.");
+      return;
+    }
+    const email = document.getElementById('inviteEmailInput').value.trim();
+    if (!email) return;
+    try {
+      const inviteSubject = encodeURIComponent("Ftesë për t'u bashkuar në PaFaqe.al Enterprise");
+      const inviteBody = encodeURIComponent(`Përshëndetje,\n\nJeni ftuar të bashkoheni në hapësirën tonë të shitjeve në PaFaqe.al.\n\nPërdorni këtë ID të Organizatës kur të regjistroheni: ${this.currentOrgId}\n\nMe respekt,\nEkipi`);
+      window.open(`mailto:${email}?subject=${inviteSubject}&body=${inviteBody}`);
+      ToastService.show("Klienti i email-it u hap për dërgimin e ftesës.");
+      document.getElementById('inviteEmailInput').value = '';
+    } catch (e) {
+      alert("Gabim gjatë dërgimit: " + e.message);
+    }
   },
 
   async signOutAction() {
@@ -1554,6 +1600,9 @@ const CRMStore = {
     if (!this.cloudHistory[leadKey]) this.cloudHistory[leadKey] = [];
     this.cloudHistory[leadKey].unshift(newEvent);
 
+    const badge = document.getElementById('navLiveActivityBadge');
+    if (badge) badge.classList.remove('hidden');
+
     if (AuthService.currentUser) {
       const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
       try {
@@ -1653,7 +1702,10 @@ const CRMStore = {
   filtered() {
     if (!this.DATA || !this.DATA.businesses) return [];
     let list = this.DATA.businesses.filter(b => {
-      if(!this.showAll && b.website) return false;
+      const includeWebsite = AuthService.currentUser ? (document.getElementById('includeWebsite')?.checked || false) : false;
+      if (!includeWebsite && !this.showAll && b.website) return false;
+      if (includeWebsite && !b.website) return false;
+
       const effectiveRating = this.getLeadRating(b);
       if(this.lowRatingOnly && (effectiveRating && effectiveRating >= 3.5)) return false;
       
@@ -1792,6 +1844,40 @@ const CRMStore = {
       a.download = 'enterprise-leads-export.json';
       a.click();
       ToastService.show('Eksportimi JSON u realizua me sukses.');
+    } else if (format === 'pdf') {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("PaFaqe.al - Enterprise Leads Report", 14, 20);
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Data e gjenerimit: ${new Date().toLocaleDateString()}`, 14, 28);
+      doc.text(`Total biznese në raport: ${list.length}`, 14, 34);
+
+      let y = 46;
+      doc.setFont("helvetica", "bold");
+      doc.text("Emri i Biznesit", 14, y);
+      doc.text("Qyteti", 90, y);
+      doc.text("Telefoni", 130, y);
+      doc.text("Score", 180, y);
+      y += 6;
+      doc.line(14, y, 196, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      list.slice(0, 35).forEach(b => {
+        if (y > 280) { doc.addPage(); y = 20; }
+        doc.text((b.name || '').substring(0, 35), 14, y);
+        doc.text((b.city || '—').substring(0, 18), 90, y);
+        doc.text((b.phone || '—').substring(0, 18), 130, y);
+        doc.text(String(this.leadScore(b)), 180, y);
+        y += 8;
+      });
+
+      doc.save('enterprise-leads-report.pdf');
+      ToastService.show('Raporti PDF u gjenerua me sukses.');
     } else {
       const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
       const body = list.map(b => [
@@ -1817,7 +1903,8 @@ const CRMStore = {
 
   renderKanban() {
     if (!this.DATA || !this.DATA.businesses) return;
-    const list = this.DATA.businesses.filter(b => !b.website);
+    const includeWebsite = document.getElementById('includeWebsite')?.checked || false;
+    const list = this.DATA.businesses.filter(b => includeWebsite ? !!b.website : !b.website);
     const cols = {
       new: document.getElementById('kanbanColNew'),
       contacted: document.getElementById('kanbanColContacted'),
@@ -2110,11 +2197,15 @@ const UIController = {
   },
 
   switchTab(tab) {
-    // KONTROLLI MBROJTËS: Nëse përdoruesi nuk është i identifikuar, lejo vetëm tab-et publike (leads, about, contact)
     const protectedTabs = ['kanban', 'analytics', 'chat', 'profile'];
     if (!AuthService.currentUser && protectedTabs.includes(tab)) {
       AuthService.openAuthModal();
       return;
+    }
+
+    if (tab === 'profile') {
+      const badge = document.getElementById('navLiveActivityBadge');
+      if (badge) badge.classList.add('hidden');
     }
 
     ['tabLeads', 'tabKanban', 'tabAnalytics', 'tabChat', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
@@ -2175,12 +2266,14 @@ const UIController = {
     const catEl = document.getElementById('cat');
     const sortEl = document.getElementById('sort');
     const phoneOnlyEl = document.getElementById('phoneOnly');
+    const includeWebsiteEl = document.getElementById('includeWebsite');
 
     if (qEl) qEl.value = '';
     if (cityEl) cityEl.value = '';
     if (catEl) catEl.value = '';
     if (sortEl) sortEl.value = 'score';
     if (phoneOnlyEl) phoneOnlyEl.checked = false;
+    if (includeWebsiteEl) includeWebsiteEl.checked = false;
     CRMStore.lowRatingOnly = false;
     CRMStore.showAll = false;
 
@@ -2202,10 +2295,30 @@ const UIController = {
     CRMStore.activeLeadKeyForNotes = leadKey;
     document.getElementById('notesBusinessSubtitle').textContent = b ? b.name : leadKey;
     document.getElementById('leadNoteInput').value = CRMStore.getLeadNote(leadKey);
-    document.getElementById('leadReminderInput').value = CRMStore.getLeadReminder(leadKey);
+    const remVal = CRMStore.getLeadReminder(leadKey);
+    document.getElementById('leadReminderInput').value = remVal;
     document.getElementById('leadCustomRatingInput').value = CRMStore.cloudRatings[leadKey] || '';
+    
+    this.updateGoogleCalendarUrl();
     this.renderActivityTimeline(leadKey);
     document.getElementById('notesModal').classList.remove('hidden');
+  },
+
+  updateGoogleCalendarUrl() {
+    const dateInput = document.getElementById('leadReminderInput').value;
+    const linkEl = document.getElementById('googleCalendarLink');
+    if (!linkEl) return;
+
+    if (!dateInput) {
+      linkEl.classList.add('hidden');
+      return;
+    }
+
+    linkEl.classList.remove('hidden');
+    const cleanDate = dateInput.replace(/-/g, '');
+    const title = encodeURIComponent(`Kujtesë CRM: Ndiq biznesin ${document.getElementById('notesBusinessSubtitle').textContent}`);
+    const details = encodeURIComponent(`Kujtesë e vendosur nga paneli i PaFaqe.al`);
+    linkEl.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${cleanDate}/${cleanDate}&details=${details}`;
   },
 
   renderActivityTimeline(leadKey) {
