@@ -26,15 +26,26 @@
   };
 </script>
 
+<!-- Firebase Compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<!-- jsPDF për Eksportin PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
+  // Inicializimi i EmailJS
   window.addEventListener('DOMContentLoaded', () => {
     if (window.emailjs) {
       emailjs.init("WMwsAouaeRvtJDhKa");
     }
   });
-</script>
 
-<script>
+  // Konfigurimi i Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
     authDomain: "pafaqeal.firebaseapp.com",
@@ -63,17 +74,6 @@
     window.__PAFAQE_DEMO_MODE__ = true;
   }
 </script>
-
-<!-- Firebase Compat SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-
-<!-- jsPDF për Eksportin PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
   body { 
@@ -418,7 +418,7 @@
             <p class="subtext text-[11px]">Biznese në faza kontakti ose interesi.</p>
           </div>
           <div class="p-5 rounded-2xl card-bg border space-y-2">
-            <span class="subtext uppercase text-[10px]">Potenciali i Riskit (<3.5★)</span>
+            <span class="subtext uppercase text-[10px]">Potenciali i Riskit (&lt;3.5★)</span>
             <div id="analytRiskCount" class="text-2xl font-bold text-rose-400">0 biznese</div>
             <p class="subtext text-[11px]">Mundësi shërbimi për menaxhim reputacioni.</p>
           </div>
@@ -452,7 +452,7 @@
     <div id="tabChat" class="hidden max-w-6xl mx-auto py-4">
       <div class="card-bg border rounded-3xl overflow-hidden shadow-xl grid grid-cols-1 md:grid-cols-12 min-h-[620px]">
         
-        <!-- Chat Sidebar (Channels, Custom Groups & Members) -->
+        <!-- Chat Sidebar -->
         <div class="md:col-span-4 border-r border-theme p-5 flex flex-col justify-between space-y-6 card-bg">
           <div class="space-y-6">
             <div class="flex items-center justify-between border-b border-theme pb-4">
@@ -468,9 +468,7 @@
                 <span class="text-[10px] font-mono uppercase subtext tracking-wider">Kanalet & Grupet</span>
                 <button onclick="ChatService.promptCreateCustomGroup()" class="text-[10px] font-mono text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-semibold">+ Krijo Grup</button>
               </div>
-              <div id="customChannelsContainer" class="space-y-1 text-xs">
-                <!-- Rendet dinamikisht -->
-              </div>
+              <div id="customChannelsContainer" class="space-y-1 text-xs"></div>
             </div>
 
             <div class="space-y-3 pt-3 border-t border-theme">
@@ -478,12 +476,8 @@
                 <span class="text-[10px] font-mono uppercase subtext tracking-wider">Anëtarët e Ekipit (Të Gjithë)</span>
                 <span id="teamCountBadge" class="text-[10px] font-mono text-blue-600 dark:text-blue-400">0 regjistruar</span>
               </div>
-              
               <input type="text" id="searchTeamInput" oninput="ChatService.filterTeamMembers(this.value)" placeholder="Kërko anëtarët..." class="input-bg w-full rounded-xl px-3 py-1.5 text-xs outline-none border">
-
-              <div id="chatOnlineUsersContainer" class="space-y-1.5 text-xs max-h-40 overflow-y-auto pr-1">
-                <!-- Ngarkohet dinamikisht nga DB -->
-              </div>
+              <div id="chatOnlineUsersContainer" class="space-y-1.5 text-xs max-h-40 overflow-y-auto pr-1"></div>
             </div>
           </div>
 
@@ -873,21 +867,6 @@
 </footer>
 
 <script>
-// ==========================================
-// 🔑 FIREBASE CONFIGURATION & SDK INIT
-// ==========================================
-const firebaseConfig = {
-  apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
-  authDomain: "pafaqeal.firebaseapp.com",
-  projectId: "pafaqeal",
-  storageBucket: "pafaqeal.firebasestorage.app",
-  messagingSenderId: "292435292597",
-  appId: "1:292435292597:web:c266bf46c4e0869be869fc",
-  measurementId: "G-5QD3YLQPQP"
-};
-
-
-
 const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business Enterprise", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
 
 // ==========================================
@@ -1308,7 +1287,6 @@ const AuthService = {
             this.currentOrgId = uData.orgId || user.uid;
             this.userRole = uData.role || 'Owner';
           } else {
-            // Kontrollo nëse ky email është i ftuar nga ndonjë organizatë (Enterprise Invite Flow)
             let assignedOrgId = user.uid;
             let assignedRole = 'Owner';
 
@@ -1317,7 +1295,6 @@ const AuthService = {
               const inviteData = inviteSnap.docs[0].data();
               assignedOrgId = inviteData.orgId;
               assignedRole = 'Sales Rep';
-              // Përditëso ftesën si të pranuar
               await inviteSnap.docs[0].ref.update({ status: 'accepted' });
               ToastService.show(`U lidhët automatikisht me organizatën e ftuar (${assignedOrgId.slice(0,8)}...)!`);
             }
@@ -1437,8 +1414,7 @@ const AuthService = {
     });
   },
 
-  
-async sendTeamInvite() {
+  async sendTeamInvite() {
     if (this.userRole !== 'Owner') {
       alert("Vetëm administratori (Owner) mund të dërgojë ftesa ekipi.");
       return;
@@ -1450,7 +1426,6 @@ async sendTeamInvite() {
     }
 
     try {
-      // 1. Regjistro ftesën në Firestore (për auto-lidhjen kur të regjistrohet)
       await db.collection('invitations').add({
         email: email,
         orgId: this.currentOrgId,
@@ -1459,16 +1434,14 @@ async sendTeamInvite() {
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // 2. Dërgo email-in fizik përmes EmailJS
       const templateParams = {
         to_email: email,
         org_id: this.currentOrgId,
         invited_by: this.currentUser.email
       };
 
-      // Zëvendësoni 'service_kggnvcu' dhe 'YOUR_TEMPLATE_ID' me vlerat tuaja nga EmailJS
-      await emailjs.send('service_kggnvcu', '__ejs-test-mail-service__
-', templateParams);
+      // Dërgimi me EmailJS
+      await emailjs.send('service_kggnvcu', 'YOUR_TEMPLATE_ID', templateParams);
 
       ToastService.show(`Email-i i ftesës u dërgua me sukses te: ${email}`);
       document.getElementById('inviteEmailInput').value = '';
@@ -1550,7 +1523,6 @@ async sendTeamInvite() {
         let assignedOrgId = cred.user.uid;
         let assignedRole = selectedRole;
 
-        // Kontrollo nëse ka ndonjë ftesë aktive për këtë email
         const inviteSnap = await db.collection('invitations').where('email', '==', email.toLowerCase()).where('status', '==', 'pending').get();
         if (!inviteSnap.empty) {
           const inviteData = inviteSnap.docs[0].data();
@@ -2465,7 +2437,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// App Initialization
+// Inicializimi i Aplikacionit
 AuthService.init();
 CRMStore.init();
 </script>
