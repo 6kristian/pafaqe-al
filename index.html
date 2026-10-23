@@ -58,20 +58,26 @@
 
   let auth = null;
   let db = null;
+  window.__PAFAQE_DEMO_MODE__ = false;
 
-  if (window.firebase && !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-    auth = firebase.auth();
-    db = firebase.firestore();
-  } else if (window.firebase && firebase.apps.length) {
+  function isFirebaseReady() {
+    return !!(window.firebase && firebase.apps && firebase.apps.length && auth && db);
+  }
+
+  if (window.firebase) {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     auth = firebase.auth();
     db = firebase.firestore();
   } else {
     console.warn("Firebase SDK did not load. Running in demo-only mode.");
+    window.__PAFAQE_DEMO_MODE__ = true;
   }
 
   if (!auth || !db) {
     window.__PAFAQE_DEMO_MODE__ = true;
+    console.warn("Firebase unavailable; app will run in demo mode.");
   }
 </script>
 
@@ -252,7 +258,12 @@
           <label class="flex items-center gap-2 cursor-pointer select-none subtext">
             <input id="includeWebsite" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Me Web (Redesign)
           </label>
-          <button onclick="UIController.resetAllFilters()" class="px-2.5 py-1.5 rounded-xl card-bg border subtext hover:text-blue-600 font-medium transition cursor-pointer text-[10px]">Pastro ↺</button>
+          <div class="flex items-center gap-1.5">
+            <button onclick="CRMStore.refreshLeadsFromDatabase()" class="px-2.5 py-1.5 rounded-xl card-bg border text-blue-500 hover:text-blue-400 font-medium transition cursor-pointer text-[10px] flex items-center gap-1" title="Rifresko nga Databaza">
+              <span>Rifresko 🔄</span>
+            </button>
+            <button onclick="UIController.resetAllFilters()" class="px-2 py-1.5 rounded-xl card-bg border subtext hover:text-blue-600 font-medium transition cursor-pointer text-[10px]">Pastro ↺</button>
+          </div>
         </div>
       </section>
 
@@ -903,16 +914,25 @@ const ChatService = {
   groupMembersMap: {},
 
   async loadOrgMembers(orgId) {
+    if (!db || typeof db.collection !== 'function') {
+      console.warn("Firebase unavailable; skipping org members load.");
+      this.allOrgMembers = [];
+      this.renderTeamMembersList(this.allOrgMembers);
+      return;
+    }
+
     try {
       const snap = await db.collection('users').where('orgId', '==', orgId).get();
       this.allOrgMembers = [];
       snap.forEach(doc => {
         const d = doc.data();
-        if (d.email) this.allOrgMembers.push(d);
+        if (d && d.email) this.allOrgMembers.push(d);
       });
       this.renderTeamMembersList(this.allOrgMembers);
     } catch (e) {
       console.error("Error loading org members:", e);
+      this.allOrgMembers = [];
+      this.renderTeamMembersList(this.allOrgMembers);
     }
   },
 
@@ -922,9 +942,10 @@ const ChatService = {
     
     let emoji = '📁';
     let rawName = inputStr.trim();
-    const matchEmoji = rawName.match(/^(\p{Extended_Pictographic}|\p{Emoji_Component}|\u26fd|\u2705)/u);
-    if (matchEmoji) {
-      emoji = matchEmoji[0];
+    const emojiMatch = rawName.match(/^[\u{1F300}-\u{1FAFF}\u2600-\u26FF]/u);
+
+    if (emojiMatch) {
+      emoji = emojiMatch[0];
       rawName = rawName.replace(emoji, '').trim();
     }
 
@@ -954,9 +975,10 @@ const ChatService = {
 
     let emoji = currentGroup.emoji;
     let rawName = newTitle.trim();
-    const matchEmoji = rawName.match(/^(\p{Extended_Pictographic}|\p{Emoji_Component}|\u26fd|\u2705)/u);
-    if (matchEmoji) {
-      emoji = matchEmoji[0];
+    const emojiMatch = rawName.match(/^[\u{1F300}-\u{1FAFF}\u2600-\u26FF]/u);
+
+    if (emojiMatch) {
+      emoji = emojiMatch[0];
       rawName = rawName.replace(emoji, '').trim();
     }
 
@@ -1164,6 +1186,11 @@ const ChatService = {
       if (roleEl) roleEl.textContent = `Roli: ${AuthService.userRole}`;
     }
 
+    if (!db || typeof db.collection !== 'function') {
+      container.innerHTML = `<div class="text-center subtext py-20">Firebase unavailable. Chat in demo mode.</div>`;
+      return;
+    }
+
     this.unsubscribe = db.collection('organizations').doc(orgId).collection(collectionName)
       .orderBy('timestamp', 'asc')
       .onSnapshot((snapshot) => {
@@ -1229,6 +1256,11 @@ const ChatService = {
     const text = input.value.trim();
     if (!text) return;
 
+    if (!db) {
+      ToastService.show("Demo mode: Cannot send message.");
+      return;
+    }
+
     const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
     const user = AuthService.currentUser;
 
@@ -1264,6 +1296,12 @@ const AuthService = {
   isSignUpMode: false,
 
   init() {
+    if (!auth) {
+      console.warn("Auth unavailable; running in demo-only mode.");
+      this.handleAuthLoggedOutState();
+      return;
+    }
+
     auth.onAuthStateChanged(async (user) => {
       this.currentUser = user;
       const btn = document.getElementById('authActionBtn');
@@ -1281,36 +1319,38 @@ const AuthService = {
         await user.getIdToken(true);
 
         try {
-          const userDoc = await db.collection('users').doc(user.uid).get();
-          if (userDoc.exists) {
-            const uData = userDoc.data();
-            this.currentOrgId = uData.orgId || user.uid;
-            this.userRole = uData.role || 'Owner';
-          } else {
-            let assignedOrgId = user.uid;
-            let assignedRole = 'Owner';
+          if (db) {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+              const uData = userDoc.data();
+              this.currentOrgId = uData.orgId || user.uid;
+              this.userRole = uData.role || 'Owner';
+            } else {
+              let assignedOrgId = user.uid;
+              let assignedRole = 'Owner';
 
-            const inviteSnap = await db.collection('invitations').where('email', '==', user.email).where('status', '==', 'pending').get();
-            if (!inviteSnap.empty) {
-              const inviteData = inviteSnap.docs[0].data();
-              assignedOrgId = inviteData.orgId;
-              assignedRole = 'Sales Rep';
-              await inviteSnap.docs[0].ref.update({ status: 'accepted' });
-              ToastService.show(`U lidhët automatikisht me organizatën e ftuar (${assignedOrgId.slice(0,8)}...)!`);
+              const inviteSnap = await db.collection('invitations').where('email', '==', user.email).where('status', '==', 'pending').get();
+              if (!inviteSnap.empty) {
+                const inviteData = inviteSnap.docs[0].data();
+                assignedOrgId = inviteData.orgId;
+                assignedRole = 'Sales Rep';
+                await inviteSnap.docs[0].ref.update({ status: 'accepted' });
+                ToastService.show(`U lidhët automatikisht me organizatën e ftuar (${assignedOrgId.slice(0,8)}...)!`);
+              }
+
+              this.currentOrgId = assignedOrgId;
+              this.userRole = assignedRole;
+
+              await db.collection('users').doc(user.uid).set({
+                email: user.email,
+                name: user.displayName || '',
+                orgId: assignedOrgId,
+                role: assignedRole,
+                online: true
+              }, { merge: true });
             }
-
-            this.currentOrgId = assignedOrgId;
-            this.userRole = assignedRole;
-
-            await db.collection('users').doc(user.uid).set({
-              email: user.email,
-              name: user.displayName || '',
-              orgId: assignedOrgId,
-              role: assignedRole,
-              online: true
-            }, { merge: true });
+            await db.collection('users').doc(user.uid).set({ online: true }, { merge: true });
           }
-          await db.collection('users').doc(user.uid).set({ online: true }, { merge: true });
         } catch (e) {
           this.currentOrgId = user.uid;
         }
@@ -1333,24 +1373,26 @@ const AuthService = {
         if (user.emailVerified) {
           try {
             if (dataSourceBadge) dataSourceBadge.textContent = "Sinkronizimi...";
-            const querySnapshot = await db.collection('lead_chunks').get();
-            let allBusinesses = [];
-            querySnapshot.forEach((doc) => {
-              const chunkData = doc.data();
-              if (chunkData.rows && Array.isArray(chunkData.rows)) {
-                allBusinesses.push(...chunkData.rows);
-              }
-            });
+            if (db) {
+              const querySnapshot = await db.collection('lead_chunks').get();
+              let allBusinesses = [];
+              querySnapshot.forEach((doc) => {
+                const chunkData = doc.data();
+                if (chunkData.rows && Array.isArray(chunkData.rows)) {
+                  allBusinesses.push(...chunkData.rows);
+                }
+              });
 
-            if (allBusinesses.length > 0) {
-              CRMStore.DATA = {
-                source: "live",
-                generated: new Date().toISOString().split('T')[0],
-                count: allBusinesses.length,
-                businesses: allBusinesses
-              };
-              if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
-              CRMStore.init();
+              if (allBusinesses.length > 0) {
+                CRMStore.DATA = {
+                  source: "live",
+                  generated: new Date().toISOString().split('T')[0],
+                  count: allBusinesses.length,
+                  businesses: allBusinesses
+                };
+                if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
+                CRMStore.init();
+              }
             }
           } catch (err) {
             console.error("Error fetching leads from Firestore:", err);
@@ -1391,27 +1433,41 @@ const AuthService = {
         await CRMStore.loadCloudData();
         CRMStore.renderFilterPresets();
       } else {
-        if (btn) btn.innerHTML = `<span>Identifikohu</span>`;
-        if (dataSourceBadge) dataSourceBadge.textContent = "Demo Mode";
-        CRMStore.cloudStatuses = {};
-        CRMStore.cloudNotes = {};
-        CRMStore.cloudReminders = {};
-        CRMStore.cloudRatings = {};
-        CRMStore.cloudHistory = {};
-        CRMStore.DATA = DEMO;
-        if (hero) hero.classList.remove('hidden');
-        if (filterSec) filterSec.classList.add('hidden');
-        if (filterPresetsSec) filterPresetsSec.classList.add('hidden');
-        
-        if (navProfileBtn) navProfileBtn.classList.add('hidden');
-        if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
-        if (navAnalyticsBtn) navAnalyticsBtn.classList.add('hidden');
-        if (navChatBtn) navChatBtn.classList.add('hidden');
-        
-        UIController.switchTab('leads');
-        CRMStore.render();
+        this.handleAuthLoggedOutState();
       }
     });
+  },
+
+  handleAuthLoggedOutState() {
+    const btn = document.getElementById('authActionBtn');
+    const hero = document.getElementById('guestHero');
+    const filterSec = document.getElementById('filterSection');
+    const filterPresetsSec = document.getElementById('filterPresetsSection');
+    const navProfileBtn = document.getElementById('navProfileBtn');
+    const navKanbanBtn = document.getElementById('navKanbanBtn');
+    const navAnalyticsBtn = document.getElementById('navAnalyticsBtn');
+    const navChatBtn = document.getElementById('navChatBtn');
+    const dataSourceBadge = document.getElementById('dataSource');
+
+    if (btn) btn.innerHTML = `<span>Identifikohu</span>`;
+    if (dataSourceBadge) dataSourceBadge.textContent = "Demo Mode";
+    CRMStore.cloudStatuses = {};
+    CRMStore.cloudNotes = {};
+    CRMStore.cloudReminders = {};
+    CRMStore.cloudRatings = {};
+    CRMStore.cloudHistory = {};
+    CRMStore.DATA = DEMO;
+    if (hero) hero.classList.remove('hidden');
+    if (filterSec) filterSec.classList.add('hidden');
+    if (filterPresetsSec) filterPresetsSec.classList.add('hidden');
+    
+    if (navProfileBtn) navProfileBtn.classList.add('hidden');
+    if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
+    if (navAnalyticsBtn) navAnalyticsBtn.classList.add('hidden');
+    if (navChatBtn) navChatBtn.classList.add('hidden');
+    
+    UIController.switchTab('leads');
+    CRMStore.render();
   },
 
   async sendTeamInvite() {
@@ -1425,10 +1481,17 @@ const AuthService = {
       return;
     }
 
+    if (!db) {
+      ToastService.show("Demo mode: Cannot send invite.");
+      return;
+    }
+
     try {
+      const currentOrg = this.currentOrgId || '4nYkxzK3yGTiFjnzIGCGIHmqgCB3';
+
       await db.collection('invitations').add({
         email: email,
-        orgId: this.currentOrgId,
+        orgId: currentOrg,
         invitedBy: this.currentUser.email,
         status: 'pending',
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -1436,28 +1499,28 @@ const AuthService = {
 
       const templateParams = {
         to_email: email,
-        org_id: this.currentOrgId,
+        org_id: currentOrg,
         invited_by: this.currentUser.email
       };
 
       // Dërgimi me EmailJS
-      await emailjs.send('service_h102oew', 'template_po0u1m8', templateParams);
+      await emailjs.send('service_kggnvcu', 'template_6jgz52c', templateParams);
 
       ToastService.show(`Email-i i ftesës u dërgua me sukses te: ${email}`);
       document.getElementById('inviteEmailInput').value = '';
-      await CRMStore.fetchTeamMemberCount(this.currentOrgId);
+      await CRMStore.fetchTeamMemberCount(currentOrg);
     } catch (e) {
       alert("Gabim gjatë dërgimit të ftesës: " + e.message);
     }
   },
 
   async signOutAction() {
-    if (this.currentUser) {
+    if (this.currentUser && db) {
       try {
         await db.collection('users').doc(this.currentUser.uid).set({ online: false }, { merge: true });
       } catch (e) {}
     }
-    auth.signOut();
+    if (auth) auth.signOut();
   },
 
   openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); },
@@ -1482,6 +1545,10 @@ const AuthService = {
 
   async handleForgotPasswordSubmit(e) {
     e.preventDefault();
+    if (!auth) {
+      alert("Auth unavailable.");
+      return;
+    }
     const email = document.getElementById('forgotEmail').value.trim();
     try {
       await auth.sendPasswordResetEmail(email);
@@ -1498,7 +1565,9 @@ const AuthService = {
     const name = document.getElementById('profileName').value.trim();
     try {
       await this.currentUser.updateProfile({ displayName: name });
-      await db.collection('users').doc(this.currentUser.uid).set({ name: name }, { merge: true });
+      if (db) {
+        await db.collection('users').doc(this.currentUser.uid).set({ name: name }, { merge: true });
+      }
       const succ = document.getElementById('profileSuccess');
       succ.classList.remove('hidden');
       setTimeout(() => succ.classList.add('hidden'), 4000);
@@ -1510,6 +1579,10 @@ const AuthService = {
 
   async handleAuthSubmit(e) {
     e.preventDefault();
+    if (!auth) {
+      alert("Auth unavailable.");
+      return;
+    }
     const email = document.getElementById('authEmail').value;
     const password = document.getElementById('authPassword').value;
     try {
@@ -1523,21 +1596,23 @@ const AuthService = {
         let assignedOrgId = cred.user.uid;
         let assignedRole = selectedRole;
 
-        const inviteSnap = await db.collection('invitations').where('email', '==', email.toLowerCase()).where('status', '==', 'pending').get();
-        if (!inviteSnap.empty) {
-          const inviteData = inviteSnap.docs[0].data();
-          assignedOrgId = inviteData.orgId;
-          assignedRole = 'Sales Rep';
-          await inviteSnap.docs[0].ref.update({ status: 'accepted' });
-        }
+        if (db) {
+          const inviteSnap = await db.collection('invitations').where('email', '==', email.toLowerCase()).where('status', '==', 'pending').get();
+          if (!inviteSnap.empty) {
+            const inviteData = inviteSnap.docs[0].data();
+            assignedOrgId = inviteData.orgId;
+            assignedRole = 'Sales Rep';
+            await inviteSnap.docs[0].ref.update({ status: 'accepted' });
+          }
 
-        await db.collection('users').doc(cred.user.uid).set({
-          email: email,
-          name: name,
-          orgId: assignedOrgId,
-          role: assignedRole,
-          online: true
-        }, { merge: true });
+          await db.collection('users').doc(cred.user.uid).set({
+            email: email,
+            name: name,
+            orgId: assignedOrgId,
+            role: assignedRole,
+            online: true
+          }, { merge: true });
+        }
 
         alert('Llogaria u krijua me sukses! Ju lutem verifikoni email-in tuaj.');
       } else {
@@ -1575,7 +1650,52 @@ const CRMStore = {
   DEFAULT_EMAIL_SUB_TEMPLATE: "Propozim Web Design për {name}",
   DEFAULT_EMAIL_BODY_TEMPLATE: "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare.{ratingContext}\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne që ju sjellin më shumë klientë.\n\nMe respekt,\nPaFaqe.al",
 
+  async refreshLeadsFromDatabase() {
+    const dataSourceBadge = document.getElementById('dataSource');
+    if (dataSourceBadge) dataSourceBadge.textContent = "Sinkronizimi...";
+
+    if (!db) {
+      ToastService.show("Demo mode: Firebase unavailable.");
+      if (dataSourceBadge) dataSourceBadge.textContent = "Demo Mode";
+      return;
+    }
+
+    try {
+      const querySnapshot = await db.collection('lead_chunks').get();
+      let allBusinesses = [];
+      querySnapshot.forEach((doc) => {
+        const chunkData = doc.data();
+        if (chunkData.rows && Array.isArray(chunkData.rows)) {
+          allBusinesses.push(...chunkData.rows);
+        }
+      });
+
+      if (allBusinesses.length > 0) {
+        this.DATA = {
+          source: "live",
+          generated: new Date().toISOString().split('T')[0],
+          count: allBusinesses.length,
+          businesses: allBusinesses
+        };
+        if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
+        this.init();
+        ToastService.show(`U sinkronizuan me sukses ${allBusinesses.length} leads nga databaza!`);
+      } else {
+        ToastService.show("Nuk u gjetën të dhëna të reja në databazë.");
+      }
+    } catch (err) {
+      console.error("Gabim gjatë rifreskimit të leads:", err);
+      ToastService.show("Gabim gjatë lidhjes me databazën.");
+      if (dataSourceBadge) dataSourceBadge.textContent = "Gabim Lidhjeje";
+    }
+  },
+
   async fetchTeamMemberCount(orgId) {
+    if (!db) {
+      const countLabel = document.getElementById('teamMemberCountLabel');
+      if (countLabel) countLabel.textContent = `Anëtarë në ekip: 1`;
+      return;
+    }
     try {
       const snapshot = await db.collection('users').where('orgId', '==', orgId).get();
       const count = snapshot.size || 1;
@@ -1588,7 +1708,7 @@ const CRMStore = {
   },
 
   async loadCloudData() {
-    if (!AuthService.currentUser) return;
+    if (!AuthService.currentUser || !db) return;
     const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
     try {
       const [statusSnap, notesSnap, historySnap] = await Promise.all([
@@ -1637,10 +1757,12 @@ const CRMStore = {
     const targetOrg = document.getElementById('joinOrgInput').value.trim();
     if (!targetOrg || !AuthService.currentUser) return;
     try {
-      await db.collection('users').doc(AuthService.currentUser.uid).set({
-        orgId: targetOrg,
-        role: 'Sales Rep'
-      }, { merge: true });
+      if (db) {
+        await db.collection('users').doc(AuthService.currentUser.uid).set({
+          orgId: targetOrg,
+          role: 'Sales Rep'
+        }, { merge: true });
+      }
       AuthService.currentOrgId = targetOrg;
       AuthService.userRole = 'Sales Rep';
       ToastService.show(`U bashkuat me sukses tek Organizata ${targetOrg}.`);
@@ -1665,7 +1787,7 @@ const CRMStore = {
     const badge = document.getElementById('navLiveActivityBadge');
     if (badge) badge.classList.remove('hidden');
 
-    if (AuthService.currentUser) {
+    if (AuthService.currentUser && db) {
       const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
       try {
         await db.collection('organizations').doc(orgId).collection('lead_history').doc(leadKey).set({
@@ -1691,11 +1813,13 @@ const CRMStore = {
       localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
     } else {
       this.cloudStatuses[id] = status;
-      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
-      try {
-        await db.collection('organizations').doc(orgId).collection('lead_statuses').doc(id).set({ status: status });
-      } catch (err) {
-        console.error("Error saving status:", err);
+      if (db) {
+        const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+        try {
+          await db.collection('organizations').doc(orgId).collection('lead_statuses').doc(id).set({ status: status });
+        } catch (err) {
+          console.error("Error saving status:", err);
+        }
       }
     }
 
@@ -1733,15 +1857,17 @@ const CRMStore = {
       if (customRating) this.cloudRatings[this.activeLeadKeyForNotes] = customRating;
       else delete this.cloudRatings[this.activeLeadKeyForNotes];
 
-      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
-      try {
-        await db.collection('organizations').doc(orgId).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ 
-          note: noteText, 
-          reminder: remDate,
-          customRating: customRating
-        });
-      } catch (err) {
-        console.error("Error saving note:", err);
+      if (db) {
+        const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+        try {
+          await db.collection('organizations').doc(orgId).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ 
+            note: noteText, 
+            reminder: remDate,
+            customRating: customRating
+          });
+        } catch (err) {
+          console.error("Error saving note:", err);
+        }
       }
     }
 
