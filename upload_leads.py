@@ -1,28 +1,2486 @@
-#!/usr/bin/env python3
-"""Upload leads.clean.json to Firestore as lead_chunks/0000, 0001, ... (new chunks are written first, stale ones removed after).
-Local:   pip install firebase-admin ; python upload_leads.py serviceAccount.json
-GitHub:  set the FIREBASE_SERVICE_ACCOUNT secret (whole JSON); run without arguments.
-NEVER commit the service account file."""
-import json, os, sys
-import firebase_admin
-from firebase_admin import credentials, firestore
+<!DOCTYPE html>
+<html lang="sq" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaFaqe.al — B2B Lead Intelligence & Sales Workspace (Enterprise)</title>
+<meta name="description" content="Platformë profesionale e inteligjencës B2B për agjencitë web në Shqipëri.">
 
-if len(sys.argv) > 1:
-    cred = credentials.Certificate(sys.argv[1])
-else:
-    cred = credentials.Certificate(json.loads(os.environ['FIREBASE_SERVICE_ACCOUNT']))
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+<!-- Enterprise Font Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-rows = json.load(open('leads.clean.json', encoding='utf-8'))['businesses']
-if len(rows) < 5000:
-    sys.exit(f'Only {len(rows)} leads, refusing to overwrite the live data')
-SIZE = 500  # ~150 KB per document, well under Firestore's 1 MiB limit
-n = (len(rows) + SIZE - 1) // SIZE
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+        }
+      }
+    }
+  };
+</script>
 
-for i in range(n):
-    db.collection('lead_chunks').document(f'{i:04d}').set({'rows': rows[i * SIZE:(i + 1) * SIZE]})
-for d in db.collection('lead_chunks').stream():
-    if int(d.id) >= n:
-        d.reference.delete()
-print(f'uploaded {len(rows)} leads in {n} chunks')
+<!-- Firebase Compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<!-- jsPDF për Eksportin PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  // Inicializimi i EmailJS
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.emailjs) {
+      emailjs.init("WMwsAouaeRvtJDhKa");
+    }
+  });
+
+  // Konfigurimi i Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyD0OAklYJCdCgNvfQXnioDG2uEm42zTjoo",
+    authDomain: "pafaqeal.firebaseapp.com",
+    projectId: "pafaqeal",
+    storageBucket: "pafaqeal.firebasestorage.app",
+    messagingSenderId: "292435292597",
+    appId: "1:292435292597:web:c266bf46c4e0869be869fc",
+    measurementId: "G-5QD3YLQPQP"
+  };
+
+  let auth = null;
+  let db = null;
+
+  if (window.firebase && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+  } else if (window.firebase && firebase.apps.length) {
+    auth = firebase.auth();
+    db = firebase.firestore();
+  } else {
+    console.warn("Firebase SDK did not load. Running in demo-only mode.");
+  }
+
+  if (!auth || !db) {
+    window.__PAFAQE_DEMO_MODE__ = true;
+  }
+</script>
+
+<style>
+  body { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    -webkit-tap-highlight-color: transparent; 
+    text-rendering: optimizeLegibility; 
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* Dark Mode Styles */
+  html.dark body { background-color: #0b0f19; color: #cbd5e1; }
+  html.dark .card-bg { background-color: #111827; border-color: #1f293d; color: #cbd5e1; }
+  html.dark .header-bg { background-color: rgba(11, 15, 25, 0.94); border-color: #1f293d; }
+  html.dark .input-bg { background-color: #0f172a; border-color: #334155; color: #f8fafc; }
+  html.dark .table-head-bg { background-color: #0f172a; border-color: #1f293d; color: #64748b; }
+  html.dark .row-hover:hover { background-color: #172033; }
+  html.dark .subtext { color: #64748b; }
+  html.dark .border-theme { border-color: #1f293d; }
+  html.dark .chip-btn { background-color: #0f172a; border-color: #1f293d; color: #94a3b8; }
+  html.dark .chip-btn:hover { background-color: #1e293b; color: #f8fafc; border-color: #334155; }
+  html.dark .logo-text { color: #ffffff; }
+  html.dark .btn-primary { background-color: #2563eb; color: #ffffff; }
+  html.dark .btn-primary:hover { background-color: #1d4ed8; }
+
+  /* Light Mode Styles */
+  html.light body { background-color: #f8fafc; color: #0f172a; }
+  html.light .card-bg { background-color: #ffffff; border-color: #cbd5e1; color: #0f172a; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04); }
+  html.light .header-bg { background-color: rgba(255, 255, 255, 0.96); border-color: #cbd5e1; }
+  html.light .input-bg { background-color: #ffffff; border-color: #94a3b8; color: #0f172a; }
+  html.light .table-head-bg { background-color: #e2e8f0; border-color: #cbd5e1; color: #334155; }
+  html.light .row-hover:hover { background-color: #f1f5f9; }
+  html.light .subtext { color: #475569; }
+  html.light .border-theme { border-color: #cbd5e1; }
+  html.light .chip-btn { background-color: #ffffff; border-color: #94a3b8; color: #1e40af; }
+  html.light .chip-btn:hover { background-color: #f1f5f9; color: #0f172a; border-color: #64748b; }
+  html.light .logo-text { color: #0f172a; }
+  html.light .btn-primary { background-color: #1e40af; color: #ffffff; font-weight: 600; }
+  html.light .btn-primary:hover { background-color: #1e3a8a; }
+
+  .chip { cursor: pointer; transition: all 0.15s ease; }
+  .chip.active { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; font-weight: 600; }
+  .row { transition: background-color 0.15s ease; }
+
+  button, input, select, textarea, a, label {
+    transition: all 0.15s ease-in-out;
+  }
+  button:hover, a:hover {
+    opacity: 0.92;
+  }
+
+  .kanban-col {
+    min-height: 520px;
+  }
+
+  /* Toast Notification Container */
+  #toastContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toast-item {
+    background: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #334155;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+    font-size: 12px;
+    font-family: monospace;
+    animation: slideIn 0.2s ease-out forwards;
+  }
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body class="min-h-screen antialiased selection:bg-blue-600 selection:text-white flex flex-col justify-between">
+
+<!-- Toast Notification Container -->
+<div id="toastContainer"></div>
+
+<div>
+  <!-- Header / Nav -->
+  <header class="header-bg border-b sticky top-0 backdrop-blur-md z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <h1 class="text-base sm:text-lg font-bold tracking-tight cursor-pointer flex items-center gap-2.5 group" onclick="UIController.switchTab('leads')">
+          <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          <span class="tracking-tight font-extrabold logo-text">PaFaqe<span class="text-blue-600 dark:text-blue-400">.al</span></span>
+        </h1>
+        <span class="hidden md:inline-block text-xs subtext border-l border-theme pl-3 font-medium">Enterprise Intelligence CRM</span>
+      </div>
+      
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <nav class="flex items-center gap-2 card-bg p-1.5 rounded-xl border text-xs font-medium shadow-sm">
+          <button onclick="UIController.switchTab('leads')" id="navLeidBtn" class="px-4 py-2 rounded-lg btn-primary font-semibold transition cursor-pointer shadow-sm">Leads</button>
+          <button onclick="UIController.switchTab('kanban')" id="navKanbanBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kanban</button>
+          <button onclick="UIController.switchTab('analytics')" id="navAnalyticsBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Analitika</button>
+          <button onclick="UIController.switchTab('chat')" id="navChatBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer flex items-center gap-1.5">
+            <span>Chat Ekipi</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </button>
+          <button onclick="UIController.switchTab('about')" id="navAboutBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Rreth Nesh</button>
+          <button onclick="UIController.switchTab('contact')" id="navContactBtn" class="px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Kontakt</button>
+          <button onclick="UIController.switchTab('profile')" id="navProfileBtn" class="hidden px-4 py-2 rounded-lg subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer flex items-center gap-1.5">
+            <span>Ekipi</span>
+            <span id="navLiveActivityBadge" class="hidden w-2 h-2 rounded-full bg-amber-500" title="Aktivitet i ri"></span>
+          </button>
+        </nav>
+
+        <button onclick="UIController.toggleTheme()" class="p-2.5 rounded-lg card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition text-xs shadow-sm cursor-pointer" title="Ndrysho Pamjen">
+          <span id="themeIcon">🌙</span>
+        </button>
+
+        <span id="dataSource" class="hidden sm:inline-block px-3 py-2 rounded-lg card-bg border text-[11px] font-mono subtext">…</span>
+
+        <div id="authContainer" class="flex items-center gap-2">
+          <button onclick="AuthService.openAuthModal()" id="authActionBtn" class="px-4 py-2 rounded-lg card-bg border text-xs font-semibold text-blue-600 dark:text-blue-400 hover:opacity-80 transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+            <span>Identifikohu</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 sm:px-8 py-8 space-y-8">
+    <!-- TAB 1: LEADS WORKSPACE -->
+    <div id="tabLeads" class="space-y-6">
+      <div id="guestHero" class="hidden rounded-2xl p-8 sm:p-10 card-bg border relative overflow-hidden shadow-sm space-y-4">
+        <div class="max-w-3xl space-y-4 relative z-10">
+          <span class="px-3.5 py-1.5 rounded-lg card-bg text-blue-600 dark:text-blue-400 border border-theme text-xs font-semibold uppercase tracking-wider">Enterprise B2B Intelligence</span>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Menaxhoni Prospecting për Agjencitë Web në Shqipëri</h2>
+          <p class="subtext text-xs sm:text-sm leading-relaxed">
+            Zbuloni biznese lokale në Tiranë, Durrës, Vlorë dhe kudo që operojnë <b class="text-blue-600 dark:text-blue-400">pa faqe interneti</b>. Qasuni në audite, sinkronizim multi-tenant dhe mjete shitjesh për ekipin.
+          </p>
+          <div class="pt-3 flex items-center gap-3">
+            <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer">
+              <span>Fillo Falas Tani</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section id="filterSection" class="hidden card-bg rounded-2xl p-5 border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 shadow-sm">
+        <div class="md:col-span-3 relative">
+          <input id="q" oninput="UIController.handleFilterInput()" placeholder="Kërko sipas emrit, adresës..." class="input-bg w-full rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition">
+          <button onclick="UIController.clearSearchInput()" class="absolute right-3 top-3 text-xs subtext hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer" title="Pastro kërkimin">×</button>
+        </div>
+        <div class="md:col-span-2">
+          <select id="city" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer"></select>
+        </div>
+        <div class="md:col-span-2">
+          <select id="cat" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer"></select>
+        </div>
+        <div class="md:col-span-2">
+          <select id="sort" onchange="UIController.handleFilterInput()" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-blue-600 border transition cursor-pointer">
+            <option value="score">Rendit: Pikët e Lead-it</option>
+            <option value="rating">Rendit: Vlerësimi (Lart→Ulët)</option>
+            <option value="reviews">Rendit: Numri i Recensioneve</option>
+            <option value="name">Rendit: Emri A→Z</option>
+          </select>
+        </div>
+        <div class="md:col-span-3 flex items-center justify-between gap-2 text-xs px-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none subtext">
+            <input id="phoneOnly" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Vetëm Tel
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer select-none subtext">
+            <input id="includeWebsite" type="checkbox" onchange="UIController.handleFilterInput()" class="w-4 h-4 rounded accent-blue-600 cursor-pointer"> Me Web (Redesign)
+          </label>
+          <div class="flex items-center gap-1.5">
+            <button onclick="CRMStore.refreshLeadsFromDatabase()" class="px-2.5 py-1.5 rounded-xl card-bg border text-blue-500 hover:text-blue-400 font-medium transition cursor-pointer text-[10px] flex items-center gap-1" title="Rifresko nga Databaza">
+              <span>Rifresko 🔄</span>
+            </button>
+            <button onclick="UIController.resetAllFilters()" class="px-2 py-1.5 rounded-xl card-bg border subtext hover:text-blue-600 font-medium transition cursor-pointer text-[10px]">Pastro ↺</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="filterPresetsSection" class="hidden flex flex-wrap items-center gap-2.5 text-xs card-bg border rounded-2xl p-4 shadow-sm">
+        <span class="subtext font-mono uppercase text-[10px] tracking-wider mr-1">Filtrat e Ruajtur:</span>
+        <div id="presetChipsContainer" class="flex flex-wrap items-center gap-2"></div>
+        <button onclick="CRMStore.saveCurrentPresetPrompt()" class="ml-auto px-3.5 py-2 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-medium text-xs transition cursor-pointer">
+          <span>+ Ruaj Filtrin Aktual</span>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div id="chips" class="flex flex-wrap gap-2.5 text-xs"></div>
+          
+          <div class="flex items-center gap-2 ml-auto">
+            <select id="exportFormatSelect" class="input-bg rounded-xl px-3 py-2 text-xs border outline-none cursor-pointer">
+              <option value="csv">Format: CSV</option>
+              <option value="json">Format: JSON (Enterprise)</option>
+              <option value="pdf">Format: PDF Raport</option>
+            </select>
+            <button onclick="CRMStore.exportDataAdvanced()" class="px-5 py-2.5 rounded-xl btn-primary font-semibold text-xs transition shadow-sm flex items-center gap-2 cursor-pointer">
+              <span id="exportBtnText">Eksporto të Dhënat</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 text-xs border-t border-theme pt-4">
+          <span class="subtext text-[11px] font-mono uppercase tracking-wider mr-1">Industritë Kryesore:</span>
+          <button onclick="UIController.quickNicheFilter('Hotel')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Hotels & Turizëm</button>
+          <button onclick="UIController.quickNicheFilter('Dental')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Dentistë & Klinika</button>
+          <button onclick="UIController.quickNicheFilter('Auto')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Auto & Qira</button>
+          <button onclick="UIController.quickNicheFilter('Restaurant')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium cursor-pointer">Restorante & Kafe</button>
+          <button onclick="UIController.quickRatingFilter('low')" class="chip-btn px-3.5 py-1.5 rounded-xl border text-xs transition font-medium text-rose-400 cursor-pointer">Rrezik Reputacioni (&lt;3.5★)</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 text-center text-xs">
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statLeads" class="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400">0</div><div class="subtext text-[11px] uppercase font-mono">Biznese Pa Faqe</div></div>
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statCities" class="text-2xl font-mono font-bold">0</div><div class="subtext text-[11px] uppercase font-mono">Qytete Mbuluar</div></div>
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statAvg" class="text-2xl font-mono font-bold">0</div><div class="subtext text-[11px] uppercase font-mono">Mesatarja e Pikëve</div></div>
+        <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-1"><div id="statOrgName" class="text-xl font-mono font-bold text-amber-500 truncate">Ekipi Solo</div><div class="subtext text-[11px] uppercase font-mono">Konteksti i Ekipit</div></div>
+      </div>
+
+      <div id="bulkActionsToolbar" class="hidden sticky top-20 z-20 card-bg border border-blue-500/50 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 backdrop-blur-md">
+        <div class="flex items-center gap-3 text-xs">
+          <span class="font-bold px-3 py-1.5 rounded-xl btn-primary text-xs" id="selectedCountBadge">0 të zgjedhur</span>
+          <span class="subtext">Veprim masiv (Ekip):</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <select id="bulkStatusSelect" class="input-bg rounded-xl px-3.5 py-2 border outline-none cursor-pointer">
+            <option value="new">Statusi: Të Reja</option>
+            <option value="contacted">Statusi: Në Kontakt</option>
+            <option value="interested">Statusi: Të Interesuar</option>
+            <option value="closed">Statusi: Mbyllur / Fituar</option>
+          </select>
+          <button onclick="CRMStore.applyBulkStatus()" class="px-4 py-2 rounded-xl btn-primary font-semibold transition cursor-pointer shadow-sm">Ndrysho Statusin</button>
+          <button onclick="CRMStore.exportDataAdvanced()" class="px-4 py-2 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">Eksporto të Zgjedhurat</button>
+          <button onclick="CRMStore.clearSelection()" class="px-3.5 py-2 rounded-xl card-bg border text-rose-400 hover:text-rose-300 transition cursor-pointer">Anulo</button>
+        </div>
+      </div>
+
+      <section class="card-bg rounded-2xl border overflow-hidden shadow-sm min-h-[580px] flex flex-col justify-between relative">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse table-fixed min-w-[780px]">
+            <thead id="tableHead" class="table-head-bg text-xs font-mono uppercase tracking-wider border-b"></thead>
+            <tbody id="rows" class="divide-y border-theme">
+              <tr><td colspan="10" class="p-16 text-center subtext">Duke ngarkuar të dhënat e workspace...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="guestGatingOverlay" class="hidden p-12 text-center card-bg border-t border-theme space-y-4">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl card-bg border text-blue-600 dark:text-blue-400 font-bold">🔒</div>
+          <h3 class="text-lg font-bold">Kërkohet Identifikimi në Ekip</h3>
+          <p class="text-xs subtext max-w-lg mx-auto leading-relaxed">
+            Ju po shikoni një pamje të kufizuar. Identifikohuni për të shfaqur numrat e plotë të telefonit, auditet e ndryshimeve në kohë reale dhe panelin e avancuar Enterprise.
+          </p>
+          <div class="pt-2">
+            <button onclick="AuthService.openAuthModal()" class="px-6 py-3 rounded-xl btn-primary font-semibold text-xs shadow-sm inline-flex items-center gap-2 cursor-pointer">
+              <span>Hyni në Llogari</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="empty" class="hidden p-16 text-center subtext text-xs">Nuk u gjet asnjë biznes që përputhet me filtrat.</div>
+        
+        <div id="paginationBar" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-theme text-xs subtext mt-auto">
+          <div id="pageInfo" class="font-mono text-xs">Duke shfaqur 0-0 nga 0 rreshta</div>
+          <div class="flex items-center gap-3">
+            <button id="prevBtn" onclick="CRMStore.changePage(-1)" class="px-3.5 py-2 rounded-xl card-bg border border-theme hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">← Para</button>
+            <span id="pageIndicator" class="px-2 font-mono text-blue-600 dark:text-blue-400 font-semibold">Faqja 1 nga 1</span>
+            <button id="nextBtn" onclick="CRMStore.changePage(1)" class="px-3.5 py-2 rounded-xl card-bg border border-theme hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">Pas →</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 2: KANBAN PIPELINE -->
+    <div id="tabKanban" class="hidden space-y-8 py-4">
+      <div class="card-bg border rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1.5">
+          <h2 class="text-xl font-bold text-blue-600 dark:text-blue-400">Kanban Pipeline</h2>
+          <p class="text-xs subtext leading-relaxed">Tërhiqni (Drag & Drop) kartat e bizneseve midis kolonave me sinkronizim të menjëhershëm për gjithë ekipin.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'new')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
+            <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Të Reja (New)</span>
+            <span id="kanbanCountNew" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
+          </div>
+          <div id="kanbanColNew" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
+        </div>
+
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'contacted')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
+            <span class="font-bold text-xs uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Në Kontakt (Contacted)</span>
+            <span id="kanbanCountContacted" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
+          </div>
+          <div id="kanbanColContacted" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
+        </div>
+
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'interested')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
+            <span class="font-bold text-xs uppercase tracking-wider text-amber-500 font-mono">Të Interesuar (Interested)</span>
+            <span id="kanbanCountInterested" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
+          </div>
+          <div id="kanbanColInterested" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
+        </div>
+
+        <div class="card-bg border rounded-2xl p-5 space-y-4 flex flex-col kanban-col shadow-sm" ondragover="CRMStore.allowDrop(event)" ondrop="CRMStore.dropLead(event, 'closed')">
+          <div class="flex items-center justify-between border-b border-theme pb-3.5">
+            <span class="font-bold text-xs uppercase tracking-wider text-emerald-500 font-mono">Mbyllur / Fituar (Closed)</span>
+            <span id="kanbanCountClosed" class="px-3 py-1 rounded-xl card-bg border text-xs font-mono font-semibold">0</span>
+          </div>
+          <div id="kanbanColClosed" class="space-y-3.5 overflow-y-auto max-h-[520px] pr-1 flex-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ENTERPRISE ANALYTICS & FORECASTING -->
+    <div id="tabAnalytics" class="hidden space-y-8 max-w-5xl mx-auto py-10">
+      <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-theme pb-6">
+          <div>
+            <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Raportim & Parashikim</span>
+            <h2 class="text-2xl font-bold tracking-tight">Sales Analytics</h2>
+          </div>
+          <span class="px-4 py-2 rounded-xl card-bg border text-xs font-mono subtext">Përditësuar në kohë reale</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs font-mono">
+          <div class="p-5 rounded-2xl card-bg border space-y-2">
+            <span class="subtext uppercase text-[10px]">Shkalla e Konvertimit (Win Rate)</span>
+            <div id="analytWinRate" class="text-2xl font-bold text-emerald-400">0%</div>
+            <p class="subtext text-[11px]">Në raport me totalin e lead-eve të trajtuara.</p>
+          </div>
+          <div class="p-5 rounded-2xl card-bg border space-y-2">
+            <span class="subtext uppercase text-[10px]">Pipeline Aktiv</span>
+            <div id="analytActivePipeline" class="text-2xl font-bold text-blue-600 dark:text-blue-400">0 biznese</div>
+            <p class="subtext text-[11px]">Biznese në faza kontakti ose interesi.</p>
+          </div>
+          <div class="p-5 rounded-2xl card-bg border space-y-2">
+            <span class="subtext uppercase text-[10px]">Potenciali i Riskit (&lt;3.5★)</span>
+            <div id="analytRiskCount" class="text-2xl font-bold text-rose-400">0 biznese</div>
+            <p class="subtext text-[11px]">Mundësi shërbimi për menaxhim reputacioni.</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 pt-4 border-t border-theme">
+          <h3 class="font-bold text-sm">Shpërndarja e Statusit në Ekip</h3>
+          <div class="space-y-3 text-xs font-mono">
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Të Reja (New)</span><span id="barNewPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillNew" class="bg-blue-600 h-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Në Kontakt (Contacted)</span><span id="barContPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillCont" class="bg-indigo-500 h-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Të Interesuar (Interested)</span><span id="barIntPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillInt" class="bg-amber-500 h-full transition-all" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1"><span class="subtext">Mbyllur / Fituar (Closed)</span><span id="barClosedPct">0%</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div id="fillClosed" class="bg-emerald-500 h-full transition-all" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3.1: ENTERPRISE SLACK-STYLE CHAT WORKSPACE -->
+    <div id="tabChat" class="hidden max-w-6xl mx-auto py-4">
+      <div class="card-bg border rounded-3xl overflow-hidden shadow-xl grid grid-cols-1 md:grid-cols-12 min-h-[620px]">
+        
+        <!-- Chat Sidebar -->
+        <div class="md:col-span-4 border-r border-theme p-5 flex flex-col justify-between space-y-6 card-bg">
+          <div class="space-y-6">
+            <div class="flex items-center justify-between border-b border-theme pb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                <span id="chatOrgTitle" class="font-bold text-sm truncate">Organizata Ekipi</span>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg card-bg border text-[10px] font-mono text-emerald-400">Live SSL</span>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono uppercase subtext tracking-wider">Kanalet & Grupet</span>
+                <button onclick="ChatService.promptCreateCustomGroup()" class="text-[10px] font-mono text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-semibold">+ Krijo Grup</button>
+              </div>
+              <div id="customChannelsContainer" class="space-y-1 text-xs"></div>
+            </div>
+
+            <div class="space-y-3 pt-3 border-t border-theme">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono uppercase subtext tracking-wider">Anëtarët e Ekipit (Të Gjithë)</span>
+                <span id="teamCountBadge" class="text-[10px] font-mono text-blue-600 dark:text-blue-400">0 regjistruar</span>
+              </div>
+              <input type="text" id="searchTeamInput" oninput="ChatService.filterTeamMembers(this.value)" placeholder="Kërko anëtarët..." class="input-bg w-full rounded-xl px-3 py-1.5 text-xs outline-none border">
+              <div id="chatOnlineUsersContainer" class="space-y-1.5 text-xs max-h-40 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+
+          <div id="chatCurrentUserProfileCard" class="p-3.5 rounded-2xl card-bg border border-theme flex items-center gap-3">
+            <img id="chatCurrentUserAvatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=default" class="w-9 h-9 rounded-full bg-slate-800 border border-blue-500/40 object-cover">
+            <div class="truncate text-xs">
+              <div id="chatCurrentUserName" class="font-bold truncate">Kristian Frroku</div>
+              <div id="chatCurrentUserRole" class="subtext text-[10px] font-mono">Sales Owner</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Feed & Form -->
+        <div class="md:col-span-8 flex flex-col justify-between card-bg">
+          <div class="p-4 border-b border-theme flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-bold flex items-center gap-2" id="chatHeaderChannelTitle">
+                <span># general-chat</span>
+              </span>
+              <span class="text-xs subtext font-mono" id="chatHeaderSubtext">(Komunikimi i brendshëm)</span>
+            </div>
+            
+            <div id="groupManagementActions" class="hidden flex items-center gap-2">
+              <button onclick="ChatService.promptEditGroupName()" class="px-3 py-1.5 rounded-xl card-bg border text-[11px] subtext hover:text-blue-400 transition cursor-pointer" title="Ndrysho emrin ose emoji">✏️ Edito Emrin</button>
+              <button onclick="ChatService.openGroupMembersModal()" class="px-3 py-1.5 rounded-xl card-bg border text-[11px] subtext hover:text-blue-400 transition cursor-pointer" title="Shto/Hiq anëtarë">👥 Menaxho Anëtarët</button>
+            </div>
+
+            <button onclick="ChatService.scrollChatToBottom()" class="px-3 py-1.5 rounded-xl card-bg border text-[11px] subtext hover:text-blue-400 transition cursor-pointer">
+              <span>Në fund ⬇</span>
+            </button>
+          </div>
+
+          <div id="chatMessagesContainer" class="h-[480px] overflow-y-auto p-5 space-y-4 text-xs font-mono">
+            <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
+              <span class="text-3xl">💬</span>
+              <span>Duke ngarkuar bisedën e ekipit...</span>
+            </div>
+          </div>
+
+          <form onsubmit="ChatService.handleSendMessage(event)" class="p-4 border-t border-theme space-y-2">
+            <div class="flex items-center gap-2 bg-slate-900/60 p-2 rounded-2xl border border-slate-700/60 focus-within:border-blue-500 transition">
+              <button type="button" onclick="ChatService.insertEmoji('👍')" class="p-2 subtext hover:text-amber-400 text-sm transition cursor-pointer" title="Shto Emoji">😊</button>
+              <input type="text" id="chatInputMessage" placeholder="Shkruani një mesazh për ekipin..." required class="bg-transparent flex-1 px-2 text-xs outline-none text-slate-100 placeholder:text-slate-500">
+              <button type="submit" class="px-6 py-2.5 rounded-xl btn-primary font-semibold text-xs shadow-sm cursor-pointer whitespace-nowrap flex items-center gap-1.5">
+                <span>Dërgo</span>
+                <span>➔</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 4: ABOUT US -->
+    <div id="tabAbout" class="hidden space-y-8 max-w-4xl mx-auto py-12 px-4 sm:px-0">
+      <div class="card-bg border border-theme rounded-3xl p-8 sm:p-12 shadow-sm space-y-5">
+        <span class="text-blue-600 dark:text-blue-400 text-xs font-mono uppercase tracking-wider">Arkitektura Enterprise</span>
+        <h2 class="text-3xl font-bold tracking-tight">Rreth PaFaqe.al</h2>
+        <p class="subtext text-sm sm:text-base leading-relaxed">
+          PaFaqe.al është platforma e parë e inteligjencës B2B në Shqipëri, e dizajnuar posaçërisht për agjencitë e zhvillimit web, profesionistët e shitjeve dhe konsulentët që kërkojnë të identifikojnë dhe kontaktojnë me efikasitet bizneset lokale që operojnë ende pa një faqe interneti zyrtare.
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 5: CONTACT -->
+    <div id="tabContact" class="hidden space-y-6 max-w-xl mx-auto py-10">
+      <div class="card-bg border rounded-3xl p-8 sm:p-10 shadow-sm space-y-6">
+        <div class="space-y-1.5">
+          <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Na Kontaktoni</h2>
+          <p class="text-xs subtext">Dërgoni një mesazh direkt te zhvilluesi <b class="text-blue-600 dark:text-blue-400">frrokuk2@gmail.com</b>.</p>
+        </div>
+        
+        <form onsubmit="UIController.handleContactSubmit(event)" class="space-y-4 text-xs">
+          <div class="space-y-1.5">
+            <label class="block font-mono uppercase subtext text-[11px]">Emri Juaj</label>
+            <input type="text" id="contactName" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block font-mono uppercase subtext text-[11px]">Email i Biznesit</label>
+            <input type="email" id="contactEmail" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block font-mono uppercase subtext text-[11px]">Mesazhi</label>
+            <textarea id="contactMsg" rows="4" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600"></textarea>
+          </div>
+          <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer mt-2">Dërgo Mesazhin</button>
+        </form>
+        <div id="contactSuccess" class="hidden mt-4 p-4 rounded-xl bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs text-center font-medium">
+          Mesazhi u dërgua me sukses!
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: TEAM WORKSPACE & GRANULAR RBAC -->
+    <div id="tabProfile" class="hidden space-y-8 max-w-4xl mx-auto py-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Organizata & RBAC</h2>
+            <span id="userRoleBadge" class="px-3 py-1 rounded-xl btn-primary text-[10px] font-mono font-bold tracking-wider">Roli: Owner</span>
+          </div>
+          <div class="space-y-4 text-xs">
+            <div class="space-y-1.5">
+              <label class="block font-mono uppercase subtext text-[11px]">ID e Organizatës (Enterprise Key)</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="orgIdInput" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border font-mono outline-none" readonly>
+                <button onclick="CRMStore.copyOrgId()" class="px-4 py-2.5 rounded-xl card-bg border subtext hover:text-blue-600 dark:hover:text-blue-400 font-semibold shrink-0 cursor-pointer">Kopjo</button>
+              </div>
+              <p class="text-[11px] subtext mt-1.5">Lejon anëtarët e ekipit të ndajnë të njëjtin pipeline dhe shënime në kohë reale.</p>
+              <p class="text-[11px] text-blue-600 dark:text-blue-400 font-mono font-semibold mt-2" id="teamMemberCountLabel">Anëtarë në ekip: 1</p>
+            </div>
+
+            <!-- Fto Anëtar të Ri -->
+            <div id="inviteMemberSection" class="space-y-1.5 border-t border-theme pt-4">
+              <label class="block font-mono uppercase subtext text-[11px]">Fto Anëtar në Ekip (Database Invite)</label>
+              <div class="flex items-center gap-2">
+                <input type="email" id="inviteEmailInput" placeholder="kolegu@example.com" class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border outline-none">
+                <button onclick="AuthService.sendTeamInvite()" class="px-4 py-2.5 rounded-xl btn-primary font-semibold shrink-0 cursor-pointer">Fto</button>
+              </div>
+              <p class="text-[10px] subtext mt-1">Kolegu do të lidhet automatikisht me organizatën tuaj sapo të futet me këtë email.</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block font-mono uppercase subtext text-[11px]">Bashkohu në Organizatë Tjetër</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="joinOrgInput" placeholder="Vendos Org ID..." class="input-bg w-full rounded-xl px-3.5 py-2.5 text-xs border font-mono outline-none">
+                <button onclick="CRMStore.joinOrganization()" class="px-4 py-2.5 rounded-xl btn-primary font-semibold shrink-0 cursor-pointer">Bashkohu</button>
+              </div>
+            </div>
+
+            <div class="border-t border-theme pt-5 space-y-4">
+              <label class="block font-mono uppercase subtext text-[11px]">Profili i Përdoruesit</label>
+              <div class="space-y-1.5">
+                <label class="block subtext text-[11px]">Emri dhe Mbiemri</label>
+                <input type="text" id="profileName" class="input-bg w-full rounded-xl px-4 py-2.5 text-xs border outline-none">
+              </div>
+              <div class="space-y-1.5">
+                <label class="block subtext text-[11px]">Email</label>
+                <input type="email" id="profileEmail" disabled class="w-full card-bg border border-theme rounded-xl px-4 py-2.5 text-xs subtext cursor-not-allowed">
+              </div>
+              <div id="verificationStatusContainer" class="p-3.5 rounded-xl card-bg border border-theme flex items-center justify-between text-xs"></div>
+              <button onclick="AuthService.updateProfileData()" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs cursor-pointer">Ruaj Ndryshimet</button>
+              <div id="profileSuccess" class="hidden text-xs text-emerald-400 font-medium text-center">Profili u përditësua me sukses!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-bg border rounded-3xl p-8 shadow-sm space-y-5">
+          <h2 class="text-base font-bold text-blue-600 dark:text-blue-400">Siguria & Lejet (RBAC)</h2>
+          
+          <div class="p-4 rounded-2xl card-bg border border-theme space-y-2 text-xs font-mono">
+            <div class="flex justify-between"><span class="subtext">Statusi i Llogarisë:</span> <span class="text-emerald-400">Aktiv / Secure</span></div>
+            <div class="flex justify-between"><span class="subtext">Protokolli i Sinkronizimit:</span> <span>Firestore SSL</span></div>
+            <div class="flex justify-between"><span class="subtext">Niveli i Qasjes:</span> <span id="rbacLevelText" class="text-blue-400">Full Access (Owner)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- GROUP MEMBERS MODAL -->
+<div id="groupMembersModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold">Menaxho Anëtarët e Grupit</div>
+        <p id="groupMembersModalSubtitle" class="text-xs subtext mt-1">Zgjidhni kë dëshironi të përfshini në këtë grup.</p>
+      </div>
+      <button onclick="ChatService.closeGroupMembersModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
+    </div>
+
+    <div class="space-y-3 text-xs">
+      <input type="text" id="searchOrgMembersForGroup" oninput="ChatService.filterOrgMembersModal(this.value)" placeholder="Kërko në organizatë..." class="input-bg w-full rounded-xl px-3.5 py-2.5 border outline-none">
+      
+      <div id="orgMembersCheckboxList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-3 border-t border-theme">
+      <button onclick="ChatService.closeGroupMembersModal()" class="px-5 py-2.5 rounded-xl card-bg border subtext cursor-pointer">Anulo</button>
+      <button onclick="ChatService.saveGroupMembers()" class="px-6 py-2.5 rounded-xl btn-primary font-semibold shadow-sm cursor-pointer">Ruaj Anëtarët</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div id="authTitle" class="text-xl font-bold">Identifikimi në Ekip</div>
+        <p id="authSubtitle" class="text-xs subtext mt-1">Hyni për të sinkronizuar statuset dhe auditet në kohë reale.</p>
+      </div>
+      <button onclick="AuthService.closeAuthModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
+    </div>
+    
+    <form onsubmit="AuthService.handleAuthSubmit(event)" class="space-y-4 text-xs">
+      <div id="nameFieldContainer" class="hidden space-y-4">
+        <div class="space-y-1.5">
+          <label class="block font-mono uppercase subtext text-[11px]">Emri dhe Mbiemri</label>
+          <input type="text" id="authName" class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="Kristian Frroku">
+        </div>
+        
+        <div class="p-4 card-bg border rounded-2xl space-y-2.5">
+          <label class="block font-mono uppercase subtext text-[10px] tracking-wider">Zgjidh Rolin Tuaj në Ekip:</label>
+          <div class="flex items-center gap-5">
+            <label class="flex items-center gap-2 cursor-pointer font-medium">
+              <input type="radio" name="userRole" value="Owner" checked class="accent-blue-600 cursor-pointer"> Owner (Admin)
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium">
+              <input type="radio" name="userRole" value="Sales Rep" class="accent-blue-600 cursor-pointer"> Sales Rep (Agjent)
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Email</label>
+        <input type="email" id="authEmail" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="you@example.com">
+      </div>
+
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between mb-1">
+          <label class="block font-mono uppercase subtext text-[11px]">Fjalëkalimi</label>
+          <button type="button" id="forgotPasswordLink" onclick="AuthService.openForgotPasswordModal()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Harrove fjalëkalimin?</button>
+        </div>
+        <input type="password" id="authPassword" required minlength="6" class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600" placeholder="••••••••">
+      </div>
+
+      <div id="authError" class="hidden text-xs text-rose-400 font-medium"></div>
+      
+      <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer mt-2">Identifikohu</button>
+    </form>
+    
+    <div class="text-center text-xs subtext pt-2">
+      <span id="authToggleText">Nuk keni llogari?</span> 
+      <button onclick="AuthService.toggleAuthMode()" id="authToggleBtn" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline ml-1 cursor-pointer">Regjistrohuni</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-3xl max-w-md w-full p-8 shadow-2xl relative space-y-5">
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold">Rikuperimi i Fjalëkalimit</div>
+        <p class="text-xs subtext mt-1">Vendosni email-in e regjistruar për të marrë linkun e rivendosjes.</p>
+      </div>
+      <button onclick="AuthService.closeForgotPasswordModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
+    </div>
+    
+    <form onsubmit="AuthService.handleForgotPasswordSubmit(event)" class="space-y-4 text-xs">
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Adresa Email</label>
+        <input type="email" id="forgotEmail" required class="input-bg w-full rounded-xl px-4 py-3 text-xs border outline-none focus:ring-1 focus:ring-blue-600">
+      </div>
+      <div id="forgotError" class="hidden text-xs text-rose-400 font-medium"></div>
+      <div id="forgotSuccess" class="hidden text-xs text-emerald-400 font-medium p-3.5 rounded-xl card-bg border border-emerald-500/50"></div>
+      
+      <button type="submit" id="forgotSubmitBtn" class="w-full py-3 rounded-xl btn-primary font-semibold transition text-xs shadow-sm cursor-pointer mt-2">Dërgo Linkun</button>
+    </form>
+  </div>
+</div>
+
+<!-- NOTES MODAL -->
+<div id="notesModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-3xl max-w-xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold">Shënime & Audit Logs</div>
+        <p id="notesBusinessSubtitle" class="text-xs text-blue-600 dark:text-blue-400 font-mono mt-1"></p>
+      </div>
+      <button onclick="UIController.closeNotesModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
+    </div>
+    
+    <div class="space-y-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="block font-mono uppercase subtext text-[11px]">Vlerësimi Manual (★)</label>
+          <select id="leadCustomRatingInput" class="input-bg w-full rounded-xl p-3 text-xs border outline-none cursor-pointer">
+            <option value="">(Sipas Databazës)</option>
+            <option value="5.0">5.0 ★ (Elite)</option>
+            <option value="4.5">4.5 ★ (Shumë mirë)</option>
+            <option value="4.0">4.0 ★ (Mirë)</option>
+            <option value="3.5">3.5 ★ (Mesatare)</option>
+            <option value="3.0">3.0 ★ (E drejtë)</option>
+            <option value="2.0">2.0 ★ (Rrezik)</option>
+            <option value="1.0">1.0 ★ (Kritike)</option>
+          </select>
+        </div>
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-mono uppercase subtext text-[11px]">Data e Kujtesës (Reminder)</label>
+            <a id="googleCalendarLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-[11px] text-blue-600 dark:text-blue-400 hover:underline">Shto në G-Calendar ↗</a>
+          </div>
+          <input type="date" id="leadReminderInput" onchange="UIController.updateGoogleCalendarUrl()" class="input-bg w-full rounded-xl p-3 text-xs border outline-none">
+        </div>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Shënimet e Përbashkëta të Ekipit</label>
+        <textarea id="leadNoteInput" rows="3" class="input-bg w-full rounded-xl p-3.5 text-xs border outline-none" placeholder="Shtoni shënime..."></textarea>
+      </div>
+
+      <div class="border-t border-theme pt-4 space-y-2">
+        <label class="block font-mono uppercase subtext text-[11px]">Historiku i Veprimeve / Audit Logs</label>
+        <div id="activityTimelineContainer" class="space-y-2.5 max-h-44 overflow-y-auto text-[11px] card-bg border rounded-2xl p-4 font-mono">
+          <span class="subtext">Nuk ka histori të regjistruar.</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3">
+        <button onclick="UIController.closeNotesModal()" class="px-5 py-2.5 rounded-xl card-bg border subtext font-medium cursor-pointer">Anulo</button>
+        <button onclick="CRMStore.saveLeadNote()" class="px-6 py-2.5 rounded-xl btn-primary font-semibold shadow-sm cursor-pointer">Ruaj Ndryshimet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OUTREACH PITCH GENERATOR MODAL -->
+<div id="pitchModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="card-bg border rounded-3xl max-w-lg w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-5">
+    <div class="flex items-start justify-between gap-4 border-b border-theme pb-4">
+      <div>
+        <div class="text-xl font-bold text-blue-600 dark:text-blue-400">Gjeneruesi i Ofertave</div>
+        <p id="pitchBusinessSubtitle" class="text-xs subtext font-medium mt-1"></p>
+      </div>
+      <button onclick="UIController.closePitchModal()" class="subtext hover:text-blue-600 font-bold text-base p-1 cursor-pointer shrink-0">✕</button>
+    </div>
+    
+    <div class="flex items-center gap-2.5 border-b border-theme pb-4">
+      <button onclick="UIController.switchPitchChannel('whatsapp')" id="pitchTabWa" class="px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer">WhatsApp</button>
+      <button onclick="UIController.switchPitchChannel('email')" id="pitchTabEmail" class="px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer">Email</button>
+    </div>
+
+    <div id="pitchPanelWa" class="space-y-4 text-xs">
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between mb-1">
+          <label class="block font-mono uppercase subtext text-[11px]">Template WhatsApp</label>
+          <button onclick="CRMStore.resetPitchTemplate('whatsapp')" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Rivendos</button>
+        </div>
+        <textarea id="pitchTemplateWaInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3.5 text-xs font-mono border outline-none"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button onclick="CRMStore.copyPitchToClipboard('whatsapp')" class="px-4.5 py-2.5 rounded-xl card-bg border text-xs font-semibold cursor-pointer">Kopjo Tekstin</button>
+        <a id="whatsappSendBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition text-center shadow-sm cursor-pointer">
+          <span>Dërgo në WhatsApp ↗</span>
+        </a>
+      </div>
+    </div>
+
+    <div id="pitchPanelEmail" class="hidden space-y-4 text-xs">
+      <div class="space-y-1.5">
+        <label class="block font-mono uppercase subtext text-[11px]">Subjekti i Email-it</label>
+        <input type="text" id="emailSubjectTemplateInput" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl px-3.5 py-3 text-xs font-mono border outline-none">
+      </div>
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between mb-1">
+          <label class="block font-mono uppercase subtext text-[11px]">Trupi i Email-it</label>
+          <button onclick="CRMStore.resetPitchTemplate('email')" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Rivendos</button>
+        </div>
+        <textarea id="emailBodyTemplateInput" rows="5" oninput="CRMStore.updateLivePitchPreview()" class="input-bg w-full rounded-xl p-3.5 text-xs font-mono border outline-none"></textarea>
+      </div>
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <button onclick="CRMStore.copyPitchToClipboard('email')" class="px-4.5 py-2.5 rounded-xl card-bg border text-xs font-semibold cursor-pointer">Kopjo Tekstin</button>
+        <a id="emailSendBtn" href="#" class="px-6 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition text-center shadow-sm cursor-pointer">
+          <span>Hape Klientin e Email ↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="max-w-7xl w-full mx-auto px-5 sm:px-8 py-8 text-xs subtext border-t border-theme mt-16 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div>
+    <p class="font-semibold logo-text">PaFaqe.al — Enterprise B2B Lead Intelligence CRM</p>
+    <p class="text-[11px] subtext mt-1">© 2026 Zhvilluar nga Kristian Frroku</p>
+  </div>
+  <div class="flex items-center gap-5 font-mono text-xs">
+    <span>📞 <a href="tel:0684073212" class="text-blue-600 dark:text-blue-400 hover:underline">0684073212</a></span>
+    <span>✉️ <a href="mailto:frrokuk2@gmail.com" class="text-blue-600 dark:text-blue-400 hover:underline">frrokuk2@gmail.com</a></span>
+  </div>
+</footer>
+
+<script>
+const DEMO = {"source": "demo", "generated": "2026-10-12", "count": 1, "businesses": [{"id": "demo_1000", "name": "Demo Business Enterprise", "category": "System", "city": "Tirana", "address": "Tirana, Albania", "phone": "+355 69 000 0000", "rating": 4.5, "reviews": 10, "website": null}]};
+
+// ==========================================
+// 🔔 TOAST NOTIFICATION SERVICE
+// ==========================================
+const ToastService = {
+  show(msg) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const item = document.createElement('div');
+    item.className = 'toast-item';
+    item.textContent = msg;
+    container.appendChild(item);
+    setTimeout(() => {
+      item.style.opacity = '0';
+      setTimeout(() => item.remove(), 200);
+    }, 3500);
+  }
+};
+
+// ==========================================
+// 💬 ENTERPRISE CHAT SERVICE
+// ==========================================
+const ChatService = {
+  unsubscribe: null,
+  currentChannel: 'general-chat',
+  currentDMUser: null,
+  customGroups: [
+    { id: 'general-chat', name: 'general-chat', emoji: '💬' },
+    { id: 'lead-deals', name: 'lead-deals', emoji: '🔒' },
+    { id: 'projekti-tirana', name: 'projekti-tirana', emoji: '🏢' }
+  ],
+  allOrgMembers: [],
+  groupMembersMap: {},
+
+  async loadOrgMembers(orgId) {
+    try {
+      const snap = await db.collection('users').where('orgId', '==', orgId).get();
+      this.allOrgMembers = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        if (d.email) this.allOrgMembers.push(d);
+      });
+      this.renderTeamMembersList(this.allOrgMembers);
+    } catch (e) {
+      console.error("Error loading org members:", e);
+    }
+  },
+
+  promptCreateCustomGroup() {
+    const inputStr = prompt("Vendosni emrin e grupit dhe emoji (Opsionale, p.sh. 🚀 Marketing Ekipi):");
+    if (!inputStr) return;
+    
+    let emoji = '📁';
+    let rawName = inputStr.trim();
+    const matchEmoji = rawName.match(/^(\p{Extended_Pictographic}|\p{Emoji_Component}|\u26fd|\u2705)/u);
+    if (matchEmoji) {
+      emoji = matchEmoji[0];
+      rawName = rawName.replace(emoji, '').trim();
+    }
+
+    const cleanId = rawName.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+    if (!cleanId) return;
+
+    if (!this.customGroups.some(g => g.id === cleanId)) {
+      this.customGroups.push({ id: cleanId, name: rawName, emoji: emoji });
+      this.renderCustomGroups();
+      ToastService.show(`Grupi ${emoji} #${rawName} u krijua me sukses!`);
+      this.switchChannel(cleanId);
+    } else {
+      this.switchChannel(cleanId);
+    }
+  },
+
+  promptEditGroupName() {
+    if (!this.currentChannel) return;
+    const currentGroup = this.customGroups.find(g => g.id === this.currentChannel);
+    if (!currentGroup) {
+      alert("Kanalet kryesore nuk mund të editohen.");
+      return;
+    }
+
+    const newTitle = prompt("Ndrysho emrin ose emoji-n e grupit:", `${currentGroup.emoji} ${currentGroup.name}`);
+    if (!newTitle) return;
+
+    let emoji = currentGroup.emoji;
+    let rawName = newTitle.trim();
+    const matchEmoji = rawName.match(/^(\p{Extended_Pictographic}|\p{Emoji_Component}|\u26fd|\u2705)/u);
+    if (matchEmoji) {
+      emoji = matchEmoji[0];
+      rawName = rawName.replace(emoji, '').trim();
+    }
+
+    currentGroup.name = rawName;
+    currentGroup.emoji = emoji;
+    this.renderCustomGroups();
+    this.switchChannel(currentGroup.id);
+    ToastService.show("Emri i grupit u përditësua!");
+  },
+
+  openGroupMembersModal() {
+    if (!this.currentChannel) return;
+    const currentGroup = this.customGroups.find(g => g.id === this.currentChannel);
+    if (!currentGroup) {
+      alert("Anëtarët mund të menaxhohen vetëm në grupet e krijuara.");
+      return;
+    }
+
+    const sub = document.getElementById('groupMembersModalSubtitle');
+    if (sub) sub.textContent = `Menaxho anëtarët për grupin: #${currentGroup.name}`;
+    
+    this.renderOrgMembersForModal();
+    document.getElementById('groupMembersModal').classList.remove('hidden');
+  },
+
+  closeGroupMembersModal() {
+    document.getElementById('groupMembersModal').classList.add('hidden');
+  },
+
+  renderOrgMembersForModal(filterQuery = '') {
+    const container = document.getElementById('orgMembersCheckboxList');
+    if (!container) return;
+
+    const currentAssigned = this.groupMembersMap[this.currentChannel] || this.allOrgMembers.map(u => u.email);
+    const q = filterQuery.toLowerCase();
+
+    const filtered = this.allOrgMembers.filter(u => u.email.toLowerCase().includes(q) || (u.name && u.name.toLowerCase().includes(q)));
+
+    container.innerHTML = filtered.map(u => {
+      const isChecked = currentAssigned.includes(u.email);
+      const name = u.name || u.email.split('@')[0];
+      return `
+        <label class="flex items-center justify-between p-2.5 rounded-xl card-bg border border-theme cursor-pointer hover:bg-slate-800/40">
+          <div class="flex items-center gap-2 truncate">
+            <span class="w-2 h-2 rounded-full ${u.online ? 'bg-emerald-500' : 'bg-slate-500'}"></span>
+            <span class="font-medium truncate">${UIController.escapeHtml(name)}</span>
+            <span class="subtext text-[10px] truncate">(${u.email})</span>
+          </div>
+          <input type="checkbox" value="${u.email}" class="group-member-checkbox accent-blue-600 w-4 h-4 cursor-pointer" ${isChecked ? 'checked' : ''}>
+        </label>
+      `;
+    }).join('');
+  },
+
+  filterOrgMembersModal(query) {
+    this.renderOrgMembersForModal(query);
+  },
+
+  saveGroupMembers() {
+    const checkboxes = document.querySelectorAll('.group-member-checkbox');
+    let selectedEmails = [];
+    checkboxes.forEach(cb => {
+      if (cb.checked) selectedEmails.push(cb.value);
+    });
+
+    this.groupMembersMap[this.currentChannel] = selectedEmails;
+    this.closeGroupMembersModal();
+    ToastService.show("Anëtarët e grupit u përditësuan!");
+  },
+
+  renderCustomGroups() {
+    const container = document.getElementById('customChannelsContainer');
+    if (!container) return;
+
+    container.innerHTML = this.customGroups.map(g => {
+      const isActive = this.currentChannel === g.id;
+      return `
+        <button onclick="ChatService.switchChannel('${g.id}')" class="w-full text-left px-3 py-2 rounded-xl ${isActive ? 'btn-primary font-semibold' : 'subtext hover:bg-slate-800/50'} flex items-center justify-between cursor-pointer transition">
+          <span class="truncate"><span>${g.emoji || '📁'}</span> #${UIController.escapeHtml(g.name)}</span>
+          <span class="text-[10px] font-mono text-emerald-400 shrink-0">Grup</span>
+        </button>
+      `;
+    }).join('');
+  },
+
+  switchChannel(channelName) {
+    this.currentChannel = channelName;
+    this.currentDMUser = null;
+    this.renderCustomGroups();
+
+    const groupObj = this.customGroups.find(g => g.id === channelName);
+    const headerTitle = document.getElementById('chatHeaderChannelTitle');
+    const headerSub = document.getElementById('chatHeaderSubtext');
+    const manageBtn = document.getElementById('groupManagementActions');
+
+    if (headerTitle) {
+      headerTitle.innerHTML = groupObj ? `<span>${groupObj.emoji}</span> #${groupObj.name}` : `# ${channelName}`;
+    }
+    if (headerSub) headerSub.textContent = groupObj ? `(Grup i krijuar nga ekipi)` : `(Kanal zyrtar i organizatës)`;
+    if (manageBtn) manageBtn.classList.toggle('hidden', !groupObj);
+
+    const orgId = AuthService.currentOrgId || AuthService.currentUser?.uid;
+    if (orgId) {
+      this.initChatForChannel(orgId, channelName);
+    }
+  },
+
+  openDirectMessage(targetEmail) {
+    this.currentChannel = null;
+    this.currentDMUser = targetEmail;
+    this.renderCustomGroups();
+
+    const headerTitle = document.getElementById('chatHeaderChannelTitle');
+    const headerSub = document.getElementById('chatHeaderSubtext');
+    const manageBtn = document.getElementById('groupManagementActions');
+
+    if (headerTitle) headerTitle.textContent = `DM: @${targetEmail.split('@')[0]}`;
+    if (headerSub) headerSub.textContent = `(Bisedë private 1:1)`;
+    if (manageBtn) manageBtn.classList.add('hidden');
+
+    const orgId = AuthService.currentOrgId || AuthService.currentUser?.uid;
+    if (orgId) {
+      this.initChatForDM(orgId, targetEmail);
+    }
+  },
+
+  filterTeamMembers(query) {
+    const q = query.toLowerCase();
+    const filtered = this.allOrgMembers.filter(u => u.email.toLowerCase().includes(q) || (u.name && u.name.toLowerCase().includes(q)));
+    this.renderTeamMembersList(filtered);
+  },
+
+  renderTeamMembersList(membersList) {
+    const onlineContainer = document.getElementById('chatOnlineUsersContainer');
+    const teamBadge = document.getElementById('teamCountBadge');
+    if (!onlineContainer) return;
+
+    if (teamBadge) teamBadge.textContent = `${this.allOrgMembers.length} anëtarë`;
+
+    onlineContainer.innerHTML = membersList.map(u => {
+      const isMe = AuthService.currentUser && u.email === AuthService.currentUser.email;
+      const name = u.name || u.email.split('@')[0];
+      if (isMe) {
+        return `
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-slate-800/30">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="font-medium truncate">${UIController.escapeHtml(name)} (Ju)</span>
+          </div>
+        `;
+      }
+      return `
+        <div onclick="ChatService.openDirectMessage('${u.email}')" class="flex items-center justify-between px-2 py-1.5 rounded-xl hover:bg-slate-800/50 cursor-pointer transition">
+          <div class="flex items-center gap-2 truncate">
+            <span class="w-2 h-2 rounded-full ${u.online ? 'bg-emerald-500' : 'bg-slate-500'}"></span>
+            <span class="font-medium truncate">${UIController.escapeHtml(name)}</span>
+          </div>
+          <span class="text-[10px] text-blue-400 font-mono shrink-0">DM 💬</span>
+        </div>
+      `;
+    }).join('');
+  },
+
+  initChat(orgId) {
+    this.loadOrgMembers(orgId);
+    this.renderCustomGroups();
+    if (this.currentDMUser) {
+      this.initChatForDM(orgId, this.currentDMUser);
+    } else {
+      this.initChatForChannel(orgId, this.currentChannel || 'general-chat');
+    }
+  },
+
+  initChatForChannel(orgId, channelName) {
+    if (this.unsubscribe) this.unsubscribe();
+    const container = document.getElementById('chatMessagesContainer');
+    if (!container) return;
+
+    const subCollectionName = `chats_${channelName}`;
+    this.setupChatSession(orgId, subCollectionName);
+  },
+
+  initChatForDM(orgId, targetEmail) {
+    if (this.unsubscribe) this.unsubscribe();
+    const container = document.getElementById('chatMessagesContainer');
+    if (!container) return;
+
+    const myEmail = AuthService.currentUser.email;
+    const sortedEmails = [myEmail, targetEmail].sort();
+    const dmRoomId = `dm_${btoa(sortedEmails[0] + '_' + sortedEmails[1]).replace(/=/g, '')}`;
+    this.setupChatSession(orgId, dmRoomId);
+  },
+
+  setupChatSession(orgId, collectionName) {
+    const container = document.getElementById('chatMessagesContainer');
+    const titleEl = document.getElementById('chatOrgTitle');
+    if (titleEl) titleEl.textContent = `Org: ${orgId.slice(0, 10)}...`;
+
+    if (AuthService.currentUser) {
+      const u = AuthService.currentUser;
+      const avatarEl = document.getElementById('chatCurrentUserAvatar');
+      const nameEl = document.getElementById('chatCurrentUserName');
+      const roleEl = document.getElementById('chatCurrentUserRole');
+      if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(u.email || 'default')}`;
+      if (nameEl) nameEl.textContent = u.displayName || u.email.split('@')[0];
+      if (roleEl) roleEl.textContent = `Roli: ${AuthService.userRole}`;
+    }
+
+    this.unsubscribe = db.collection('organizations').doc(orgId).collection(collectionName)
+      .orderBy('timestamp', 'asc')
+      .onSnapshot((snapshot) => {
+        let messages = [];
+        snapshot.forEach(doc => {
+          messages.push(doc.data());
+        });
+
+        if (messages.length === 0) {
+          container.innerHTML = `
+            <div class="text-center subtext py-32 flex flex-col items-center justify-center space-y-2">
+              <span class="text-3xl">💬</span>
+              <span>Nuk ka ende mesazhe në këtë hapësirë. Filloni bisedën!</span>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = messages.map(m => {
+          const isMe = AuthService.currentUser && m.email === AuthService.currentUser.email;
+          const timeStr = m.timestamp ? new Date(m.timestamp.toDate ? m.timestamp.toDate() : m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Tani';
+          const avatarUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(m.email || 'user')}`;
+          const senderName = UIController.escapeHtml(m.name || m.email.split('@')[0]);
+
+          return `
+            <div class="flex items-start gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'} mb-4">
+              <img src="${avatarUrl}" alt="Avatar" class="w-9 h-9 rounded-full bg-slate-800 border border-theme shrink-0 object-cover shadow-sm">
+              <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[78%] space-y-1">
+                <div class="flex items-center gap-2 px-1">
+                  <span class="font-bold text-[11px] text-blue-600 dark:text-blue-400">${senderName}</span>
+                  <span class="subtext text-[10px]">${timeStr}</span>
+                </div>
+                <div class="p-3.5 rounded-2xl ${isMe ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none' : 'card-bg border border-theme rounded-tl-none'} text-xs leading-relaxed shadow-sm">
+                  ${UIController.escapeHtml(m.text)}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        this.scrollChatToBottom();
+      }, (error) => {
+        console.error("Error loading chat:", error);
+      });
+  },
+
+  scrollChatToBottom() {
+    const container = document.getElementById('chatMessagesContainer');
+    if (container) container.scrollTop = container.scrollHeight;
+  },
+
+  insertEmoji(emoji) {
+    const input = document.getElementById('chatInputMessage');
+    if (input) {
+      input.value += emoji;
+      input.focus();
+    }
+  },
+
+  async handleSendMessage(e) {
+    e.preventDefault();
+    if (!AuthService.currentUser) return;
+    const input = document.getElementById('chatInputMessage');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+    const user = AuthService.currentUser;
+
+    let targetCollection = '';
+    if (this.currentDMUser) {
+      const sortedEmails = [user.email, this.currentDMUser].sort();
+      targetCollection = `dm_${btoa(sortedEmails[0] + '_' + sortedEmails[1]).replace(/=/g, '')}`;
+    } else {
+      targetCollection = `chats_${this.currentChannel || 'general-chat'}`;
+    }
+
+    try {
+      await db.collection('organizations').doc(orgId).collection(targetCollection).add({
+        text: text,
+        email: user.email,
+        name: user.displayName || user.email.split('@')[0],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      input.value = '';
+    } catch (err) {
+      alert("Gabim gjatë dërgimit: " + err.message);
+    }
+  }
+};
+
+// ==========================================
+// 🛡️ AUTH SERVICE & GRANULAR RBAC
+// ==========================================
+const AuthService = {
+  currentUser: null,
+  currentOrgId: null,
+  userRole: 'Owner',
+  isSignUpMode: false,
+
+  init() {
+    auth.onAuthStateChanged(async (user) => {
+      this.currentUser = user;
+      const btn = document.getElementById('authActionBtn');
+      const hero = document.getElementById('guestHero');
+      const filterSec = document.getElementById('filterSection');
+      const filterPresetsSec = document.getElementById('filterPresetsSection');
+      const navProfileBtn = document.getElementById('navProfileBtn');
+      const navKanbanBtn = document.getElementById('navKanbanBtn');
+      const navAnalyticsBtn = document.getElementById('navAnalyticsBtn');
+      const navChatBtn = document.getElementById('navChatBtn');
+      const dataSourceBadge = document.getElementById('dataSource');
+      
+      if (user) {
+        await user.reload();
+        await user.getIdToken(true);
+
+        try {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            const uData = userDoc.data();
+            this.currentOrgId = uData.orgId || user.uid;
+            this.userRole = uData.role || 'Owner';
+          } else {
+            let assignedOrgId = user.uid;
+            let assignedRole = 'Owner';
+
+            const inviteSnap = await db.collection('invitations').where('email', '==', user.email).where('status', '==', 'pending').get();
+            if (!inviteSnap.empty) {
+              const inviteData = inviteSnap.docs[0].data();
+              assignedOrgId = inviteData.orgId;
+              assignedRole = 'Sales Rep';
+              await inviteSnap.docs[0].ref.update({ status: 'accepted' });
+              ToastService.show(`U lidhët automatikisht me organizatën e ftuar (${assignedOrgId.slice(0,8)}...)!`);
+            }
+
+            this.currentOrgId = assignedOrgId;
+            this.userRole = assignedRole;
+
+            await db.collection('users').doc(user.uid).set({
+              email: user.email,
+              name: user.displayName || '',
+              orgId: assignedOrgId,
+              role: assignedRole,
+              online: true
+            }, { merge: true });
+          }
+          await db.collection('users').doc(user.uid).set({ online: true }, { merge: true });
+        } catch (e) {
+          this.currentOrgId = user.uid;
+        }
+
+        const orgInput = document.getElementById('orgIdInput');
+        if (orgInput) orgInput.value = this.currentOrgId;
+        const roleBadge = document.getElementById('userRoleBadge');
+        if (roleBadge) roleBadge.textContent = `Roli: ${this.userRole}`;
+        const rbacText = document.getElementById('rbacLevelText');
+        if (rbacText) rbacText.textContent = this.userRole === 'Owner' ? 'Full Access (Owner)' : 'Restricted (Sales Rep)';
+        const inviteSec = document.getElementById('inviteMemberSection');
+        if (inviteSec) inviteSec.classList.toggle('hidden', this.userRole !== 'Owner');
+
+        const orgStat = document.getElementById('statOrgName');
+        if (orgStat) orgStat.textContent = this.currentOrgId.slice(0, 10) + '...';
+
+        await CRMStore.fetchTeamMemberCount(this.currentOrgId);
+        ChatService.initChat(this.currentOrgId);
+
+        if (user.emailVerified) {
+          try {
+            if (dataSourceBadge) dataSourceBadge.textContent = "Sinkronizimi...";
+            const querySnapshot = await db.collection('lead_chunks').get();
+            let allBusinesses = [];
+            querySnapshot.forEach((doc) => {
+              const chunkData = doc.data();
+              if (chunkData.rows && Array.isArray(chunkData.rows)) {
+                allBusinesses.push(...chunkData.rows);
+              }
+            });
+
+            if (allBusinesses.length > 0) {
+              CRMStore.DATA = {
+                source: "live",
+                generated: new Date().toISOString().split('T')[0],
+                count: allBusinesses.length,
+                businesses: allBusinesses
+              };
+              if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
+              CRMStore.init();
+            }
+          } catch (err) {
+            console.error("Error fetching leads from Firestore:", err);
+            if (dataSourceBadge) dataSourceBadge.textContent = "Offline Cache";
+          }
+        } else {
+          if (dataSourceBadge) dataSourceBadge.textContent = "Email i paverifikuar";
+        }
+
+        const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+        const avatarUrl = UIController.getPixelAvatarUrl(user);
+        
+        if (btn) {
+          btn.innerHTML = `
+            <div class="flex items-center gap-2 cursor-pointer" onclick="UIController.switchTab('profile')">
+              <img src="${avatarUrl}" alt="Avatar" style="width: 20px; height: 20px;" class="rounded-full border border-blue-600/40 bg-slate-800 object-cover shadow-sm">
+              <span class="hover:underline font-semibold text-xs whitespace-nowrap text-slate-800 dark:text-slate-100">${UIController.escapeHtml(displayName)}</span>
+            </div>
+            <span class="text-xs text-rose-500 hover:text-rose-400 ml-1.5 font-medium cursor-pointer" onclick="event.stopPropagation(); AuthService.signOutAction()">[Dil]</span>
+          `;
+          btn.className = "px-3.5 py-2 rounded-xl card-bg border border-theme text-xs flex items-center gap-2 shadow-sm";
+        }
+        if (hero) hero.classList.add('hidden');
+        if (filterSec) filterSec.classList.remove('hidden');
+        if (filterPresetsSec) filterPresetsSec.classList.remove('hidden');
+        
+        if (navProfileBtn) navProfileBtn.classList.remove('hidden');
+        if (navKanbanBtn) navKanbanBtn.classList.remove('hidden');
+        if (navAnalyticsBtn) navAnalyticsBtn.classList.remove('hidden');
+        if (navChatBtn) navChatBtn.classList.remove('hidden');
+        
+        const pName = document.getElementById('profileName');
+        const pEmail = document.getElementById('profileEmail');
+        if (pName) pName.value = user.displayName || '';
+        if (pEmail) pEmail.value = user.email || '';
+        UIController.renderVerificationStatus();
+
+        await CRMStore.loadCloudData();
+        CRMStore.renderFilterPresets();
+      } else {
+        if (btn) btn.innerHTML = `<span>Identifikohu</span>`;
+        if (dataSourceBadge) dataSourceBadge.textContent = "Demo Mode";
+        CRMStore.cloudStatuses = {};
+        CRMStore.cloudNotes = {};
+        CRMStore.cloudReminders = {};
+        CRMStore.cloudRatings = {};
+        CRMStore.cloudHistory = {};
+        CRMStore.DATA = DEMO;
+        if (hero) hero.classList.remove('hidden');
+        if (filterSec) filterSec.classList.add('hidden');
+        if (filterPresetsSec) filterPresetsSec.classList.add('hidden');
+        
+        if (navProfileBtn) navProfileBtn.classList.add('hidden');
+        if (navKanbanBtn) navKanbanBtn.classList.add('hidden');
+        if (navAnalyticsBtn) navAnalyticsBtn.classList.add('hidden');
+        if (navChatBtn) navChatBtn.classList.add('hidden');
+        
+        UIController.switchTab('leads');
+        CRMStore.render();
+      }
+    });
+  },
+
+  async sendTeamInvite() {
+    if (this.userRole !== 'Owner') {
+      alert("Vetëm administratori (Owner) mund të dërgojë ftesa ekipi.");
+      return;
+    }
+    const email = document.getElementById('inviteEmailInput').value.trim().toLowerCase();
+    if (!email) {
+      alert("Ju lutem vendosni një adresë email.");
+      return;
+    }
+
+    try {
+      const currentOrg = this.currentOrgId || '4nYkxzK3yGTiFjnzIGCGIHmqgCB3';
+
+      await db.collection('invitations').add({
+        email: email,
+        orgId: currentOrg,
+        invitedBy: this.currentUser.email,
+        status: 'pending',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      const templateParams = {
+        to_email: email,
+        org_id: currentOrg,
+        invited_by: this.currentUser.email
+      };
+
+      // Dërgimi me EmailJS
+      await emailjs.send('service_kggnvcu', 'template_6jgz52c', templateParams);
+
+      ToastService.show(`Email-i i ftesës u dërgua me sukses te: ${email}`);
+      document.getElementById('inviteEmailInput').value = '';
+      await CRMStore.fetchTeamMemberCount(currentOrg);
+    } catch (e) {
+      alert("Gabim gjatë dërgimit të ftesës: " + e.message);
+    }
+  },
+
+  async signOutAction() {
+    if (this.currentUser) {
+      try {
+        await db.collection('users').doc(this.currentUser.uid).set({ online: false }, { merge: true });
+      } catch (e) {}
+    }
+    auth.signOut();
+  },
+
+  openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); },
+  closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); },
+
+  toggleAuthMode() {
+    this.isSignUpMode = !this.isSignUpMode;
+    document.getElementById('nameFieldContainer').classList.toggle('hidden', !this.isSignUpMode);
+    document.getElementById('authTitle').textContent = this.isSignUpMode ? 'Regjistrohu në Ekip' : 'Identifikimi në Ekip';
+    document.getElementById('authSubmitBtn').textContent = this.isSignUpMode ? 'Regjistrohu' : 'Identifikohu';
+    document.getElementById('authToggleText').textContent = this.isSignUpMode ? 'Keni llogari?' : 'Nuk keni llogari?';
+    document.getElementById('authToggleBtn').textContent = this.isSignUpMode ? 'Identifikohu' : 'Regjistrohuni';
+  },
+
+  openForgotPasswordModal() {
+    this.closeAuthModal();
+    document.getElementById('forgotPasswordModal').classList.remove('hidden');
+  },
+  closeForgotPasswordModal() {
+    document.getElementById('forgotPasswordModal').classList.add('hidden');
+  },
+
+  async handleForgotPasswordSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgotEmail').value.trim();
+    try {
+      await auth.sendPasswordResetEmail(email);
+      const succ = document.getElementById('forgotSuccess');
+      succ.textContent = "Linku i rivendosjes u dërgua.";
+      succ.classList.remove('hidden');
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
+  async updateProfileData() {
+    if (!this.currentUser) return;
+    const name = document.getElementById('profileName').value.trim();
+    try {
+      await this.currentUser.updateProfile({ displayName: name });
+      await db.collection('users').doc(this.currentUser.uid).set({ name: name }, { merge: true });
+      const succ = document.getElementById('profileSuccess');
+      succ.classList.remove('hidden');
+      setTimeout(() => succ.classList.add('hidden'), 4000);
+      ToastService.show('Profili u përditësua me sukses.');
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
+  async handleAuthSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+    try {
+      if (this.isSignUpMode) {
+        const name = document.getElementById('authName').value.trim();
+        const selectedRole = document.querySelector('input[name="userRole"]:checked')?.value || 'Owner';
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        await cred.user.updateProfile({ displayName: name });
+        await cred.user.sendEmailVerification();
+        
+        let assignedOrgId = cred.user.uid;
+        let assignedRole = selectedRole;
+
+        const inviteSnap = await db.collection('invitations').where('email', '==', email.toLowerCase()).where('status', '==', 'pending').get();
+        if (!inviteSnap.empty) {
+          const inviteData = inviteSnap.docs[0].data();
+          assignedOrgId = inviteData.orgId;
+          assignedRole = 'Sales Rep';
+          await inviteSnap.docs[0].ref.update({ status: 'accepted' });
+        }
+
+        await db.collection('users').doc(cred.user.uid).set({
+          email: email,
+          name: name,
+          orgId: assignedOrgId,
+          role: assignedRole,
+          online: true
+        }, { merge: true });
+
+        alert('Llogaria u krijua me sukses! Ju lutem verifikoni email-in tuaj.');
+      } else {
+        await auth.signInWithEmailAndPassword(email, password);
+      }
+      this.closeAuthModal();
+    } catch (err) {
+      const errBox = document.getElementById('authError');
+      errBox.textContent = err.message;
+      errBox.classList.remove('hidden');
+    }
+  }
+};
+
+// ==========================================
+// 📊 CRM STORE & ENTERPRISE SYNC
+// ==========================================
+const CRMStore = {
+  DATA: DEMO,
+  cloudStatuses: {},
+  cloudNotes: {},
+  cloudReminders: {},
+  cloudRatings: {},
+  cloudHistory: {},
+  activeLeadKeyForNotes: null,
+  selectedLeads: new Set(),
+  currentPitchChannel: 'whatsapp',
+  currentPitchLeadKey: null,
+  showAll: false,
+  currentPage: 1,
+  pageSize: 50,
+  lowRatingOnly: false,
+
+  DEFAULT_WA_TEMPLATE: "Përshëndetje! Vura re se {name} në {city} nuk ka ende një faqe web zyrtare për t'u shfaqur në Google.{ratingContext}\n\nJemi një ekip zhvilluesish lokalë dhe mund t'ju ndihmojmë me një faqe moderne. A jeni të interesuar për një propozim të shkurtër?",
+  DEFAULT_EMAIL_SUB_TEMPLATE: "Propozim Web Design për {name}",
+  DEFAULT_EMAIL_BODY_TEMPLATE: "Përshëndetje,\n\nU bëra kërkim në zonën e {city} dhe vura re se {name} ({category}) nuk ka ende një faqe web zyrtare.{ratingContext}\n\nJemi një kompani zhvillimi ueb-i lokale dhe ofrojmë faqe moderne që ju sjellin më shumë klientë.\n\nMe respekt,\nPaFaqe.al",
+
+  async refreshLeadsFromDatabase() {
+    const dataSourceBadge = document.getElementById('dataSource');
+    if (dataSourceBadge) dataSourceBadge.textContent = "Sinkronizimi...";
+
+    try {
+      const querySnapshot = await db.collection('lead_chunks').get();
+      let allBusinesses = [];
+      querySnapshot.forEach((doc) => {
+        const chunkData = doc.data();
+        if (chunkData.rows && Array.isArray(chunkData.rows)) {
+          allBusinesses.push(...chunkData.rows);
+        }
+      });
+
+      if (allBusinesses.length > 0) {
+        this.DATA = {
+          source: "live",
+          generated: new Date().toISOString().split('T')[0],
+          count: allBusinesses.length,
+          businesses: allBusinesses
+        };
+        if (dataSourceBadge) dataSourceBadge.textContent = `${allBusinesses.length.toLocaleString()} Leads (Live)`;
+        this.init();
+        ToastService.show(`U sinkronizuan me sukses ${allBusinesses.length} leads nga databaza!`);
+      } else {
+        ToastService.show("Nuk u gjetën të dhëna të reja në databazë.");
+      }
+    } catch (err) {
+      console.error("Gabim gjatë rifreskimit të leads:", err);
+      ToastService.show("Gabim gjatë lidhjes me databazën.");
+      if (dataSourceBadge) dataSourceBadge.textContent = "Gabim Lidhjeje";
+    }
+  },
+
+  async fetchTeamMemberCount(orgId) {
+    try {
+      const snapshot = await db.collection('users').where('orgId', '==', orgId).get();
+      const count = snapshot.size || 1;
+      const countLabel = document.getElementById('teamMemberCountLabel');
+      if (countLabel) countLabel.textContent = `Anëtarë në ekip: ${count}`;
+    } catch (e) {
+      const countLabel = document.getElementById('teamMemberCountLabel');
+      if (countLabel) countLabel.textContent = `Anëtarë në ekip: 1`;
+    }
+  },
+
+  async loadCloudData() {
+    if (!AuthService.currentUser) return;
+    const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+    try {
+      const [statusSnap, notesSnap, historySnap] = await Promise.all([
+        db.collection('organizations').doc(orgId).collection('lead_statuses').get(),
+        db.collection('organizations').doc(orgId).collection('lead_notes').get(),
+        db.collection('organizations').doc(orgId).collection('lead_history').get()
+      ]);
+      
+      this.cloudStatuses = {};
+      statusSnap.forEach(doc => { this.cloudStatuses[doc.id] = doc.data().status; });
+      
+      this.cloudNotes = {};
+      this.cloudReminders = {};
+      this.cloudRatings = {};
+      notesSnap.forEach(doc => { 
+        const d = doc.data();
+        this.cloudNotes[doc.id] = d.note || ''; 
+        if (d.reminder) this.cloudReminders[doc.id] = d.reminder;
+        if (d.customRating) this.cloudRatings[doc.id] = d.customRating;
+      });
+
+      this.cloudHistory = {};
+      historySnap.forEach(doc => {
+        this.cloudHistory[doc.id] = doc.data().events || [];
+      });
+    } catch (err) {
+      console.error("Error loading org cloud data:", err);
+    } finally {
+      this.render();
+      this.updateAnalytics(this.DATA && this.DATA.businesses ? this.DATA.businesses.length : 0);
+      if (!document.getElementById('tabKanban').classList.contains('hidden')) {
+        this.renderKanban();
+      }
+    }
+  },
+
+  async copyOrgId() {
+    const input = document.getElementById('orgIdInput');
+    if (input) {
+      await navigator.clipboard.writeText(input.value);
+      ToastService.show('ID e Organizatës u kopjua në clipboard.');
+    }
+  },
+
+  async joinOrganization() {
+    const targetOrg = document.getElementById('joinOrgInput').value.trim();
+    if (!targetOrg || !AuthService.currentUser) return;
+    try {
+      await db.collection('users').doc(AuthService.currentUser.uid).set({
+        orgId: targetOrg,
+        role: 'Sales Rep'
+      }, { merge: true });
+      AuthService.currentOrgId = targetOrg;
+      AuthService.userRole = 'Sales Rep';
+      ToastService.show(`U bashkuat me sukses tek Organizata ${targetOrg}.`);
+      await this.fetchTeamMemberCount(targetOrg);
+      ChatService.initChat(targetOrg);
+      await this.loadCloudData();
+    } catch (e) {
+      alert('Gabim në lidhje me organizatën: ' + e.message);
+    }
+  },
+
+  async recordLeadHistoryEvent(leadKey, eventText) {
+    const timestamp = new Date().toLocaleString();
+    const userObj = AuthService.currentUser;
+    const fullName = userObj ? (userObj.displayName || userObj.email || 'Përdorues') : 'Përdorues';
+    const formattedEvent = `Ndryshuar nga ${fullName}: ${eventText}`;
+    const newEvent = { date: timestamp, text: formattedEvent };
+    
+    if (!this.cloudHistory[leadKey]) this.cloudHistory[leadKey] = [];
+    this.cloudHistory[leadKey].unshift(newEvent);
+
+    const badge = document.getElementById('navLiveActivityBadge');
+    if (badge) badge.classList.remove('hidden');
+
+    if (AuthService.currentUser) {
+      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+      try {
+        await db.collection('organizations').doc(orgId).collection('lead_history').doc(leadKey).set({
+          events: this.cloudHistory[leadKey]
+        });
+      } catch (err) {
+        console.error("Error saving audit log:", err);
+      }
+    }
+  },
+
+  getLeadStatus(id) {
+    return AuthService.currentUser ? (this.cloudStatuses[id] || 'new') : (JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}')[id] || 'new');
+  },
+
+  async setLeadStatus(id, status) {
+    const oldStatus = this.getLeadStatus(id);
+    if (oldStatus === status) return;
+
+    if (!AuthService.currentUser) {
+      const statuses = JSON.parse(localStorage.getItem('pafaqe_lead_statuses') || '{}');
+      statuses[id] = status;
+      localStorage.setItem('pafaqe_lead_statuses', JSON.stringify(statuses));
+    } else {
+      this.cloudStatuses[id] = status;
+      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+      try {
+        await db.collection('organizations').doc(orgId).collection('lead_statuses').doc(id).set({ status: status });
+      } catch (err) {
+        console.error("Error saving status:", err);
+      }
+    }
+
+    await this.recordLeadHistoryEvent(id, `Statusi ndryshua nga "${oldStatus}" në "${status}"`);
+    ToastService.show(`Statusi u përditësua në: ${status}`);
+    this.render();
+    if (!document.getElementById('tabKanban').classList.contains('hidden')) {
+      this.renderKanban();
+    }
+  },
+
+  getLeadNote(id) {
+    return AuthService.currentUser ? (this.cloudNotes[id] || '') : (JSON.parse(localStorage.getItem('pafaqe_lead_notes') || '{}')[id] || '');
+  },
+
+  getLeadReminder(id) {
+    return AuthService.currentUser ? (this.cloudReminders[id] || '') : (JSON.parse(localStorage.getItem('pafaqe_lead_reminders') || '{}')[id] || '');
+  },
+
+  getLeadRating(b) {
+    const key = b.id || b.name;
+    const custom = AuthService.currentUser ? this.cloudRatings[key] : (JSON.parse(localStorage.getItem('pafaqe_lead_ratings') || '{}')[key]);
+    return custom !== undefined && custom !== null && custom !== "" ? parseFloat(custom) : (b.rating || null);
+  },
+
+  async saveLeadNote() {
+    if (!this.activeLeadKeyForNotes) return;
+    const noteText = document.getElementById('leadNoteInput').value.trim();
+    const remDate = document.getElementById('leadReminderInput').value;
+    const customRating = document.getElementById('leadCustomRatingInput').value;
+    
+    if (AuthService.currentUser) {
+      this.cloudNotes[this.activeLeadKeyForNotes] = noteText;
+      this.cloudReminders[this.activeLeadKeyForNotes] = remDate;
+      if (customRating) this.cloudRatings[this.activeLeadKeyForNotes] = customRating;
+      else delete this.cloudRatings[this.activeLeadKeyForNotes];
+
+      const orgId = AuthService.currentOrgId || AuthService.currentUser.uid;
+      try {
+        await db.collection('organizations').doc(orgId).collection('lead_notes').doc(this.activeLeadKeyForNotes).set({ 
+          note: noteText, 
+          reminder: remDate,
+          customRating: customRating
+        });
+      } catch (err) {
+        console.error("Error saving note:", err);
+      }
+    }
+
+    await this.recordLeadHistoryEvent(this.activeLeadKeyForNotes, `Përditësoi shënimet dhe auditin CRM`);
+    UIController.closeNotesModal();
+    ToastService.show('Shënimet u ruajtën me sukses.');
+    this.render();
+  },
+
+  leadScore(b) {
+    let s = 50;
+    if(!b.website) s += 25;
+    if(b.phone) s += 10;
+    const effectiveRating = this.getLeadRating(b);
+    if(effectiveRating){ s += Math.round((effectiveRating-3)*6); if(effectiveRating>=4.5) s+=5; }
+    if(b.reviews>50) s += 5;
+    return Math.max(0,Math.min(100,s));
+  },
+
+  filtered() {
+    if (!this.DATA || !this.DATA.businesses) return [];
+    let list = this.DATA.businesses.filter(b => {
+      const includeWebsite = AuthService.currentUser ? (document.getElementById('includeWebsite')?.checked || false) : false;
+      if (!includeWebsite && !this.showAll && b.website) return false;
+      if (includeWebsite && !b.website) return false;
+
+      const effectiveRating = this.getLeadRating(b);
+      if(this.lowRatingOnly && (effectiveRating && effectiveRating >= 3.5)) return false;
+      
+      if (AuthService.currentUser) {
+        const q = (document.getElementById('q')?.value || '').toLowerCase();
+        const city = document.getElementById('city')?.value || '';
+        const cat = document.getElementById('cat')?.value || '';
+        const phoneOnly = document.getElementById('phoneOnly')?.checked || false;
+
+        if(q && !(b.name + ' ' + (b.address || '') + ' ' + (b.category || '')).toLowerCase().includes(q)) return false;
+        if(city && (b.city || '').trim() !== city) return false;
+        if(cat && (b.category || '').trim() !== cat) return false;
+        if(phoneOnly && !b.phone) return false;
+      }
+      return true;
+    });
+
+    const s = AuthService.currentUser ? (document.getElementById('sort')?.value || 'score') : 'score';
+    list.sort((a,b) => s==='name' ? a.name.localeCompare(b.name)
+      : s==='rating' ? ((this.getLeadRating(b) || 0) - (this.getLeadRating(a) || 0))
+      : s==='reviews' ? ((b.reviews || 0) - (a.reviews || 0))
+      : this.leadScore(b) - this.leadScore(a));
+    return list;
+  },
+
+  toggleSelectAll(cb) {
+    const isChecked = cb.checked;
+    document.querySelectorAll('.lead-select-checkbox').forEach(c => {
+      c.checked = isChecked;
+      const key = c.getAttribute('data-key');
+      if (isChecked) this.selectedLeads.add(key);
+      else this.selectedLeads.delete(key);
+    });
+    this.updateExportBtnLabel();
+    this.updateBulkToolbar();
+  },
+
+  toggleSelectLead(key, cb) {
+    if (cb.checked) this.selectedLeads.add(key);
+    else this.selectedLeads.delete(key);
+    this.updateExportBtnLabel();
+    this.updateBulkToolbar();
+  },
+
+  clearSelection() {
+    this.selectedLeads.clear();
+    document.querySelectorAll('.lead-select-checkbox').forEach(cb => cb.checked = false);
+    this.updateExportBtnLabel();
+    this.updateBulkToolbar();
+  },
+
+  updateBulkToolbar() {
+    const toolbar = document.getElementById('bulkActionsToolbar');
+    if (toolbar) toolbar.classList.toggle('hidden', this.selectedLeads.size === 0);
+    const badge = document.getElementById('selectedCountBadge');
+    if (badge) badge.textContent = `${this.selectedLeads.size} të zgjedhur`;
+  },
+
+  async applyBulkStatus() {
+    if (this.selectedLeads.size === 0) return;
+    const targetStatus = document.getElementById('bulkStatusSelect').value;
+    for (const leadKey of this.selectedLeads) {
+      await this.setLeadStatus(leadKey, targetStatus);
+    }
+    ToastService.show(`Statusi u përditësua në masë për ${this.selectedLeads.size} biznese.`);
+    this.clearSelection();
+    this.render();
+  },
+
+  getSavedPresets() {
+    try { return JSON.parse(localStorage.getItem('pafaqe_filter_presets') || '[]'); } catch(e) { return []; }
+  },
+
+  saveCurrentPresetPrompt() {
+    const name = prompt("Emri i filtrit të ruajtur:");
+    if (!name) return;
+    const presets = this.getSavedPresets();
+    presets.push({
+      name,
+      q: document.getElementById('q').value,
+      city: document.getElementById('city').value,
+      cat: document.getElementById('cat').value,
+      phoneOnly: document.getElementById('phoneOnly').checked
+    });
+    localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
+    this.renderFilterPresets();
+    ToastService.show('Filtri u ruajt me sukses.');
+  },
+
+  deletePreset(idx, e) {
+    if (e) e.stopPropagation();
+    const presets = this.getSavedPresets();
+    presets.splice(idx, 1);
+    localStorage.setItem('pafaqe_filter_presets', JSON.stringify(presets));
+    this.renderFilterPresets();
+  },
+
+  applyPreset(idx) {
+    const p = this.getSavedPresets()[idx];
+    if (!p) return;
+    document.getElementById('q').value = p.q || '';
+    document.getElementById('city').value = p.city || '';
+    document.getElementById('cat').value = p.cat || '';
+    document.getElementById('phoneOnly').checked = !!p.phoneOnly;
+    UIController.handleFilterInput();
+  },
+
+  renderFilterPresets() {
+    const container = document.getElementById('presetChipsContainer');
+    if (!container) return;
+    const presets = this.getSavedPresets();
+    container.innerHTML = presets.map((p, idx) => `
+      <span class="chip chip-btn px-3 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-2 cursor-pointer">
+        <span onclick="CRMStore.applyPreset(${idx})">${UIController.escapeHtml(p.name)}</span>
+        <button onclick="CRMStore.deletePreset(${idx}, event)" class="text-rose-500 hover:text-rose-400 font-bold text-xs" title="Fshij filtrin">×</button>
+      </span>
+    `).join('');
+  },
+
+  updateExportBtnLabel() {
+    const btnText = document.getElementById('exportBtnText');
+    if (btnText) btnText.textContent = this.selectedLeads.size > 0 ? `Eksporto Të Zgjedhurat (${this.selectedLeads.size})` : `Eksporto të Dhënat`;
+  },
+
+  exportDataAdvanced() {
+    if (!AuthService.currentUser) { AuthService.openAuthModal(); return; }
+    const format = document.getElementById('exportFormatSelect')?.value || 'csv';
+    let list = this.filtered();
+    if (this.selectedLeads.size > 0) list = list.filter(b => this.selectedLeads.has(b.id || b.name));
+
+    if (format === 'json') {
+      const jsonStr = JSON.stringify(list, null, 2);
+      const blob = new Blob([jsonStr], {type: 'application/json;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'enterprise-leads-export.json';
+      a.click();
+      ToastService.show('Eksportimi JSON u realizua me sukses.');
+    } else if (format === 'pdf') {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("PaFaqe.al - Enterprise Leads Report", 14, 20);
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Data e gjenerimit: ${new Date().toLocaleDateString()}`, 14, 28);
+      doc.text(`Total biznese në raport: ${list.length}`, 14, 34);
+
+      let y = 46;
+      doc.setFont("helvetica", "bold");
+      doc.text("Emri i Biznesit", 14, y);
+      doc.text("Qyteti", 90, y);
+      doc.text("Telefoni", 130, y);
+      doc.text("Score", 180, y);
+      y += 6;
+      doc.line(14, y, 196, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      list.slice(0, 35).forEach(b => {
+        if (y > 280) { doc.addPage(); y = 20; }
+        doc.text((b.name || '').substring(0, 35), 14, y);
+        doc.text((b.city || '—').substring(0, 18), 90, y);
+        doc.text((b.phone || '—').substring(0, 18), 130, y);
+        doc.text(String(this.leadScore(b)), 180, y);
+        y += 8;
+      });
+
+      doc.save('enterprise-leads-report.pdf');
+      ToastService.show('Raporti PDF u gjenerua me sukses.');
+    } else {
+      const head = 'name,category,city,address,phone,rating,reviews,website,lead_score\n';
+      const body = list.map(b => [
+        `"${(b.name || '').replace(/"/g, '""')}"`,
+        `"${(b.category || '').replace(/"/g, '""')}"`,
+        `"${(b.city || '').replace(/"/g, '""')}"`,
+        `"${(b.address || '').replace(/"/g, '""')}"`,
+        `="${b.phone || ''}"`,
+        this.getLeadRating(b) || '',
+        b.reviews || '',
+        `"${(b.website || '').replace(/"/g, '""')}"`,
+        this.leadScore(b)
+      ].join(',')).join('\n');
+      
+      const blob = new Blob(['\ufeff' + head + body], {type: 'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'enterprise-leads-export.csv'; 
+      a.click();
+      ToastService.show('Eksportimi CSV u realizua me sukses.');
+    }
+  },
+
+  renderKanban() {
+    if (!this.DATA || !this.DATA.businesses) return;
+    const includeWebsite = document.getElementById('includeWebsite')?.checked || false;
+    const list = this.DATA.businesses.filter(b => includeWebsite ? !!b.website : !b.website);
+    const cols = {
+      new: document.getElementById('kanbanColNew'),
+      contacted: document.getElementById('kanbanColContacted'),
+      interested: document.getElementById('kanbanColInterested'),
+      closed: document.getElementById('kanbanColClosed')
+    };
+
+    const counts = {
+      new: document.getElementById('kanbanCountNew'),
+      contacted: document.getElementById('kanbanCountContacted'),
+      interested: document.getElementById('kanbanCountInterested'),
+      closed: document.getElementById('kanbanCountClosed')
+    };
+
+    const categorized = { new: [], contacted: [], interested: [], closed: [] };
+    list.forEach(b => {
+      const status = this.getLeadStatus(b.id || b.name) || 'new';
+      if (categorized[status]) categorized[status].push(b);
+      else categorized.new.push(b);
+    });
+
+    Object.keys(cols).forEach(status => {
+      const statusList = categorized[status];
+      if (counts[status]) counts[status].textContent = statusList.length;
+
+      if (cols[status]) {
+        cols[status].innerHTML = statusList.slice(0, 30).map(b => {
+          const leadKey = b.id || b.name;
+          return `
+            <div class="card-bg border rounded-2xl p-4 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-500 transition space-y-2.5 text-xs" 
+                 draggable="true" 
+                 ondragstart="CRMStore.dragLead(event, '${UIController.escapeHtml(leadKey)}')">
+              <div class="flex items-start justify-between gap-2">
+                <span class="font-bold truncate">${UIController.escapeHtml(b.name)}</span>
+                <span class="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 shrink-0">${this.leadScore(b)} pts</span>
+              </div>
+              <div class="subtext text-[11px] truncate">${UIController.escapeHtml(b.category || 'Business')} • ${UIController.escapeHtml(b.city || 'Albania')}</div>
+              <div class="flex items-center justify-between pt-3 border-t border-theme text-[11px]">
+                <span class="font-mono text-amber-600 dark:text-amber-400">${UIController.escapeHtml(b.phone || 'Pa tel')}</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="event.stopPropagation(); UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-2.5 py-1.5 rounded-xl card-bg border subtext hover:text-blue-500 cursor-pointer">Shënim</button>
+                  <button onclick="event.stopPropagation(); UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-2.5 py-1.5 rounded-xl card-bg border text-emerald-600 dark:text-emerald-400 cursor-pointer">Oferta</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    });
+
+    this.updateAnalytics(list.length);
+  },
+
+  dragLead(e, leadKey) {
+    e.dataTransfer.setData('text/plain', leadKey);
+    e.dataTransfer.effectAllowed = 'move';
+  },
+
+  allowDrop(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  },
+
+  dropLead(e, newStatus) {
+    e.preventDefault();
+    const leadKey = e.dataTransfer.getData('text/plain');
+    if (leadKey) {
+      this.setLeadStatus(leadKey, newStatus);
+    }
+  },
+
+  updateAnalytics(totalCount) {
+    const allBusinesses = this.DATA && this.DATA.businesses ? this.DATA.businesses : [];
+    const totalLeadsEl = document.getElementById('analyticsTotalLeads');
+    if (totalLeadsEl) totalLeadsEl.textContent = allBusinesses.length.toLocaleString();
+
+    let cNew = 0, cCont = 0, cInt = 0, cClosed = 0, cRisk = 0;
+
+    allBusinesses.forEach(b => {
+      const st = this.getLeadStatus(b.id || b.name);
+      if (st === 'contacted') cCont++;
+      else if (st === 'interested') cInt++;
+      else if (st === 'closed') cClosed++;
+      else cNew++;
+
+      const r = this.getLeadRating(b) || 0;
+      if (r > 0 && r < 3.5) cRisk++;
+    });
+
+    const totalProcessed = cNew + cCont + cInt + cClosed;
+    const winRate = totalProcessed > 0 ? Math.round((cClosed / totalProcessed) * 100) : 0;
+    const activePipelineCount = cCont + cInt;
+
+    const winRateEl = document.getElementById('analytWinRate');
+    if (winRateEl) winRateEl.textContent = `${winRate}%`;
+    
+    const activePipeEl = document.getElementById('analytActivePipeline');
+    if (activePipeEl) activePipeEl.textContent = `${activePipelineCount.toLocaleString()} biznese`;
+    
+    const riskEl = document.getElementById('analytRiskCount');
+    if (riskEl) riskEl.textContent = `${cRisk.toLocaleString()} biznese`;
+
+    const pNew = totalProcessed ? Math.round((cNew / totalProcessed) * 100) : 0;
+    const pCont = totalProcessed ? Math.round((cCont / totalProcessed) * 100) : 0;
+    const pInt = totalProcessed ? Math.round((cInt / totalProcessed) * 100) : 0;
+    const pClosed = totalProcessed ? Math.round((cClosed / totalProcessed) * 100) : 0;
+
+    if (document.getElementById('barNewPct')) {
+      document.getElementById('barNewPct').textContent = `${pNew}%`;
+      document.getElementById('fillNew').style.width = `${pNew}%`;
+      
+      document.getElementById('barContPct').textContent = `${pCont}%`;
+      document.getElementById('fillCont').style.width = `${pCont}%`;
+      
+      document.getElementById('barIntPct').textContent = `${pInt}%`;
+      document.getElementById('fillInt').style.width = `${pInt}%`;
+      
+      document.getElementById('barClosedPct').textContent = `${pClosed}%`;
+      document.getElementById('fillClosed').style.width = `${pClosed}%`;
+    }
+  },
+
+  updateLivePitchPreview() {
+    if (!this.currentPitchLeadKey) return;
+    const b = this.DATA.businesses.find(item => (item.id || item.name) === this.currentPitchLeadKey);
+    if (!b) return;
+
+    const name = b.name || '';
+    const city = b.city || 'Albania';
+    const category = b.category || 'Business';
+    const phone = b.phone ? String(b.phone) : '';
+    const rating = this.getLeadRating(b) || 0;
+
+    let ratingContext = rating >= 4.5 ? ` Vura re se keni një vlerësim fantastik prej ${rating}★ në Google.` : '';
+    const waTemplate = document.getElementById('pitchTemplateWaInput').value;
+    const formattedWa = waTemplate.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+
+    const cleanNum = phone.replace(/\D/g, '');
+    const phoneFormatted = cleanNum.startsWith('0') ? '355' + cleanNum.slice(1) : cleanNum;
+    document.getElementById('whatsappSendBtn').href = `https://wa.me/${phoneFormatted}?text=${encodeURIComponent(formattedWa)}`;
+
+    const emailSub = document.getElementById('emailSubjectTemplateInput').value;
+    const emailBody = document.getElementById('emailBodyTemplateInput').value;
+    const formattedSub = emailSub.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+    const formattedBody = emailBody.replace(/{name}/g, name).replace(/{city}/g, city).replace(/{category}/g, category).replace(/{ratingContext}/g, ratingContext);
+    
+    const emailTarget = b.email || '';
+    document.getElementById('emailSendBtn').href = `mailto:${emailTarget}?subject=${encodeURIComponent(formattedSub)}&body=${encodeURIComponent(formattedBody)}`;
+  },
+
+  resetPitchTemplate(type) {
+    if (type === 'whatsapp') document.getElementById('pitchTemplateWaInput').value = this.DEFAULT_WA_TEMPLATE;
+    else {
+      document.getElementById('emailSubjectTemplateInput').value = this.DEFAULT_EMAIL_SUB_TEMPLATE;
+      document.getElementById('emailBodyTemplateInput').value = this.DEFAULT_EMAIL_BODY_TEMPLATE;
+    }
+    this.updateLivePitchPreview();
+  },
+
+  copyPitchToClipboard(type) {
+    const text = document.getElementById(type === 'whatsapp' ? 'pitchTemplateWaInput' : 'emailBodyTemplateInput').value;
+    navigator.clipboard.writeText(text).then(() => ToastService.show('Teksti u kopjua.'));
+  },
+
+  changePage(dir) {
+    const list = this.filtered();
+    const maxPage = Math.ceil(list.length / this.pageSize) || 1;
+    this.currentPage = Math.max(1, Math.min(maxPage, this.currentPage + dir));
+    this.render();
+  },
+
+  render() {
+    if (!this.DATA || !this.DATA.businesses) return;
+    const list = this.filtered();
+    document.getElementById('statLeads').textContent = this.DATA.businesses.filter(b => !b.website).length.toLocaleString();
+    document.getElementById('statCities').textContent = [...new Set(this.DATA.businesses.filter(b => !b.website).map(b => (b.city || '').trim()).filter(Boolean))].length;
+    
+    const sc = this.DATA.businesses.filter(b => !b.website).map(b => this.leadScore(b));
+    document.getElementById('statAvg').textContent = sc.length ? Math.round(sc.reduce((a,c) => a + c, 0) / sc.length) : 0;
+
+    const totalRecords = list.length;
+    const maxPage = Math.ceil(totalRecords / this.pageSize) || 1;
+    if (this.currentPage > maxPage) this.currentPage = maxPage;
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = Math.min(start + this.pageSize, totalRecords);
+    const displayList = AuthService.currentUser ? list.slice(start, end) : list.slice(0, 5);
+
+    document.getElementById('tableHead').innerHTML = `
+      <tr>
+        ${AuthService.currentUser ? '<th class="w-[4%] p-3.5 text-center"><input type="checkbox" onchange="CRMStore.toggleSelectAll(this)" class="accent-blue-600 cursor-pointer"></th>' : ''}
+        <th class="w-[26%] p-3.5 font-semibold">Biznesi</th>
+        <th class="w-[14%] p-3.5 font-semibold">Kategoria</th>
+        <th class="w-[12%] p-3.5 font-semibold">Qyteti</th>
+        <th class="w-[16%] p-3.5 font-semibold">Telefoni</th>
+        ${AuthService.currentUser ? '<th class="w-[12%] p-3.5 font-semibold">Statusi</th>' : ''}
+        <th class="w-[8%] p-3.5 font-semibold">Rating</th>
+        <th class="w-[8%] p-3.5 font-semibold text-right">Score</th>
+        ${AuthService.currentUser ? '<th class="w-[14%] p-3.5 font-semibold text-center">Veprime</th>' : ''}
+      </tr>
+    `;
+
+    const tb = document.getElementById('rows'); 
+    tb.innerHTML = '';
+    
+    displayList.forEach(b => {
+      const score = this.leadScore(b);
+      const leadKey = b.id || b.name;
+      const currentStatus = this.getLeadStatus(leadKey);
+      const effectiveRating = this.getLeadRating(b);
+      const isSelected = this.selectedLeads.has(leadKey);
+
+      const tr = document.createElement('tr');
+      tr.className = 'row row-hover border-b border-theme text-xs';
+      tr.innerHTML = `
+        ${AuthService.currentUser ? `<td class="p-3.5 text-center"><input type="checkbox" data-key="${UIController.escapeHtml(leadKey)}" onchange="CRMStore.toggleSelectLead('${UIController.escapeHtml(leadKey)}', this)" class="lead-select-checkbox accent-blue-600 cursor-pointer" ${isSelected ? 'checked' : ''}></td>` : ''}
+        <td class="p-3.5 truncate font-semibold">${UIController.escapeHtml(b.name)}</td>
+        <td class="p-3.5 subtext truncate">${UIController.escapeHtml(b.category || '—')}</td>
+        <td class="p-3.5 truncate">${UIController.escapeHtml(b.city || '—')}</td>
+        <td class="p-3.5 truncate font-mono">
+          ${b.phone ? `<a href="tel:${UIController.escapeHtml(b.phone)}" class="text-blue-600 dark:text-blue-400 hover:underline">${UIController.escapeHtml(b.phone)}</a>` : '—'}
+        </td>
+        ${AuthService.currentUser ? `
+          <td class="p-3.5 truncate">
+            <select onchange="CRMStore.setLeadStatus('${UIController.escapeHtml(leadKey)}', this.value)" class="input-bg rounded-xl px-2.5 py-1.5 text-xs border outline-none cursor-pointer">
+              <option value="new" ${currentStatus==='new'?'selected':''}>New</option>
+              <option value="contacted" ${currentStatus==='contacted'?'selected':''}>Contacted</option>
+              <option value="interested" ${currentStatus==='interested'?'selected':''}>Interested</option>
+              <option value="closed" ${currentStatus==='closed'?'selected':''}>Closed</option>
+            </select>
+          </td>
+        ` : ''}
+        <td class="p-3.5 truncate font-mono">${effectiveRating ? `★ ${effectiveRating}` : '—'}</td>
+        <td class="p-3.5 text-right font-mono font-bold text-blue-600 dark:text-blue-400">${score}</td>
+        ${AuthService.currentUser ? `
+          <td class="p-3.5 text-center space-x-1">
+            <button onclick="UIController.openNotesModal('${UIController.escapeHtml(leadKey)}')" class="px-3 py-1.5 rounded-xl card-bg border subtext hover:text-blue-500 font-medium cursor-pointer">Shënim</button>
+            <button onclick="UIController.openPitchModal('${UIController.escapeHtml(leadKey)}')" class="px-3 py-1.5 rounded-xl card-bg border text-emerald-600 dark:text-emerald-400 font-medium cursor-pointer">Oferta</button>
+          </td>
+        ` : ''}
+      `;
+      tb.appendChild(tr);
+    });
+
+    document.getElementById('guestGatingOverlay').classList.toggle('hidden', !!AuthService.currentUser);
+    document.getElementById('paginationBar').classList.toggle('hidden', !AuthService.currentUser);
+
+    const pageInfo = document.getElementById('pageInfo');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (pageInfo) pageInfo.textContent = totalRecords > 0 ? `Duke shfaqur ${start + 1}-${end} nga ${totalRecords} rreshta` : `0 rreshta`;
+    if (pageIndicator) pageIndicator.textContent = `Faqja ${this.currentPage} nga ${maxPage}`;
+    if (prevBtn) prevBtn.disabled = (this.currentPage <= 1);
+    if (nextBtn) nextBtn.disabled = (this.currentPage >= maxPage);
+  },
+
+  init() {
+    if (!this.DATA || !this.DATA.businesses) return;
+    const cleanCities = [...new Set(this.DATA.businesses.map(b => (b.city || '').trim()).filter(Boolean))].sort();
+    const cleanCats = [...new Set(this.DATA.businesses.map(b => (b.category || '').trim()).filter(Boolean))].sort();
+
+    document.getElementById('city').innerHTML = '<option value="">Të gjitha qytetet</option>' + cleanCities.map(c => `<option value="${UIController.escapeHtml(c)}">${UIController.escapeHtml(c)}</option>`).join('');
+    document.getElementById('cat').innerHTML = '<option value="">Të gjitha kategoritë</option>' + cleanCats.map(c => `<option value="${UIController.escapeHtml(c)}">${UIController.escapeHtml(c)}</option>`).join('');
+    this.render();
+  }
+};
+
+// ==========================================
+// 🎨 UI CONTROLLER
+// ==========================================
+const UIController = {
+  getPixelAvatarUrl(user) {
+    return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(user?.email || 'default')}`;
+  },
+
+  toggleTheme() {
+    const isDark = document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', !isDark);
+    document.documentElement.classList.toggle('light', isDark);
+    document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  },
+
+  renderVerificationStatus() {
+    const c = document.getElementById('verificationStatusContainer');
+    if (c && AuthService.currentUser) {
+      c.innerHTML = AuthService.currentUser.emailVerified ? `<span class="text-emerald-400 font-mono text-xs">Email i Verifikuar ✓</span>` : `<span class="text-amber-500 font-mono text-xs">Email i Paverifikuar</span>`;
+    }
+  },
+
+  switchTab(tab) {
+    const protectedTabs = ['kanban', 'analytics', 'chat', 'profile'];
+    if (!AuthService.currentUser && protectedTabs.includes(tab)) {
+      AuthService.openAuthModal();
+      return;
+    }
+
+    if (tab === 'profile') {
+      const badge = document.getElementById('navLiveActivityBadge');
+      if (badge) badge.classList.add('hidden');
+    }
+
+    ['tabLeads', 'tabKanban', 'tabAnalytics', 'tabChat', 'tabAbout', 'tabContact', 'tabProfile'].forEach(t => document.getElementById(t)?.classList.add('hidden'));
+    document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.remove('hidden');
+    
+    const navButtons = {
+      leads: 'navLeidBtn',
+      kanban: 'navKanbanBtn',
+      analytics: 'navAnalyticsBtn',
+      chat: 'navChatBtn',
+      about: 'navAboutBtn',
+      contact: 'navContactBtn',
+      profile: 'navProfileBtn'
+    };
+
+    Object.keys(navButtons).forEach(key => {
+      const btn = document.getElementById(navButtons[key]);
+      if (btn) {
+        if (key === tab) {
+          btn.className = "px-4 py-2 rounded-xl btn-primary font-semibold transition cursor-pointer shadow-sm";
+        } else {
+          btn.className = "px-4 py-2 rounded-xl subtext hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer";
+        }
+      }
+    });
+
+    if (tab === 'kanban') {
+      CRMStore.renderKanban();
+    } else if (tab === 'analytics') {
+      CRMStore.updateAnalytics(CRMStore.DATA && CRMStore.DATA.businesses ? CRMStore.DATA.businesses.length : 0);
+    } else if (tab === 'chat') {
+      ChatService.scrollChatToBottom();
+    }
+  },
+
+  handleContactSubmit(e) {
+    e.preventDefault();
+    document.getElementById('contactSuccess').classList.remove('hidden');
+    ToastService.show('Mesazhi u dërgua me sukses.');
+  },
+
+  handleFilterInput() {
+    CRMStore.currentPage = 1;
+    CRMStore.render();
+  },
+
+  clearSearchInput() {
+    const qEl = document.getElementById('q');
+    if (qEl) {
+      qEl.value = '';
+      this.handleFilterInput();
+    }
+  },
+
+  resetAllFilters() {
+    const qEl = document.getElementById('q');
+    const cityEl = document.getElementById('city');
+    const catEl = document.getElementById('cat');
+    const sortEl = document.getElementById('sort');
+    const phoneOnlyEl = document.getElementById('phoneOnly');
+    const includeWebsiteEl = document.getElementById('includeWebsite');
+
+    if (qEl) qEl.value = '';
+    if (cityEl) cityEl.value = '';
+    if (catEl) catEl.value = '';
+    if (sortEl) sortEl.value = 'score';
+    if (phoneOnlyEl) phoneOnlyEl.checked = false;
+    if (includeWebsiteEl) includeWebsiteEl.checked = false;
+    CRMStore.lowRatingOnly = false;
+    CRMStore.showAll = false;
+
+    this.handleFilterInput();
+  },
+
+  quickNicheFilter(k) {
+    document.getElementById('q').value = k;
+    this.handleFilterInput();
+  },
+
+  quickRatingFilter(t) {
+    CRMStore.lowRatingOnly = (t === 'low');
+    this.handleFilterInput();
+  },
+
+  openNotesModal(leadKey) {
+    const b = CRMStore.DATA.businesses.find(item => (item.id || item.name) === leadKey);
+    CRMStore.activeLeadKeyForNotes = leadKey;
+    document.getElementById('notesBusinessSubtitle').textContent = b ? b.name : leadKey;
+    document.getElementById('leadNoteInput').value = CRMStore.getLeadNote(leadKey);
+    const remVal = CRMStore.getLeadReminder(leadKey);
+    document.getElementById('leadReminderInput').value = remVal;
+    document.getElementById('leadCustomRatingInput').value = CRMStore.cloudRatings[leadKey] || '';
+    
+    this.updateGoogleCalendarUrl();
+    this.renderActivityTimeline(leadKey);
+    document.getElementById('notesModal').classList.remove('hidden');
+  },
+
+  updateGoogleCalendarUrl() {
+    const dateInput = document.getElementById('leadReminderInput').value;
+    const linkEl = document.getElementById('googleCalendarLink');
+    if (!linkEl) return;
+
+    if (!dateInput) {
+      linkEl.classList.add('hidden');
+      return;
+    }
+
+    linkEl.classList.remove('hidden');
+    const cleanDate = dateInput.replace(/-/g, '');
+    const title = encodeURIComponent(`Kujtesë CRM: Ndiq biznesin ${document.getElementById('notesBusinessSubtitle').textContent}`);
+    const details = encodeURIComponent(`Kujtesë e vendosur nga paneli i PaFaqe.al`);
+    linkEl.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${cleanDate}/${cleanDate}&details=${details}`;
+  },
+
+  renderActivityTimeline(leadKey) {
+    const c = document.getElementById('activityTimelineContainer');
+    const events = CRMStore.cloudHistory[leadKey] || [];
+    c.innerHTML = events.length === 0 ? '<span class="subtext">Nuk ka histori të regjistruar.</span>' : events.map(e => `<div class="border-b border-theme pb-2 mb-2 font-mono">${this.escapeHtml(e.text)} <span class="subtext">(${e.date})</span></div>`).join('');
+  },
+
+  closeNotesModal() { document.getElementById('notesModal').classList.add('hidden'); },
+
+  switchPitchChannel(channel) {
+    CRMStore.currentPitchChannel = channel;
+    const btnWa = document.getElementById('pitchTabWa');
+    const btnEmail = document.getElementById('pitchTabEmail');
+
+    if (channel === 'whatsapp') {
+      document.getElementById('pitchPanelWa').classList.remove('hidden');
+      document.getElementById('pitchPanelEmail').classList.add('hidden');
+      if (btnWa) btnWa.className = "px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer";
+      if (btnEmail) btnEmail.className = "px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer";
+    } else {
+      document.getElementById('pitchPanelWa').classList.add('hidden');
+      document.getElementById('pitchPanelEmail').classList.remove('hidden');
+      if (btnEmail) btnEmail.className = "px-4 py-2 rounded-xl btn-primary font-semibold text-xs transition cursor-pointer";
+      if (btnWa) btnWa.className = "px-4 py-2 rounded-xl subtext hover:text-blue-500 font-medium text-xs transition cursor-pointer";
+    }
+  },
+
+  openPitchModal(leadKey) {
+    const b = CRMStore.DATA.businesses.find(item => (item.id || item.name) === leadKey);
+    if (!b) return;
+    CRMStore.currentPitchLeadKey = leadKey;
+    document.getElementById('pitchBusinessSubtitle').textContent = `${b.name} (${b.category || 'Business'} • ${b.city || 'Albania'})`;
+    document.getElementById('pitchTemplateWaInput').value = CRMStore.DEFAULT_WA_TEMPLATE;
+    document.getElementById('emailSubjectTemplateInput').value = CRMStore.DEFAULT_EMAIL_SUB_TEMPLATE;
+    document.getElementById('emailBodyTemplateInput').value = CRMStore.DEFAULT_EMAIL_BODY_TEMPLATE;
+    CRMStore.updateLivePitchPreview();
+    this.switchPitchChannel('whatsapp');
+    document.getElementById('pitchModal').classList.remove('hidden');
+  },
+
+  closePitchModal() { document.getElementById('pitchModal').classList.add('hidden'); },
+
+  escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    UIController.closeNotesModal();
+    UIController.closePitchModal();
+    ChatService.closeGroupMembersModal();
+  }
+});
+
+// Inicializimi i Aplikacionit
+AuthService.init();
+CRMStore.init();
+</script>
+</body>
+</html>
